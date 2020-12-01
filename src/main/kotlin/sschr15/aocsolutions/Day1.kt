@@ -4,7 +4,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 fun main() {
-    val nums = Files.newBufferedReader(Path.of("inputs", "day1", "input1")).readLines().map { it.toInt() }
+    val nums = Files.newBufferedReader(Path.of("inputs", "2020", "day1", "input1")).readLines().map { it.toInt() }
     println("Part 1")
     for (i in nums.indices) {
         for (j in i until nums.size) {
