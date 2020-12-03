@@ -10,5 +10,8 @@ This will be built one day behind as always, but if you want to just see the obj
 here is the list:
 
 1. Given the attached list of ~500,000 numbers, find 3 of them that sum to 3232322, and give the product of those 3 numbers.
+2. The format, `a-b q: xxxxxx` means that the substring from index a to b must be a **PALINDROME** to be considered valid.
+   If the password is valid, **YOU MUST PRINT OUT the ROT13 of 'q'.** This is case sensitive - lower case letters will 
+   only rot to other lowercase letters. Print out the character from all valid strings to uncover the secret key.
 
 More to come...
