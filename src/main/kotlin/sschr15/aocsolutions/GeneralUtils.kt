@@ -124,3 +124,37 @@ fun aStarAlgorithm(start: Point, end: Point, h: (Point) -> Int, neighbors: (Poin
 
     return null
 }
+
+fun Int.toString(chars: Int): String {
+    return if (toString().length < chars) "${"0" * (chars - toString().length)}$this"
+    else this.toString()
+}
+
+operator fun String.times(amount: Int): String {
+    val builder = StringBuilder()
+    for (i in 1..amount) builder.append(this)
+    return builder.toString()
+}
+
+operator fun String.get(start: Int, end: Int = length) = substring(start, end)
+
+/**
+ * Perform a binary tree traversal to get an index.
+ * @param items a list of instructions
+ * @param lo the instruction to state "the value is in the lower half of the remaining region"
+ * @param hi the instruction to state "the value is in the upper half of the remaining region"
+ * @param throwException should the method throw an exception if an item is neither [lo] or [hi]?
+ * @return an index that would point to one specific spot in a list
+ */
+fun <T> binarySearch(items: List<T>, lo: T, hi: T, throwException: Boolean = true): Int {
+    val len = items.size
+    var lowBound = 0
+    var highBound = (1 shl len) - 1
+    for (i in 0 until len) {
+        val bound = (highBound - lowBound) / 2
+        if (items[i] == lo) highBound = lowBound + bound
+        else if (items[i] == hi) lowBound = highBound - bound
+        else if (throwException) throw IllegalArgumentException("${items[i]}")
+    }
+    return lowBound
+}
