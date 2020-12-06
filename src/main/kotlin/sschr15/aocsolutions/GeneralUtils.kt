@@ -4,7 +4,7 @@ import java.io.BufferedReader
 import java.nio.file.Files
 import java.nio.file.Path
 
-val maxValue = 2147483647
+const val maxValue = 2147483647
 
 /**
  * Get a challenge's file
