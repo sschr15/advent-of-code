@@ -1,7 +1,7 @@
 package sschr15.aocsolutions
 
 @ExperimentalUnsignedTypes
-fun main() {
+fun day1() {
     val funStart = System.currentTimeMillis()
 
     var partStart = funStart

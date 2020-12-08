@@ -1,6 +1,6 @@
 package sschr15.aocsolutions
 
-fun main() {
+fun day6() {
     println("Part 1")
     // get groups (a group is separated from others by two newlines)
     getChallenge(2020, 6).readLines().joinToString("\n").split("\n\n")

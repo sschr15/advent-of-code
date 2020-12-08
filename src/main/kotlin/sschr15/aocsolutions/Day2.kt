@@ -1,6 +1,6 @@
 package sschr15.aocsolutions
 
-fun main() {
+fun day2() {
     val challenge = getChallenge(2020, 2).readLines()
 
     println("Part 1")

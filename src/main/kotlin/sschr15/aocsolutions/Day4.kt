@@ -1,6 +1,6 @@
 package sschr15.aocsolutions
 
-fun main() {
+fun day4() {
     val passportData = getChallenge(2020, 4).readLines().joinToString("\n").split("\n\n")
         .map { it.split(Regex("\\s")) }
 
