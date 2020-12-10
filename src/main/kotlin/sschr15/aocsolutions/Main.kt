@@ -18,4 +18,6 @@ fun main() {
     day7()
     println("\nDay 8:")
     day8()
+    println("\nDay 9:")
+    day9()
 }
