@@ -22,6 +22,7 @@ fun main() {
     day9()
     println("\nDay 10:")
     day10()
-    println("\nDay 11:")
-    day11()
+    println("\n(Skipping day 11, takes too long)")
+    println("\nDay 12:")
+    day12()
 }

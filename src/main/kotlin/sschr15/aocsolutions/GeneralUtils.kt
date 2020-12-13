@@ -122,6 +122,11 @@ data class MutablePoint(var x: Int, var y: Int) {
         return "($x, $y)"
     }
 }
+data class MutableLongPoint(var x: Long, var y: Long) {
+    override fun toString(): String {
+        return "($x, $y)"
+    }
+}
 
 private fun reconstruct(origins: Map<Point, Point>, current: Point): List<Point> {
     var thing = current
