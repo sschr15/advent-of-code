@@ -21,6 +21,9 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
     val width: Int
         get() = (data.map { it.size }.firstOrNull() ?: 0)
 
+    fun getRow(row: Int) = data[row]
+    fun getColumn(col: Int) = data.map { it[col] }.toMutableList()
+
     operator fun get(x: Int, y: Int) = data[y][x]
     operator fun get(point: Point) = data[point.y][point.x]
     operator fun set(x: Int, y: Int, value: E) {
@@ -30,14 +33,54 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
         data[point.y][point.x] = value
     }
 
-    fun flatten() = data.flatten()
+    fun getNeighbors(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, E> {
+        val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
+            .filter { it.x in 0 until width && it.y in 0 until height } // only get points in the grid
+        return points.associateWith { this[it] }
+    }
+
+    /**
+     * Returns a map where the keys are points and the values are the grid's values at their points.
+     * ---
+     *     12
+     *     34
+     * This example will create a map of `(0, 0) to 1, (0, 1) to 2, (1, 0) to 3, (1, 1) to 4`.
+     */
+    fun toPointMap() = map { it.mapIndexed { index, c -> index to c }.toMap() }
+        .mapIndexed { y, map -> map.asIterable().associate { (x, c) -> Point(x, y) to c } }
+        .reduce { acc, map -> acc.toMutableMap().also { it.putAll(map) } }
 
     companion object {
         fun <E> of(data: List<List<E>> = listOf()) = Grid(data.map { it.toMutableList() }.toMutableList())
+
+        /**
+         * Get the neighboring points of a given point
+         * @param point the point you want neighboring points of
+         * @param includeDiagonals should points diagonal to that point be included?
+         * @return a list of neighboring points
+         */
+        fun getNeighboringPoints(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1) =
+            if (includeDiagonals) {
+                (-searchDistance..searchDistance).flatMap { x ->
+                    (-searchDistance..searchDistance).filter { x != 0 || it != 0 }.map { y ->
+                        Point(point.x + x, point.y + y)
+                    }
+                }
+            } else {
+                (-searchDistance..searchDistance).flatMap { x ->
+                    (-searchDistance..searchDistance).filter { x != it && x != -it }.map { y ->
+                        Point(point.x + x, point.y + y)
+                    }
+                }
+            }
     }
 
     override fun iterator(): Iterator<Iterable<E>> = data.iterator()
 }
+
+fun <T> Iterable<Iterable<T>>.toGrid() = Grid.of(this.toList().map { it.toList() })
+
+fun Grid<Char>.stringify() = this.joinToString("\n") { it.joinToString("") }
 
 data class Point(val x: Int, val y: Int) {
     override operator fun equals(other: Any?): Boolean {
