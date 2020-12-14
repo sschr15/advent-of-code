@@ -206,3 +206,9 @@ fun <T> binarySearch(items: List<T>, lo: T, hi: T, throwException: Boolean = tru
     }
     return lowBound
 }
+
+operator fun <A> Pair<A, A>.get(index: Int) = when(index) {
+    0 -> first
+    1 -> second
+    else -> throw IllegalArgumentException(index.toString())
+}

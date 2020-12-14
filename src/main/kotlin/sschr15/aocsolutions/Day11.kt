@@ -2,9 +2,13 @@ package sschr15.aocsolutions
 
 import kotlin.math.min
 
+fun main() {
+    println("Day 11 execution is slow. Please wait...")
+    day11()
+}
+
 fun day11() {
     val seats = Grid.of(getChallenge(2020, 11).readLines().map { it.toList() })
-    println("Both parts take seconds to execute. Please wait...")
 
     println("Part 1")
     // seats.map { it.map { c -> c } }.toGrid() is basically just seats.clone()

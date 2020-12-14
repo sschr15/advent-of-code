@@ -82,7 +82,3 @@ private fun part2(point: MutableLongPoint, waypointRelative: MutableLongPoint, d
     }
     return direction
 }
-
-fun main() {
-    day12()
-}

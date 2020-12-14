@@ -1,7 +1,9 @@
 package sschr15.aocsolutions
 
 @ExperimentalUnsignedTypes
-fun main() {
+fun main(args: Array<String>) {
+    val shouldExecuteSlowFunctions = args.contains("--include-slow")
+
     println("Day 1:")
     day1()
     println("\nDay 2:")
@@ -22,7 +24,15 @@ fun main() {
     day9()
     println("\nDay 10:")
     day10()
-    println("\n(Skipping day 11, takes too long)")
+    if (!shouldExecuteSlowFunctions) {
+        println("\nSkipping day 11 because it is slow." +
+                "Run using Day11Kt.main() or run this with --include-slow to run part 2.")
+    } else {
+        println("\nDay 11 (slow):")
+        day11()
+    }
     println("\nDay 12:")
     day12()
+    println("\nDay 13:")
+    day13(shouldExecuteSlowFunctions)
 }
