@@ -10,7 +10,6 @@ package sschr15.aocsolutions
 fun day1() {
     val data = getChallenge(2021, 1).use { it.readLines() }.map { it.toInt() }
 
-    // default to max value to force the first value to not be considered an increase
     val result = data.countIncreases()
 
     println("Part 1: $result")
@@ -33,3 +32,5 @@ private inline fun List<Int>.countIncreases() = fold(0 to maxValue) { (count, la
         count to current
     }
 }.first
+
+private fun List<Int>.alternateCountIncreases() = windowed(2) { it[0] > it[1] }.count()
