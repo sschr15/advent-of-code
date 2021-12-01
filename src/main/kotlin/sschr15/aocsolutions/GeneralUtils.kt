@@ -3,6 +3,9 @@ package sschr15.aocsolutions
 import java.io.BufferedReader
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.bufferedReader
+import kotlin.io.path.exists
 
 const val maxValue = 2147483647
 
@@ -13,7 +16,10 @@ const val maxValue = 2147483647
  * @return a [BufferedReader] pointing to the challenge's file
  */
 fun getChallenge(year: Int, day: Int): BufferedReader =
-    Files.newBufferedReader(Path.of(if (year == 0) "part3" else "inputs/$year", "day$day"))
+    (if (year == 0) "part3" else "inputs/$year/day$day").let {
+        if (Path(it).exists()) Path(it).bufferedReader()
+        else Path("$it.txt").bufferedReader()
+    }
 
 class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Iterable<Iterable<E>> {
     val height: Int
@@ -138,51 +144,12 @@ private fun reconstruct(origins: Map<Point, Point>, current: Point): List<Point>
     return path
 }
 
-/**
- * A* algorithm implemented in (hopefully partially) easy-to-understand Kotlin.
- * @param start the start point
- * @param end the goal point
- * @param h heuristic function: a calculator for how hard it is to reach the goal point, as an estimate
- * @param neighbors a list of all neighbors of a given input point
- * @param d the weight of the distance from a point to a neighbor
- * @return a path to follow to get from [start] to [end]
- */
-fun aStarAlgorithm(start: Point, end: Point, h: (Point) -> Int, neighbors: (Point) -> List<Point>, d: (Point, Point) -> Int): List<Point>? {
-    val openNodes = mutableListOf(start)
-    val origins = mutableMapOf<Point, Point>()
-    val g = mutableMapOf(start to 0)
-    val f = mutableMapOf(start to h(start))
-
-    while (openNodes.isNotEmpty()) {
-        val current = openNodes.minByOrNull { f.getOrDefault(it, maxValue) }!!
-        if (current == end) return reconstruct(origins, current)
-
-        openNodes.remove(current)
-
-        neighbors(current).forEach {
-            val tent = g.getOrDefault(it, maxValue) + d(current, it)
-            if (tent < g.getOrDefault(it, maxValue)) {
-                origins[it] = current
-                g[it] = tent
-                f[it] = tent + h(it)
-                if (!openNodes.contains(it)) openNodes.add(it)
-            }
-        }
-    }
-
-    return null
-}
-
 fun Int.toString(chars: Int): String {
     return if (toString().length < chars) "${"0" * (chars - toString().length)}$this"
     else this.toString()
 }
 
-operator fun String.times(amount: Int): String {
-    val builder = StringBuilder()
-    for (i in 1..amount) builder.append(this)
-    return builder.toString()
-}
+operator fun String.times(amount: Int) = this.repeat(amount)
 
 operator fun String.get(start: Int, end: Int = length) = substring(start, end)
 

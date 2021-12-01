@@ -15,5 +15,12 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    listOf(
+        "stdlib",
+        "stdlib-common",
+        "stdlib-jdk8",
+        "stdlib-jdk7",
+    ).forEach {
+        implementation(kotlin(it))
+    }
 }
