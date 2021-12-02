@@ -4,7 +4,9 @@ package sschr15.aocsolutions
 
 /**
  * Day 1: Sonar Sweep
+ *
  * Part 1 - Given a list of numbers, count the number of times the number increases.
+ *
  * Part 2 - like part 1 but the list is the sum of each 3 numbers.
  */
 fun day1() {
