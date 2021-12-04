@@ -76,7 +76,9 @@ private class BingoCard(input: String) {
         card.flatten().forEach { if (it.value == number) it.called = true }
     }
 
-    override fun toString(): String = card.joinToString("\n") { row -> row.joinToString(" ") { it.value.toString().padStart(2) } }
+    override fun toString(): String = card.joinToString("\n") { row ->
+        row.joinToString(" ") { it.value.toString().padStart(2) }
+    }
 
     fun toInt(winningNumber: Int): Int {
         val numbers = card.flatten().filter { !it.called }.map { it.value }
