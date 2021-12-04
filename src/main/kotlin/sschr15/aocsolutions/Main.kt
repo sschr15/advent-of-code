@@ -10,4 +10,9 @@ fun main(args: Array<String>) {
     println("Day 2: Dive!")
     day2()
 
+    println("Day 3: Binary Diagnostic")
+    day3()
+
+    println("Day 4: Giant Squid")
+    day4()
 }
