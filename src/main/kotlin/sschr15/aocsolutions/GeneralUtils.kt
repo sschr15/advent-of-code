@@ -6,6 +6,7 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.exists
+import kotlin.io.path.readText
 
 const val maxValue = 2147483647
 
@@ -17,11 +18,9 @@ const val maxValue = 2147483647
  */
 fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
     (if (year == 0) "part3" else "inputs/$year/day$day").let {
-        if (Path(it).exists()) Path(it).bufferedReader()
-        else Path("$it.txt").bufferedReader()
-    }.use { it.readText() }.let {
+        val text = (if (Path(it).exists()) Path(it) else Path("$it.txt")).readText()
         // return the input as a list of lines, or as a singleton list if the separator is null
-        if (separator != null) it.split(separator) else listOf(it)
+        if (separator != null) text.split(separator) else listOf(text)
     }
 
 class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Iterable<Iterable<E>> {
