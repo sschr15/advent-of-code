@@ -12,7 +12,7 @@ package sschr15.aocsolutions
  *  - `forward X` controls the distance and changes the depth by `X * aim`
  */
 fun day2() {
-    val data = getChallenge(2021, 2).use { it.readLines() }
+    val data = getChallenge(2021, 2)
         .map { it.split(' ') }
         .map { it[0] to it[1].toInt() }
 

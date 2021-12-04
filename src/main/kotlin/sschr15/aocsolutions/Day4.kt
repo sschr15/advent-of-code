@@ -6,7 +6,7 @@ package sschr15.aocsolutions
  * Goal: Play bingo! Sum all uncalled numbers on the winning bingo card, then multiply by the winning called number.
  */
 fun day4() {
-    val input = getChallenge(2021, 4).use { it.readText() }
+    val input = getChallenge(2021, 4).joinToString("\n")
     val parts = input.split("\n\n")
     val calledNumbers = parts[0].split(',').map { it.toInt() }
     val bingoCards = parts.drop(1).map {

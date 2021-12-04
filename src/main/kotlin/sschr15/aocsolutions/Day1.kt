@@ -10,7 +10,7 @@ package sschr15.aocsolutions
  * Part 2 - like part 1 but the list is the sum of each 3 numbers.
  */
 fun day1() {
-    val data = getChallenge(2021, 1).use { it.readLines() }.map { it.toInt() }
+    val data = getChallenge(2021, 1).map { it.toInt() }
 
     val result = data.countIncreases()
 

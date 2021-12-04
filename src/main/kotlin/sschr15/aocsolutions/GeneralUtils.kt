@@ -15,11 +15,11 @@ const val maxValue = 2147483647
  * @param day the day of the challenge, according to the Advent of Code website.
  * @return a [BufferedReader] pointing to the challenge's file
  */
-fun getChallenge(year: Int, day: Int): BufferedReader =
+fun getChallenge(year: Int, day: Int) =
     (if (year == 0) "part3" else "inputs/$year/day$day").let {
         if (Path(it).exists()) Path(it).bufferedReader()
         else Path("$it.txt").bufferedReader()
-    }
+    }.use { it.readLines() }
 
 class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Iterable<Iterable<E>> {
     val height: Int

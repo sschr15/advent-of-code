@@ -15,7 +15,7 @@ package sschr15.aocsolutions
  */
 fun day3() {
     // interpreting each number as a list of booleans to represent the bits
-    val input = getChallenge(2021, 3).use { it.readLines() }
+    val input = getChallenge(2021, 3)
         .map { it.toCharArray().map { c -> c.digitToInt() != 0 } }
 
     // gamma rate
