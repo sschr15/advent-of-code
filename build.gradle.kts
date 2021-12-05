@@ -1,10 +1,20 @@
 plugins {
     java
     kotlin("jvm") version "1.6.0"
+    application
 }
 
 group = "sschr15"
 version = "1.0-SNAPSHOT"
+
+application {
+    mainClass.set("sschr15.aocsolutions.MainKt")
+}
+
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
     mavenCentral()
