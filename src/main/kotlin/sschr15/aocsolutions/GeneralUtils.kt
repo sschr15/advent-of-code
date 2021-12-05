@@ -27,7 +27,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         if (it.last().isBlank()) it.dropLast(1) else it
     }
 
-class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Iterable<Iterable<E>> {
+class Grid<T> private constructor(private val data: MutableList<MutableList<T>>) : Iterable<Iterable<T>> {
     val height: Int
         get() = data.size
     val width: Int
@@ -38,14 +38,14 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
 
     operator fun get(x: Int, y: Int) = data[y][x]
     operator fun get(point: Point) = data[point.y][point.x]
-    operator fun set(x: Int, y: Int, value: E) {
+    operator fun set(x: Int, y: Int, value: T) {
         data[y][x] = value
     }
-    operator fun set(point: Point, value: E) {
+    operator fun set(point: Point, value: T) {
         data[point.y][point.x] = value
     }
 
-    fun getNeighbors(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, E> {
+    fun getNeighbors(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
             .filter { it.x in 0 until width && it.y in 0 until height } // only get points in the grid
         return points.associateWith { this[it] }
@@ -58,9 +58,19 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
      *     34
      * This example will create a map of `(0, 0) to 1, (0, 1) to 2, (1, 0) to 3, (1, 1) to 4`.
      */
-    fun toPointMap() = map { it.mapIndexed { index, c -> index to c }.toMap() }
-        .mapIndexed { y, map -> map.asIterable().associate { (x, c) -> Point(x, y) to c } }
-        .reduce { acc, map -> acc.toMutableMap().also { it.putAll(map) } }
+    fun toPointMap() = data.mapIndexed { y, row ->
+        row.mapIndexed { x, value -> Point(x, y) to value }
+    }.flatten().toMap()
+
+    override fun toString() = data.joinToString("\n") { it.joinToString("") }
+
+    init {
+        // remove empty rows because who knows what the input will be
+        data.removeAll { it.isEmpty() }
+
+        // ensure that the grid is rectangular
+        require(data.all { it.size == data[0].size }) { "Grid must be rectangular" }
+    }
 
     companion object {
         operator fun <E> invoke(data: List<List<E>> = listOf()) = Grid(data.map { it.toMutableList() }.toMutableList())
@@ -90,12 +100,10 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
             }
     }
 
-    override fun iterator(): Iterator<Iterable<E>> = data.iterator()
+    override fun iterator(): Iterator<Iterable<T>> = data.iterator()
 }
 
 fun <T> Iterable<Iterable<T>>.toGrid() = Grid(this.toList().map { it.toList() })
-
-fun Grid<Char>.stringify() = this.joinToString("\n") { it.joinToString("") }
 
 data class Point(val x: Int, val y: Int) {
     override operator fun equals(other: Any?): Boolean {
@@ -164,6 +172,11 @@ data class Line(val start: Point, val end: Point) {
                 .map { y -> Point(start.x, y) }
         }
     }
+
+    companion object {
+        operator fun invoke(x1: Int, y1: Int, x2: Int, y2: Int) = Line(Point(x1, y1), Point(x2, y2))
+        operator fun invoke(points: Pair<Point, Point>) = Line(points.first, points.second)
+    }
 }
 
 fun Int.toString(chars: Int): String {
@@ -196,7 +209,7 @@ fun <T> binarySearch(items: List<T>, lo: T, hi: T, throwException: Boolean = tru
     return lowBound
 }
 
-operator fun <A> Pair<A, A>.get(index: Int) = when(index) {
+operator fun <T> Pair<T, T>.get(index: Int) = when(index) {
     0 -> first
     1 -> second
     else -> throw IllegalArgumentException(index.toString())
