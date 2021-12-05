@@ -7,6 +7,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.exists
 import kotlin.io.path.readText
+import kotlin.math.*
 
 const val maxValue = 2147483647
 
@@ -21,6 +22,9 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         val text = (if (Path(it).exists()) Path(it) else Path("$it.txt")).readText()
         // return the input as a list of lines, or as a singleton list if the separator is null
         if (separator != null) text.split(separator) else listOf(text)
+    }.let {
+        // if the file ends with a newline, remove it
+        if (it.last().isBlank()) it.dropLast(1) else it
     }
 
 class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Iterable<Iterable<E>> {
@@ -59,7 +63,10 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
         .reduce { acc, map -> acc.toMutableMap().also { it.putAll(map) } }
 
     companion object {
-        fun <E> of(data: List<List<E>> = listOf()) = Grid(data.map { it.toMutableList() }.toMutableList())
+        operator fun <E> invoke(data: List<List<E>> = listOf()) = Grid(data.map { it.toMutableList() }.toMutableList())
+
+        inline operator fun <reified E> invoke(width: Int, height: Int, defaultValue: E) =
+            invoke(Array(width) { Array(height) { defaultValue }.toMutableList() }.toMutableList())
 
         /**
          * Get the neighboring points of a given point
@@ -86,7 +93,7 @@ class Grid<E> private constructor(val data: MutableList<MutableList<E>>) : Itera
     override fun iterator(): Iterator<Iterable<E>> = data.iterator()
 }
 
-fun <T> Iterable<Iterable<T>>.toGrid() = Grid.of(this.toList().map { it.toList() })
+fun <T> Iterable<Iterable<T>>.toGrid() = Grid(this.toList().map { it.toList() })
 
 fun Grid<Char>.stringify() = this.joinToString("\n") { it.joinToString("") }
 
@@ -136,14 +143,27 @@ data class MutableLongPoint(var x: Long, var y: Long) {
     }
 }
 
-private fun reconstruct(origins: Map<Point, Point>, current: Point): List<Point> {
-    var thing = current
-    val path = mutableListOf(thing)
-    while (origins.containsKey(thing)) {
-        thing = origins[thing]!!
-        path.add(0, thing)
+data class Line(val start: Point, val end: Point) {
+    val length = sqrt((start.x - end.x).toDouble().pow(2) + (start.y - end.y).toDouble().pow(2))
+    val slope = (start.y - end.y).toDouble() / (start.x - end.x).toDouble()
+    private val yIntercept = start.y - slope * start.x
+    val wholeNumberPoints by lazy {
+        if (slope.isFinite()) {
+            // not a vertical line
+            val min = min(start.x, end.x)
+            val max = max(start.x, end.x)
+            (min..max)
+                .map { it to it * slope + yIntercept }
+                .filter { (_, y) -> y.roundToInt().toDouble() == y }
+                .map { (x, y) -> Point(x, y.roundToInt()) }
+        } else {
+            // vertical line
+            val min = min(start.y, end.y)
+            val max = max(start.y, end.y)
+            (min..max)
+                .map { y -> Point(start.x, y) }
+        }
     }
-    return path
 }
 
 fun Int.toString(chars: Int): String {
