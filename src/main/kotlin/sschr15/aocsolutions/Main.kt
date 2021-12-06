@@ -41,6 +41,11 @@ fun main(args: Array<String>) {
                 println("Day 5: Hydrothermal Venture")
                 println("Completed in ${measureTimeMillis { day5() }}ms")
             }.onFailure { failure(it, 5) }
+            
+            runCatching {
+                println("Day 6: Lanternfish")
+                println("Completed in ${measureTimeMillis { day6() }}ms")
+            }.onFailure { failure(it, 6) }
 
             if (anythingFailed) {
                 println("Stacktraces for failed solutions are in files under the name `dayN_error.txt`")
@@ -57,7 +62,7 @@ fun main(args: Array<String>) {
 }
 
 private fun failure(t: Throwable, day: Int) {
-    println("Day $day failed: ${t.localizedMessage}")
+    println("Day $day failed: $t")
     Path("day${day}_error.txt").bufferedWriter().use {
         t.printStackTrace(PrintWriter(it))
     }

@@ -7,3 +7,30 @@ out/
 
 # custom
 inputs/
+
+# apparently gitignore doesn't like wildcards in the middle of the file name
+/day1_error.txt
+/day2_error.txt
+/day3_error.txt
+/day4_error.txt
+/day5_error.txt
+/day6_error.txt
+/day7_error.txt
+/day8_error.txt
+/day9_error.txt
+/day10_error.txt
+/day11_error.txt
+/day12_error.txt
+/day13_error.txt
+/day14_error.txt
+/day15_error.txt
+/day16_error.txt
+/day17_error.txt
+/day18_error.txt
+/day19_error.txt
+/day20_error.txt
+/day21_error.txt
+/day22_error.txt
+/day23_error.txt
+/day24_error.txt
+/day25_error.txt
