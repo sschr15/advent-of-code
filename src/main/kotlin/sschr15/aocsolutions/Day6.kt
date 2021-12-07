@@ -1,5 +1,7 @@
 package sschr15.aocsolutions
 
+import java.math.BigInteger
+
 /**
  * Day 6: Lanternfish
  *
@@ -10,28 +12,37 @@ fun day6() {
     val input = getChallenge(2021, 6, ",").map { it.removeSuffix("\n").toInt() }
 
     // numbers get too big too quickly, so we shall use a map of the number of fish on a specific day of its cycle
-    val fishMap = mutableMapOf<Int, Long>()
+    val fishMap = mutableMapOf<Int, BigInteger>()
     input.forEach {
-        fishMap[it] = fishMap.getOrDefault(it, 0) + 1
+        fishMap[it] = fishMap.getOrDefault(it, 0.toBigInteger()) + 1.toBigInteger()
     }
 
-    for (i in 1..256) {
+    repeat(10000) { i ->
         val entries = fishMap.entries.map { it.toPair() }
         fishMap.clear()
         entries.forEach {
             if (it.first - 1 < 0) {
-                fishMap[8] = fishMap.getOrDefault(8, 0) + it.second
-                fishMap[6] = fishMap.getOrDefault(6, 0) + it.second
+                fishMap[8] = fishMap.getOrDefault(8, 0.toBigInteger()) + it.second
+                fishMap[6] = fishMap.getOrDefault(6, 0.toBigInteger()) + it.second
             } else {
-                fishMap[it.first - 1] = fishMap.getOrDefault(it.first - 1, 0) + it.second
+                fishMap[it.first - 1] = fishMap.getOrDefault(it.first - 1, 0.toBigInteger()) + it.second
             }
         }
-        if (i == 80) {
-            println("Part 1: ${fishMap.values.sum()}")
+        when (i) {
+            79 -> {
+                println("Part 1: ${fishMap.values.sumOf { it }}")
+            }
+            255 -> {
+                println("Part 2: ${fishMap.values.sumOf { it }}")
+            }
+            999 -> {
+                println("Fun part: ${fishMap.values.sumOf { it }}")
+            }
+            9999 -> {
+                println("Fun part #2: ${fishMap.values.sumOf { it }}")
+            }
         }
     }
-
-    println("Part 2: ${fishMap.values.sum()}")
 }
 
 fun main() {

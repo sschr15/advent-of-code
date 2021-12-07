@@ -46,6 +46,11 @@ fun main(args: Array<String>) {
                 println("Day 6: Lanternfish")
                 println("Completed in ${measureTimeMillis { day6() }}ms")
             }.onFailure { failure(it, 6) }
+            
+            runCatching {
+                println("Day 7: The Treachery of Whales")
+                println("Completed in ${measureTimeMillis { day7() }}ms")
+            }.onFailure { failure(it, 7) }
 
             if (anythingFailed) {
                 println("Stacktraces for failed solutions are in files under the name `dayN_error.txt`")
