@@ -1,5 +1,7 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.getChallenge
+
 /**
  * Day 2: Dive!
  *

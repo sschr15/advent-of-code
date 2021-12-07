@@ -1,5 +1,6 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.getChallenge
 import java.math.BigInteger
 
 /**

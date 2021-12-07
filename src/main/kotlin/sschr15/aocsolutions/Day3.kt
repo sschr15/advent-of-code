@@ -1,5 +1,7 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.getChallenge
+
 /**
  * Day 3: Binary Diagnostic
  *

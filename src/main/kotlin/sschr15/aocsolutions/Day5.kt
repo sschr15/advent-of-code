@@ -1,5 +1,9 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.Grid
+import sschr15.aocsolutions.util.Line
+import sschr15.aocsolutions.util.Point
+import sschr15.aocsolutions.util.getChallenge
 import kotlin.math.*
 import kotlin.system.measureTimeMillis
 

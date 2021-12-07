@@ -1,5 +1,6 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.getChallenge
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min

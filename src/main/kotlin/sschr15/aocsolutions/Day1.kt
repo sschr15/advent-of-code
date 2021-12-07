@@ -2,6 +2,9 @@
 
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.getChallenge
+import sschr15.aocsolutions.util.maxValue
+
 /**
  * Day 1: Sonar Sweep
  *
