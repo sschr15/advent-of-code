@@ -1,9 +1,6 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.Grid
-import sschr15.aocsolutions.util.Point
-import sschr15.aocsolutions.util.getChallenge
-import sschr15.aocsolutions.util.toGrid
+import sschr15.aocsolutions.util.*
 
 /**
  * Day 9: Smoke Basin
@@ -45,7 +42,7 @@ fun day9() {
 
     // largest three basins
     val largestBasins = basinSizes.sortedDescending().take(3)
-    println("Part 2: ${largestBasins.reduce { acc, i -> acc * i }}")
+    println("Part 2: ${largestBasins.mul()}")
 
     // endregion
 }
