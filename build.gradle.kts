@@ -22,6 +22,7 @@ repositories {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
+    kotlinOptions.freeCompilerArgs = listOf("-opt-in=kotlin.time.ExperimentalTime")
 }
 
 dependencies {

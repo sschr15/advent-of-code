@@ -5,12 +5,10 @@ import java.io.PrintWriter
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.system.measureTimeMillis
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 private var anythingFailed = false
 
-@OptIn(ExperimentalTime::class)
 fun main(args: Array<String>) {
     // in case there are slow solves, we can skip them if necessary
     val shouldExecuteSlowFunctions = args.contains("--include-slow")
