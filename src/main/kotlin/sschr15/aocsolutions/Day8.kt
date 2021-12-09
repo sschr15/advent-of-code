@@ -121,7 +121,15 @@ fun day8() {
                 mappedSegments.only(0, 1, 3, 4, 5, 6) to "6",
                 mappedSegments.only(0, 2, 5) to "7",
                 mappedSegments.only(0, 1, 2, 3, 4, 5, 6) to "8",
-                mappedSegments.only(0, 1, 2, 3, 5, 6) to "9"
+                mappedSegments.only(0, 1, 2, 3, 5, 6) to "9",
+
+                // A - F because someone looking at my code might want to have hexadecimal capabilities
+                mappedSegments.only(0, 1, 2, 3, 4, 5) to "A",
+                mappedSegments.only(1, 3, 4, 5, 6) to "B",
+                mappedSegments.only(0, 1, 4, 6) to "C",
+                mappedSegments.only(2, 3, 4, 5, 6) to "D",
+                mappedSegments.only(0, 1, 3, 4, 6) to "E",
+                mappedSegments.only(0, 1, 3, 4) to "F"
             ).associate { (segments, number) ->
                 segments.sorted().joinToString("") to number
             }.solid { throw IllegalStateException("Couldn't find a number for segment set '$it'") }
