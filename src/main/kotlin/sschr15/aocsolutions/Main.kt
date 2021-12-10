@@ -62,6 +62,11 @@ fun main(args: Array<String>) {
                 println("Day 9: Smoke Basin")
                 println("Completed in ${measureTimeMillis { day9() }}ms")
             }
+            
+            runCatching(10) {
+                println("Day 10: Syntax Scoring")
+                println("Completed in ${measureTimeMillis { day10() }}ms")
+            }
 
             // wait for all threads (in the `threads` list) to finish
             while (threads.any { it.isAlive }) {
