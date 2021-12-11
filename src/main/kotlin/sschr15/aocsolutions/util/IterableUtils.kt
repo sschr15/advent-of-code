@@ -67,3 +67,4 @@ inline fun <T> Iterable<T>.multiplyBy(block: (T) -> Double) = this.map(block).mu
 inline fun <T> Iterable<T>.multiplyBy(block: (T) -> BigInteger) = this.map(block).mul()
 inline fun <T> Iterable<T>.multiplyBy(block: (T) -> BigDecimal) = this.map(block).mul()
 
+inline fun <T> Iterable<T>.allEqual() = this.all { it == this.first() }

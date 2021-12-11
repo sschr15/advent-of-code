@@ -59,7 +59,12 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         row.mapIndexed { x, value -> Point(x, y) to value }
     }.flatten().toMap()
 
-    override fun toString() = data.joinToString("\n") { it.joinToString("") }
+    override fun toString(): String {
+        val allStrings = data.map { it.map { t -> t.toString() } }
+        val longestLength = allStrings.map { it.maxByOrNull { s -> s.length }?.length ?: 0 }.maxOrNull() ?: 0
+        val paddedStrings = allStrings.map { it.map { s -> s.padEnd(longestLength) } }
+        return paddedStrings.joinToString("\n") { it.joinToString("") }
+    }
 
     init {
         // remove empty rows because who knows what the input will be
