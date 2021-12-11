@@ -25,15 +25,8 @@ fun day10() {
         for (char in it) {
             when (char) {
                 '(', '[', '{', '<' -> opens.add(char)
-                ')' -> {
-                    if (opens.last() == '(') {
-                        opens.removeLast()
-                    } else {
-                        return@map char
-                    }
-                }
-                ']', '}', '>' -> {
-                    if (opens.last() == char - 2) {
+                ')', ']', '}', '>' -> {
+                    if (opens.last() == char - (if (char == ')') 1 else 2)) {
                         opens.removeLast()
                     } else {
                         return@map char
@@ -67,7 +60,7 @@ fun day10() {
         return@map opens.reversed().map { char -> if (char == '(') char + 1 else char + 2 }
     }
 
-    val scores = closers.map { chars -> chars.fold(0L) { acc, c ->
+    val scores = closers.map { it.fold(0L) { acc, c ->
         (acc * 5) + newScoring[c]
     } }.sorted()
 
