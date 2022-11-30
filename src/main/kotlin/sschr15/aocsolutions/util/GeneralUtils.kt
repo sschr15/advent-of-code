@@ -193,20 +193,20 @@ operator fun String.get(start: Int, end: Int = length) = substring(start, end)
 /**
  * Perform a binary tree traversal to get an index.
  * @param items a list of instructions
- * @param lo the instruction to state "the value is in the lower half of the remaining region"
- * @param hi the instruction to state "the value is in the upper half of the remaining region"
- * @param throwException should the method throw an exception if an item is neither [lo] or [hi]?
+ * @param value the value to search for
  * @return an index that would point to one specific spot in a list
  */
-fun <T> binarySearch(items: List<T>, lo: T, hi: T, throwException: Boolean = true): Int {
+fun <T : Comparable<T>> binarySearch(items: List<T>, value: T): Int {
     val len = items.size
     var lowBound = 0
     var highBound = (1 shl len) - 1
     for (i in 0 until len) {
         val bound = (highBound - lowBound) / 2
-        if (items[i] == lo) highBound = lowBound + bound
-        else if (items[i] == hi) lowBound = highBound - bound
-        else if (throwException) throw IllegalArgumentException("${items[i]}")
+        when {
+            value < items[i] -> highBound -= bound + 1
+            value > items[i] -> lowBound += bound + 1
+            else -> return lowBound + bound
+        }
     }
     return lowBound
 }

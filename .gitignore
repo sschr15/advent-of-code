@@ -7,6 +7,8 @@ out/
 
 # custom
 inputs/
+bin/
+run/
 
 # apparently gitignore doesn't like wildcards in the middle of the file name
 /day1_error.txt

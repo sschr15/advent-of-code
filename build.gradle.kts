@@ -1,6 +1,9 @@
+import java.nio.file.Files
+import java.nio.file.Path
+
 plugins {
     java
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.7.22"
     application
 }
 
@@ -33,5 +36,27 @@ dependencies {
         "stdlib-jdk7",
     ).forEach {
         implementation(kotlin(it))
+    }
+    implementation("org.jetbrains:annotations:23.0.0")
+}
+
+afterEvaluate {
+    fun path(name: String) = project.file(name).toPath()
+
+    Files.createDirectories(path("run"))
+    val isWin = "win" in System.getProperty("os.name").toLowerCase()
+    val pythonExecutable = if (isWin) "python.exe" else "python3"
+    val py3Exists = System.getenv("PATH").split(if (isWin) ";" else ":")
+        .map { Path.of(it, pythonExecutable) }
+        .filter { Files.exists(it) }
+        .map {
+            val process = ProcessBuilder(it.toString(), "--version").start()
+            process.waitFor()
+            process.inputStream.bufferedReader().readLine()
+        }
+        .any { it.startsWith("Python 3") }
+
+    if (!py3Exists) {
+        logger.error("Python 3 is not installed! Some challenges may not be solvable.")
     }
 }
