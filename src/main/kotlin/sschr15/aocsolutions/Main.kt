@@ -13,7 +13,7 @@ import kotlin.time.measureTime
 private var anythingFailed = false
 
 @OptIn(ExperimentalTime::class)
-fun main(args: Array<String>) {
+fun main() {
     fun classOrNull(name: String) = try {
         Class.forName(name)
     } catch (e: ClassNotFoundException) {
