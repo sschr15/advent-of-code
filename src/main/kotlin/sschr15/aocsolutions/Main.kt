@@ -89,7 +89,7 @@ private fun failure(t: Throwable, day: Int) {
 val outputs = mutableMapOf<Int, ByteArray>()
 val threads = mutableListOf<Thread>()
 
-private fun runCatching(day: Int, block: () -> Unit) = Thread(Runnable {
+private fun runCatching(day: Int, block: () -> Unit) = Thread({
     runCatching(block).onFailure { failure(it, day) }
 
     outputs[day] = (System.out as ThreadLocalPrintStream).out.toByteArray()
