@@ -20,9 +20,6 @@ fun main(args: Array<String>) {
         null
     }
 
-    // in case there are slow solves, we can skip them if necessary
-    val shouldExecuteSlowFunctions = args.contains("--include-slow")
-
     println("Total time: ${
         measureTime {
             val originalOut = System.out
