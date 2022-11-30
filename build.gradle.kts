@@ -3,7 +3,7 @@ import java.nio.file.Path
 
 plugins {
     java
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm") version "1.8.0-Beta"
     application
 }
 
@@ -25,7 +25,7 @@ repositories {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
-    kotlinOptions.freeCompilerArgs = listOf("-opt-in=kotlin.time.ExperimentalTime")
+    kotlinOptions.freeCompilerArgs = listOf("-Xuse-k2") // big boy compiler time
 }
 
 dependencies {

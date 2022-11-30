@@ -7,10 +7,12 @@ import java.lang.invoke.MethodType
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.exists
+import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 private var anythingFailed = false
 
+@OptIn(ExperimentalTime::class)
 fun main(args: Array<String>) {
     fun classOrNull(name: String) = try {
         Class.forName(name)
