@@ -20,5 +20,5 @@ object DayN : Challenge {
     }
 
     @JvmStatic
-    fun main(args: Array<String>) = println("Time: ${Day1.solve()}")
+    fun main(args: Array<String>) = println("Time: ${solve()}")
 }
