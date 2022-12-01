@@ -18,12 +18,16 @@ annotation class ReflectivelyUsed
 fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
     (if (year == 0) "part3" else "inputs/$year/day$day").let {
         val text = (if (Path(it).exists()) Path(it) else Path("$it.txt")).readText()
+            .replace("\r\n", "\n")
         // return the input as a list of lines, or as a singleton list if the separator is null
         if (separator != null) text.split(separator) else listOf(text)
     }.let {
         // if the file ends with a newline, remove it
         if (it.last().isBlank()) it.dropLast(1) else it
     }
+
+fun List<String>.ints() = map(String::toInt)
+fun List<String>.csv() = map { it.split(",") }
 
 class Grid<T> private constructor(private val data: MutableList<MutableList<T>>) : Iterable<Iterable<T>> {
     val height: Int
