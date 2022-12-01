@@ -1,9 +1,8 @@
 package sschr15.aocsolutions
 
+import sschr15.aocsolutions.util.Challenge
 import sschr15.aocsolutions.util.ThreadLocalPrintStream
 import java.io.PrintWriter
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.exists
@@ -14,8 +13,9 @@ private var anythingFailed = false
 
 @OptIn(ExperimentalTime::class)
 fun main() {
-    fun classOrNull(name: String) = try {
-        Class.forName(name)
+    fun challengeInstance(name: String) = try {
+        Class.forName(name).kotlin.objectInstance
+            as? Challenge ?: throw ClassNotFoundException()
     } catch (e: ClassNotFoundException) {
         null
     }
@@ -26,11 +26,13 @@ fun main() {
             System.setOut(ThreadLocalPrintStream())
 
             for (day in 1..25) {
-                val clazz = classOrNull("sschr15.aocsolutions.Day${day}Kt")
-                if (clazz != null) {
+                val challenge = challengeInstance("sschr15.aocsolutions.Day${day}")
+                if (challenge != null) {
                     // Kotlin "non-null Unit" compiles to return void instead of Unit
-                    val method = MethodHandles.lookup().findStatic(clazz, "solve", MethodType.methodType(Void.TYPE))
-                    runCatching(day, method::invoke)
+                    runCatching(day) {
+                        val length = challenge.solve()
+                        println("Day $day took $length")
+                    }
                 } else {
                     // Python! because i'm trying to polyglot my way to victory
                     val path = Path("day${day}.py")

@@ -38,6 +38,7 @@ dependencies {
         implementation(kotlin(it))
     }
     implementation("org.jetbrains:annotations:23.0.0")
+    implementation(kotlin("reflect"))
 }
 
 afterEvaluate {

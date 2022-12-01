@@ -4,10 +4,15 @@ import java.io.BufferedReader
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
+import kotlin.time.Duration
 
 const val maxValue = 2147483647
 
 annotation class ReflectivelyUsed
+
+interface Challenge {
+    fun solve(): Duration
+}
 
 /**
  * Get a challenge's file
