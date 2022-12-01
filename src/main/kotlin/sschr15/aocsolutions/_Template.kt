@@ -1,11 +1,8 @@
-@file:OptIn(ExperimentalTime::class)
-
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.Challenge
 import sschr15.aocsolutions.util.ReflectivelyUsed
 import sschr15.aocsolutions.util.getChallenge
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 /**

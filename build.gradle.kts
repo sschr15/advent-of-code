@@ -25,7 +25,10 @@ repositories {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
-    kotlinOptions.freeCompilerArgs = listOf("-Xuse-k2") // big boy compiler time
+    kotlinOptions.freeCompilerArgs = listOf(
+        "-Xuse-k2", // big boy compiler time
+        "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
+    )
 }
 
 dependencies {
