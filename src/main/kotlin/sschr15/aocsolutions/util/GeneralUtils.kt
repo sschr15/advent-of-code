@@ -125,6 +125,7 @@ fun Int.toString(chars: Int): String {
 operator fun String.times(amount: Int) = this.repeat(amount)
 
 operator fun String.get(start: Int, end: Int = length) = substring(start, end)
+operator fun String.get(range: IntRange) = substring(range)
 
 /**
  * Perform a binary tree traversal to get an index.

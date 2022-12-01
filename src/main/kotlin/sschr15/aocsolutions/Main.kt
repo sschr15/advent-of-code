@@ -35,7 +35,7 @@ fun main() {
                     }
                 } else {
                     // Python! because i'm trying to polyglot my way to victory
-                    val path = Path("day${day}.py")
+                    val path = Path("src/main/python/day${day}.py")
                     if (path.exists()) {
                         @Suppress("BlockingMethodInNonBlockingContext")
                         runCatching(day) {
