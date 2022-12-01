@@ -4,9 +4,10 @@ import java.io.BufferedReader
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
-import kotlin.math.*
 
 const val maxValue = 2147483647
+
+annotation class ReflectivelyUsed
 
 /**
  * Get a challenge's file
@@ -106,80 +107,6 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
 }
 
 fun <T> Iterable<Iterable<T>>.toGrid() = Grid(this.toList().map { it.toList() })
-
-data class Point(val x: Int, val y: Int) {
-    override operator fun equals(other: Any?): Boolean {
-        return when (other) {
-            is Point -> x == other.x && y == other.y
-            is MutablePoint -> x == other.x && y == other.y
-            is Pair<*, *> -> x == other.first && y == other.second
-            else -> false
-        }
-    }
-
-    override fun hashCode(): Int {
-        var result = x
-        result = 31 * result + y
-        return result
-    }
-
-    override fun toString(): String {
-        return "($x, $y)"
-    }
-}
-data class MutablePoint(var x: Int, var y: Int) {
-    override operator fun equals(other: Any?): Boolean {
-        return when (other) {
-            is Point -> x == other.x && y == other.y
-            is MutablePoint -> x == other.x && y == other.y
-            is Pair<*, *> -> x == other.first && y == other.second
-            else -> false
-        }
-    }
-
-    override fun hashCode(): Int {
-        var result = x
-        result = 31 * result + y
-        return result
-    }
-
-    override fun toString(): String {
-        return "($x, $y)"
-    }
-}
-data class MutableLongPoint(var x: Long, var y: Long) {
-    override fun toString(): String {
-        return "($x, $y)"
-    }
-}
-
-data class Line(val start: Point, val end: Point) {
-    val length = sqrt((start.x - end.x).toDouble().pow(2) + (start.y - end.y).toDouble().pow(2))
-    val slope = (start.y - end.y).toDouble() / (start.x - end.x).toDouble()
-    private val yIntercept = start.y - slope * start.x
-    val wholeNumberPoints by lazy {
-        if (slope.isFinite()) {
-            // not a vertical line
-            val min = min(start.x, end.x)
-            val max = max(start.x, end.x)
-            (min..max)
-                .map { it to it * slope + yIntercept }
-                .filter { (_, y) -> y.roundToInt().toDouble() == y }
-                .map { (x, y) -> Point(x, y.roundToInt()) }
-        } else {
-            // vertical line
-            val min = min(start.y, end.y)
-            val max = max(start.y, end.y)
-            (min..max)
-                .map { y -> Point(start.x, y) }
-        }
-    }
-
-    companion object {
-        operator fun invoke(x1: Int, y1: Int, x2: Int, y2: Int) = Line(Point(x1, y1), Point(x2, y2))
-        operator fun invoke(points: Pair<Point, Point>) = Line(points.first, points.second)
-    }
-}
 
 fun Int.toString(chars: Int): String {
     return if (toString().length < chars) "${"0" * (chars - toString().length)}$this"

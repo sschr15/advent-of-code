@@ -29,8 +29,8 @@ fun main() {
                 val clazz = classOrNull("sschr15.aocsolutions.Day${day}Kt")
                 if (clazz != null) {
                     // Kotlin "non-null Unit" compiles to return void instead of Unit
-                    val method = MethodHandles.lookup().findStatic(clazz, "solve", MethodType.methodType(Void::class.java))
-                    runCatching(day, method::invokeExact)
+                    val method = MethodHandles.lookup().findStatic(clazz, "solve", MethodType.methodType(Void.TYPE))
+                    runCatching(day, method::invoke)
                 } else {
                     // Python! because i'm trying to polyglot my way to victory
                     val path = Path("day${day}.py")
@@ -52,6 +52,7 @@ fun main() {
                             }
                         }
                     }
+                    // else the file just doesn't exist, so we don't care
                 }
             }
 
