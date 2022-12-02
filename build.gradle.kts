@@ -21,6 +21,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven("https://maven.concern.i.ng/releases/")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -42,6 +43,7 @@ dependencies {
     }
     implementation("org.jetbrains:annotations:23.0.0")
     implementation(kotlin("reflect"))
+    implementation("sschr15.tools.qblo:quilt-but-less-okay:0.4.0")
 }
 
 afterEvaluate {

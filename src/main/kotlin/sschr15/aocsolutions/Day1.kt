@@ -15,7 +15,7 @@ object Day1 : Challenge {
     override fun solve() = measureTime {
         val raw = getChallenge(2022, 1, "\n\n")
 
-        val data = raw.map { it.split("\n").ints() }
+        val data = raw.map { it.split("\n").filterNot(String::isEmpty).ints() }
 
         val best = data.maxOf { it.sum() }
         println("Part 1: $best")
