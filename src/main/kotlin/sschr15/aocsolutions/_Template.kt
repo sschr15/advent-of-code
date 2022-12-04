@@ -13,7 +13,21 @@ object DayN : Challenge {
     @ReflectivelyUsed
     override fun solve() = measureTime {
         val data = getChallenge(2022, 1)
-        TODO("Complete your challenge here!")
+        /*
+         * REMEMBER
+         * TO
+         * COMPILE
+         * ONCE
+         * BEFORE
+         * AOC
+         * CHALLENGE
+         * IS
+         * RELEASED
+         * FOR
+         * FASTER
+         * RECOMPILATION
+         * TIMES
+         */
     }
 
     @JvmStatic
