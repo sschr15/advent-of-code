@@ -153,3 +153,5 @@ operator fun <T> Pair<T, T>.get(index: Int) = when(index) {
     1 -> second
     else -> throw IllegalArgumentException(index.toString())
 }
+
+operator fun <E> List<E>.component6() = this[5]
