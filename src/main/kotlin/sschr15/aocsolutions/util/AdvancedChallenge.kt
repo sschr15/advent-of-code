@@ -17,7 +17,7 @@ fun challenge(year: Int, day: Int, block: AdvancedChallenge.Builder.() -> Unit):
 
 class AdvancedChallenge(private val year: Int, private val day: Int, private val builder: Builder) : Challenge {
     override fun solve() = measureTime {
-        val lines = getChallenge(year, day)
+        val lines = getChallenge(year, day, builder._splitBy)
         val challengePart = ChallengePart(lines)
         builder._p1!!.invoke(challengePart)
         val result = challengePart._res!!
@@ -66,6 +66,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         internal var _p1: (ChallengePart.() -> Unit)? = null
         internal var _p2: (ChallengePart.() -> Unit)? = null
         internal var _test = false
+        internal var _splitBy = "\n"
 
         fun part1(block: ChallengePart.() -> Unit) {
             _p1 = block
@@ -77,6 +78,10 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
 
         fun test() {
             _test = true
+        }
+
+        fun splitBy(splitBy: String) {
+            _splitBy = splitBy
         }
     }
 }

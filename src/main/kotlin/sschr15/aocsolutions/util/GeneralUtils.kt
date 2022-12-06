@@ -117,16 +117,6 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
 
 fun <T> Iterable<Iterable<T>>.toGrid() = Grid(this.toList().map { it.toList() })
 
-fun Int.toString(chars: Int): String {
-    return if (toString().length < chars) "${"0" * (chars - toString().length)}$this"
-    else this.toString()
-}
-
-operator fun String.times(amount: Int) = this.repeat(amount)
-
-operator fun String.get(start: Int, end: Int = length) = substring(start, end)
-operator fun String.get(range: IntRange) = substring(range)
-
 /**
  * Perform a binary tree traversal to get an index.
  * @param items a list of instructions
