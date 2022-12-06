@@ -14,22 +14,26 @@ object Day6 : Challenge {
         part1 {
             val input = inputLines.first()
             // where's the first sequence of 4 unique letters?
-            for ((i, chars) in input.windowed(4).mapIndexed { i, s -> i to s }) {
-                if (chars.toSet().size == 4) {
-                    submit(i + 4) // first character that isn't the fourth in a repeated sequence
-                    return@part1
-                }
-            }
+//            for ((i, chars) in input.windowed(4).mapIndexed { i, s -> i to s }) {
+//                if (chars.toSet().size == 4) {
+//                    submit(i + 4) // first character that isn't the fourth in a repeated sequence
+//                    return@part1
+//                }
+//            }
+
+            // Very simple solution
+            submit(input.windowed(4).indexOfFirst { it.toSet().size == 4 } + 4)
         }
         part2 {
             // 14 characters instead of 4
             val input = inputLines.first()
-            for ((i, chars) in input.windowed(14).mapIndexed { i, s -> i to s }) {
-                if (chars.toSet().size == 14) {
-                    submit(i + 14)
-                    return@part2
-                }
-            }
+//            for ((i, chars) in input.windowed(14).mapIndexed { i, s -> i to s }) {
+//                if (chars.toSet().size == 14) {
+//                    submit(i + 14)
+//                    return@part2
+//                }
+//            }
+            submit(input.windowed(14).indexOfFirst { it.toSet().size == 14 } + 14)
         }
     }
 
