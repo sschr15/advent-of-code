@@ -69,7 +69,7 @@ inline fun <T> I1d<T>.multiplyBy(block: (T) -> BigDecimal) = this.map(block).mul
 
 inline fun <T> I1d<T>.allEqual() = this.all { it == this.first() }
 
-fun <T> I2d<T>.transpose(throwIfUneven: Boolean = true): List<List<T>> {
+fun <T> I2d<T>.transpose(throwIfUneven: Boolean = true): L2d<T> {
     val i = iterator()
     if (!i.hasNext()) return emptyList()
     val result = mutableListOf<List<T>>()
