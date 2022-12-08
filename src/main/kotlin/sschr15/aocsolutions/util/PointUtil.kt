@@ -33,6 +33,26 @@ fun Point.angle(other: Point): Double {
     return angle
 }
 
+/**
+ * Get the point 1 higher than this point.
+ */
+fun Point.up() = Point(x, y - 1)
+
+/**
+ * Get the point 1 lower than this point.
+ */
+fun Point.down() = Point(x, y + 1)
+
+/**
+ * Get the point 1 to the left of this point.
+ */
+fun Point.left() = Point(x - 1, y)
+
+/**
+ * Get the point 1 to the right of this point.
+ */
+fun Point.right() = Point(x + 1, y)
+
 interface AbstractPoint {
     fun x(): Int
     fun y(): Int
