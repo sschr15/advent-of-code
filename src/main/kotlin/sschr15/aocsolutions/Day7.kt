@@ -4,9 +4,9 @@ import sschr15.aocsolutions.util.Challenge
 import sschr15.aocsolutions.util.ReflectivelyUsed
 import sschr15.aocsolutions.util.challenge
 
-data class File(val name: String, val size: Int)
+private data class File(val name: String, val size: Int)
 
-open class Directory(val name: String, val parent: Directory?) {
+private open class Directory(val name: String, val parent: Directory?) {
     object Root : Directory("/", null)
 
     val children = mutableMapOf<String, Directory>()
