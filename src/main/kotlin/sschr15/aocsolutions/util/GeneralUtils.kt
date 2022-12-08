@@ -71,7 +71,7 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
 
     override fun toString(): String {
         val allStrings = data.map { it.map { t -> t.toString() } }
-        val longestLength = allStrings.map { it.maxByOrNull { s -> s.length }?.length ?: 0 }.maxOrNull() ?: 0
+        val longestLength = allStrings.maxOfOrNull { it.maxByOrNull { s -> s.length }?.length ?: 0 } ?: 0
         val paddedStrings = allStrings.map { it.map { s -> s.padEnd(longestLength) } }
         return paddedStrings.joinToString("\n") { it.joinToString("") }
     }
