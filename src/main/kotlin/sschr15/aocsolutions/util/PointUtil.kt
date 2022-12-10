@@ -7,19 +7,19 @@ import kotlin.math.*
 /**
  * Get the Manhattan / taxicab distance between two points.
  */
-fun Point.manhattanDistance(other: Point): Int = (x - other.x).absoluteValue + (y - other.y).absoluteValue
+fun AbstractPoint.manhattanDistance(other: AbstractPoint): Int = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
 
 /**
  * Get the squared euclidean distance between two points.
  * This is faster than [distance] because square roots are expensive.
  */
-fun Point.distanceSquared(other: Point): Double = (x - other.x).toDouble().pow(2) + (y - other.y).toDouble().pow(2)
+fun AbstractPoint.distanceSquared(other: AbstractPoint): Double = (x() - other.x()).toDouble().pow(2) + (y() - other.y()).toDouble().pow(2)
 
 /**
  * Get the euclidean distance between two points.
  * If you only need to compare distances or have predefined distances, use [distanceSquared] instead as it is faster.
  */
-fun Point.distance(other: Point): Double = sqrt(distanceSquared(other))
+fun AbstractPoint.distance(other: AbstractPoint): Double = sqrt(distanceSquared(other))
 
 /**
  * Get the angle between two points.
@@ -27,8 +27,8 @@ fun Point.distance(other: Point): Double = sqrt(distanceSquared(other))
  * The angle is in radians, and is in the range of `0` to `2 * PI`
  * (sometimes called ["tau"](https://www.youtube.com/watch?v=FtxmFlMLYRI)).
  */
-fun Point.angle(other: Point): Double {
-    var angle = atan2((other.y - y).toDouble(), (other.x - x).toDouble())
+fun AbstractPoint.angle(other: AbstractPoint): Double {
+    var angle = atan2((other.y() - y()).toDouble(), (other.x() - x()).toDouble())
     if (angle < 0) angle += 2 * PI
     return angle
 }
@@ -36,22 +36,29 @@ fun Point.angle(other: Point): Double {
 /**
  * Get the point 1 higher than this point.
  */
-fun Point.up() = Point(x, y - 1)
+fun AbstractPoint.up() = Point(x(), y() - 1)
 
 /**
  * Get the point 1 lower than this point.
  */
-fun Point.down() = Point(x, y + 1)
+fun AbstractPoint.down() = Point(x(), y() + 1)
 
 /**
  * Get the point 1 to the left of this point.
  */
-fun Point.left() = Point(x - 1, y)
+fun AbstractPoint.left() = Point(x() - 1, y())
 
 /**
  * Get the point 1 to the right of this point.
  */
-fun Point.right() = Point(x + 1, y)
+fun AbstractPoint.right() = Point(x() + 1, y())
+
+/**
+ * Get the chess-board equivalent distance between two points.
+ */
+fun AbstractPoint.chessDistance(other: AbstractPoint): Int = max((x() - other.x()).absoluteValue, (y() - other.y()).absoluteValue)
+
+fun AbstractPoint.toPoint() = Point(x(), y())
 
 interface AbstractPoint {
     fun x(): Int

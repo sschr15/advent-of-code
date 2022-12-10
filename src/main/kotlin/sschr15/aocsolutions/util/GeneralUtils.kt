@@ -44,17 +44,17 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
     fun getColumn(col: Int) = data.map { it[col] }.toMutableList()
 
     operator fun get(x: Int, y: Int) = data[y][x]
-    operator fun get(point: Point) = data[point.y][point.x]
+    operator fun get(point: AbstractPoint) = data[point.y()][point.x()]
     operator fun set(x: Int, y: Int, value: T) {
         data[y][x] = value
     }
-    operator fun set(point: Point, value: T) {
-        data[point.y][point.x] = value
+    operator fun set(point: AbstractPoint, value: T) {
+        data[point.y()][point.x()] = value
     }
 
-    fun getNeighbors(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, T> {
+    fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<AbstractPoint, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
-            .filter { it.x in 0 until width && it.y in 0 until height } // only get points in the grid
+            .filter { it.x() in 0 until width && it.y() in 0 until height } // only get points in the grid
         return points.associateWith { this[it] }
     }
 
@@ -96,20 +96,24 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
          * @param includeDiagonals should points diagonal to that point be included?
          * @return a list of neighboring points
          */
-        fun getNeighboringPoints(point: Point, includeDiagonals: Boolean = true, searchDistance: Int = 1) =
-            if (includeDiagonals) {
-                (-searchDistance..searchDistance).flatMap { x ->
-                    (-searchDistance..searchDistance).filter { x != 0 || it != 0 }.map { y ->
-                        Point(point.x + x, point.y + y)
-                    }
+        fun getNeighboringPoints(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1) =
+            (listOf(
+                AbstractPoint::up,
+                AbstractPoint::down,
+                AbstractPoint::left,
+                AbstractPoint::right,
+            ) + if (includeDiagonals) listOf<(AbstractPoint) -> AbstractPoint>(
+                { it.up().left() },
+                { it.up().right() },
+                { it.down().left() },
+                { it.down().right() },
+            ) else emptyList()).flatMap { buildList {
+                var prev = point
+                repeat(searchDistance) {
+                    prev = it(prev)
+                    add(prev)
                 }
-            } else {
-                (-searchDistance..searchDistance).flatMap { x ->
-                    (-searchDistance..searchDistance).filter { x != it && x != -it }.map { y ->
-                        Point(point.x + x, point.y + y)
-                    }
-                }
-            }
+            } }
     }
 
     override fun iterator(): Iterator<Iterable<T>> = data.iterator()
