@@ -67,68 +67,68 @@ object Day9 : Challenge {
         part2 {
             TODO("Part 2 code does not function correctly")
             // now there are 9 "tails" indicated by numbers
-            val grid = Grid(1000, 1000, ' ')
-            val working = MutablePoint(500, 500)
-            val tail = Array(9) { MutablePoint(500, 500) }
-            var offset = tail.map { it.toPoint() }
-            for ((dir, i) in inputLines.map { it.split(" ") }) {
-                val direction = Direction.values().first { it.name.startsWith(dir) }
-                val distance = i.toInt()
-                repeat(distance) {
-                    val prevWorking = working.toPoint()
-                    when (direction) {
-                        Direction.UP -> working.y--
-                        Direction.DOWN -> working.y++
-                        Direction.LEFT -> working.x--
-                        Direction.RIGHT -> working.x++
-                    }
-                    grid[tail.last().toPoint()] = 'V'
-                    var direction: Direction.Extended? = null
-                    for (j in 0 ..< 9) {
-                        val before = if (j > 0) offset[j - 1] else null
-                        val current = tail[j]
-
-                        if (before == null) {
-                            if (working.toPoint().chessDistance(current.toPoint()) > 1) {
-                                // get direction
-                                val xDiff = (working.x - current.x).coerceIn(-1, 1)
-                                val yDiff = (working.y - current.y).coerceIn(-1, 1)
-                                current.x = prevWorking.x
-                                current.y = prevWorking.y
-                                val vert = when (yDiff) {
-                                    -1 -> "U"
-                                    1 -> "D"
-                                    else -> ""
-                                }
-                                val horiz = when (xDiff) {
-                                    -1 -> "L"
-                                    1 -> "R"
-                                    else -> ""
-                                }
-                                direction = Direction.Extended.valueOf(vert + horiz)
-                            }
-                            continue
-                        }
-
-                        if (before.toPoint().chessDistance(current.toPoint()) > 1) {
-                            current.x += when (direction?.right) {
-                                true -> 1
-                                false -> -1
-                                else -> 0
-                            }
-                            current.y += when (direction?.down) {
-                                true -> 1
-                                false -> -1
-                                else -> 0
-                            }
-                        }
-                    }
-                    offset = tail.map { it.toPoint() }
-                }
-            }
-
-            grid[tail.last().toPoint()] = 'V'
-            submit(grid.flatten().count { it == 'V' })
+//            val grid = Grid(1000, 1000, ' ')
+//            val working = MutablePoint(500, 500)
+//            val tail = Array(9) { MutablePoint(500, 500) }
+//            var offset = tail.map { it.toPoint() }
+//            for ((dir, i) in inputLines.map { it.split(" ") }) {
+//                val direction = Direction.values().first { it.name.startsWith(dir) }
+//                val distance = i.toInt()
+//                repeat(distance) {
+//                    val prevWorking = working.toPoint()
+//                    when (direction) {
+//                        Direction.UP -> working.y--
+//                        Direction.DOWN -> working.y++
+//                        Direction.LEFT -> working.x--
+//                        Direction.RIGHT -> working.x++
+//                    }
+//                    grid[tail.last().toPoint()] = 'V'
+//                    var direction: Direction.Extended? = null
+//                    for (j in 0 ..< 9) {
+//                        val before = if (j > 0) offset[j - 1] else null
+//                        val current = tail[j]
+//
+//                        if (before == null) {
+//                            if (working.toPoint().chessDistance(current.toPoint()) > 1) {
+//                                // get direction
+//                                val xDiff = (working.x - current.x).coerceIn(-1, 1)
+//                                val yDiff = (working.y - current.y).coerceIn(-1, 1)
+//                                current.x = prevWorking.x
+//                                current.y = prevWorking.y
+//                                val vert = when (yDiff) {
+//                                    -1 -> "U"
+//                                    1 -> "D"
+//                                    else -> ""
+//                                }
+//                                val horiz = when (xDiff) {
+//                                    -1 -> "L"
+//                                    1 -> "R"
+//                                    else -> ""
+//                                }
+//                                direction = Direction.Extended.valueOf(vert + horiz)
+//                            }
+//                            continue
+//                        }
+//
+//                        if (before.toPoint().chessDistance(current.toPoint()) > 1) {
+//                            current.x += when (direction?.right) {
+//                                true -> 1
+//                                false -> -1
+//                                else -> 0
+//                            }
+//                            current.y += when (direction?.down) {
+//                                true -> 1
+//                                false -> -1
+//                                else -> 0
+//                            }
+//                        }
+//                    }
+//                    offset = tail.map { it.toPoint() }
+//                }
+//            }
+//
+//            grid[tail.last().toPoint()] = 'V'
+//            submit(grid.flatten().count { it == 'V' })
         }
     }
 
