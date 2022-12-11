@@ -168,6 +168,7 @@ fun lcm(a: Int, b: Int) = a * b / gcf(a, b)
 /**
  * Get the greatest common factor of two numbers.
  */
+@Suppress("NAME_SHADOWING")
 fun gcf(a: Int, b: Int): Int {
     var a = a
     var b = b
