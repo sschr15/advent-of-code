@@ -48,7 +48,6 @@ object Day9 : Challenge {
             grid[tail.toPoint()] = Status.VISITED
             submit(grid.flatten().count { it == Status.VISITED })
         }
-        @Suppress("UNREACHABLE_CODE")
         part2 {
             // now there are 9 "tails" indicated by numbers
             val grid = Grid(1000, 1000, ' ')
