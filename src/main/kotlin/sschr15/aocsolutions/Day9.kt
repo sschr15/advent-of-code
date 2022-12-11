@@ -14,7 +14,7 @@ private enum class Status {
 
 /**
  * AOC 2022 [Day 9](https://adventofcode.com/2022/day/9)
- * Challenge: TODO (based on the day's description)
+ * Challenge: You basically have to follow a rope, or a snake, or whatever you feel like calling it.
  */
 object Day9 : Challenge {
     @ReflectivelyUsed

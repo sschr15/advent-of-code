@@ -6,7 +6,7 @@ import sschr15.aocsolutions.util.challenge
 
 /**
  * AOC 2022 [Day 10](https://adventofcode.com/2022/day/10)
- * Challenge: TODO (based on the day's description)
+ * Challenge: You're running a two-instruction-set "computer"!
  */
 object Day10 : Challenge {
     @ReflectivelyUsed
