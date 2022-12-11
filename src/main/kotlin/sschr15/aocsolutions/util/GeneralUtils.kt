@@ -149,3 +149,36 @@ operator fun <T> Pair<T, T>.get(index: Int) = when(index) {
 }
 
 operator fun <E> List<E>.component6() = this[5]
+
+/**
+ * Get the least common multiple of a list of numbers.
+ */
+fun List<Int>.lcm() = reduce { acc, i -> lcm(acc, i) }
+
+/**
+ * Get the greatest common factor of a list of numbers.
+ */
+fun List<Int>.gcf() = reduce { acc, i -> gcf(acc, i) }
+
+/**
+ * Get the least common multiple of two numbers.
+ */
+fun lcm(a: Int, b: Int) = a * b / gcf(a, b)
+
+/**
+ * Get the greatest common factor of two numbers.
+ */
+fun gcf(a: Int, b: Int): Int {
+    var a = a
+    var b = b
+    while (b != 0) {
+        val temp = b
+        b = a % b
+        a = temp
+    }
+    return a
+}
+
+fun modAdd(a: Long, b: Long, mod: Int) = (a + b) % mod
+
+fun modMult(a: Long, b: Long, mod: Int) = ((a % mod) * (b % mod)) % mod
