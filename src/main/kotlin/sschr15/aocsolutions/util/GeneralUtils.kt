@@ -1,6 +1,8 @@
 package sschr15.aocsolutions.util
 
 import java.io.BufferedReader
+import java.io.File
+import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -190,13 +192,14 @@ interface Truthy {
 
 val Any?.truthiness get() = when (this) {
     null -> false
+    is Array<*> -> isNotEmpty()
     is Boolean -> this
+    is File -> exists()
+    is Path -> exists() // must come before Iterable because Path implements Iterable
+    is Iterable<*> -> iterator().hasNext()
+    is Map<*, *> -> isNotEmpty()
     is Number -> this != 0
     is String -> isNotEmpty()
-    is Collection<*> -> isNotEmpty()
-    is Map<*, *> -> isNotEmpty()
-    is Array<*> -> isNotEmpty()
-    is Iterable<*> -> iterator().hasNext()
     is Truthy -> asBoolean()
     else -> true
 }

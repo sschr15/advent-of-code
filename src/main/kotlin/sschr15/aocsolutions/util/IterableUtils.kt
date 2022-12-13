@@ -84,3 +84,6 @@ fun <T> I2d<T>.transpose(throwIfUneven: Boolean = true): L2d<T> {
 
     return result
 }
+
+operator fun <T> L2d<T>.get(point: AbstractPoint) = this[point.y()][point.x()]
+operator fun <T> A2d<T>.get(point: AbstractPoint) = this[point.y()][point.x()]
