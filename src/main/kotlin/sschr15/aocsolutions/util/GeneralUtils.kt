@@ -183,3 +183,20 @@ fun gcf(a: Int, b: Int): Int {
 fun modAdd(a: Long, b: Long, mod: Int) = (a + b) % mod
 
 fun modMult(a: Long, b: Long, mod: Int) = ((a % mod) * (b % mod)) % mod
+
+interface Truthy {
+    fun asBoolean(): Boolean
+}
+
+val Any?.truthiness get() = when (this) {
+    null -> false
+    is Boolean -> this
+    is Number -> this != 0
+    is String -> isNotEmpty()
+    is Collection<*> -> isNotEmpty()
+    is Map<*, *> -> isNotEmpty()
+    is Array<*> -> isNotEmpty()
+    is Iterable<*> -> iterator().hasNext()
+    is Truthy -> asBoolean()
+    else -> true
+}
