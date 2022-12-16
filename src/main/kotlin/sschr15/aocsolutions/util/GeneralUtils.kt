@@ -150,8 +150,6 @@ operator fun <T> Pair<T, T>.get(index: Int) = when(index) {
     else -> throw IllegalArgumentException(index.toString())
 }
 
-operator fun <E> List<E>.component6() = this[5]
-
 /**
  * Get the least common multiple of a list of numbers.
  */

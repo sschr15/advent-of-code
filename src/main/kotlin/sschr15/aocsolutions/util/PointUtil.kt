@@ -192,3 +192,38 @@ data class Line(val start: Point, val end: Point) : Iterable<Point> {
         operator fun invoke(points: Pair<Point, Point>) = Line(points.first, points.second)
     }
 }
+
+/**
+ * A line not constrained to whole number points.
+ * @property x1 The x coordinate of the first point
+ * @property y1 The y coordinate of the first point
+ * @property x2 The x coordinate of the second point
+ * @property y2 The y coordinate of the second point
+ * @property upIsInside Whether some polygon with this as an edge is considered to be above the line (or left of the line if vertical)
+ */
+data class NonPointLine(val x1: Double, val x2: Double, val y1: Double, val y2: Double, val upIsInside: Boolean) {
+    constructor(x1: Number, x2: Number, y1: Number, y2: Number, upIsInside: Boolean) : this(x1.toDouble(), x2.toDouble(), y1.toDouble(), y2.toDouble(), upIsInside)
+
+    val length = sqrt((x1 - x2).pow(2) + (y1 - y2).pow(2))
+    val slope = (y1 - y2) / (x1 - x2)
+    val yIntercept = y1 - slope * x1
+
+    /**
+     * Get the point at which this line intersects with the given line,
+     * `NaN, NaN` if they are parallel, or `NaN, Inf` if they are the same line.
+     */
+    fun intersection(other: NonPointLine): Pair<Double, Double> {
+        if (slope == other.slope) {
+            return if (yIntercept == other.yIntercept) {
+                // same line
+                Pair(Double.NaN, Double.POSITIVE_INFINITY)
+            } else {
+                // parallel lines
+                Pair(Double.NaN, Double.NaN)
+            }
+        }
+        val x = (other.yIntercept - yIntercept) / (slope - other.slope)
+        val y = slope * x + yIntercept
+        return Pair(x, y)
+    }
+}

@@ -29,6 +29,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.freeCompilerArgs = listOf(
         "-Xuse-k2", // big boy compiler time
         "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
+        "-opt-in=kotlin.ExperimentalStdlibApi", // because ..<
     )
 }
 

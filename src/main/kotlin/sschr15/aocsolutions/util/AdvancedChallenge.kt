@@ -11,6 +11,9 @@ fun challenge(year: Int, day: Int, block: AdvancedChallenge.Builder.() -> Unit):
     val builder = AdvancedChallenge.Builder()
     builder.block()
     val d = if (builder._test) day + 30 else day
+    if (builder._test) {
+        System.setProperty("aoc.test", "true")
+    }
     val challenge = AdvancedChallenge(year, d, builder)
     return challenge.solve()
 }
@@ -33,6 +36,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     }
 
     private fun copyToClipboard(text: String) {
+        if (System.getProperty("aoc.skip.clipboard.copy") == "true") return
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val selection = StringSelection(text)
         clipboard.setContents(selection, selection)
@@ -57,8 +61,8 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
             _extra[key] = value()
         }
 
-        inline fun <reified T> getInfo(key: String): T? {
-            return _extra[key] as? T
+        inline fun <reified T> getInfo(key: String): T {
+            return _extra[key] as T
         }
     }
 

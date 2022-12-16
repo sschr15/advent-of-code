@@ -20,6 +20,8 @@ fun main() {
         null
     }
 
+    System.setProperty("aoc.skip.clipboard.copy", "true")
+
     println("Total time: ${
         measureTime {
             val originalOut = System.out
