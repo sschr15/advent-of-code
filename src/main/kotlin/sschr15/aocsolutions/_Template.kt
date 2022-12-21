@@ -2,8 +2,7 @@ package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.Challenge
 import sschr15.aocsolutions.util.ReflectivelyUsed
-import sschr15.aocsolutions.util.getChallenge
-import kotlin.time.measureTime
+import sschr15.aocsolutions.util.challenge
 
 /**
  * AOC 2022 [Day N](https://adventofcode.com/2022/day/N)
@@ -11,23 +10,14 @@ import kotlin.time.measureTime
  */
 object DayN : Challenge {
     @ReflectivelyUsed
-    override fun solve() = measureTime {
-        val data = getChallenge(2022, 1)
-        /*
-         * REMEMBER
-         * TO
-         * COMPILE
-         * ONCE
-         * BEFORE
-         * AOC
-         * CHALLENGE
-         * IS
-         * RELEASED
-         * FOR
-         * FASTER
-         * RECOMPILATION
-         * TIMES
-         */
+    override fun solve() = challenge(2022, 0) {
+//        test()
+        part1 {
+            "Some result"
+        }
+//        part2 {
+//            "Some other result"
+//        }
     }
 
     @JvmStatic

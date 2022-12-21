@@ -22,12 +22,12 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     override fun solve() = measureTime {
         val lines = getChallenge(year, day, builder._splitBy)
         val challengePart = ChallengePart(lines)
-        builder._p1!!.invoke(challengePart)
-        val result = challengePart._res!!
+        val implicitResult = builder._p1!!.invoke(challengePart)
+        val result = challengePart._res ?: implicitResult
         println("Part 1: $result")
         if (builder._p2 != null) {
-            builder._p2!!.invoke(challengePart)
-            val result2 = challengePart._res!!
+            val implicitResult2 = builder._p2!!.invoke(challengePart)
+            val result2 = challengePart._res ?: implicitResult2
             println("Part 2: $result2")
             copyToClipboard(result2.toString())
         } else {
@@ -36,7 +36,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     }
 
     private fun copyToClipboard(text: String) {
-        if (System.getProperty("aoc.skip.clipboard.copy") == "true") return
+        if (System.getProperty("aoc.skip.clipboard.copy") == "true" || builder._test) return
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val selection = StringSelection(text)
         clipboard.setContents(selection, selection)
@@ -67,16 +67,16 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     }
 
     class Builder {
-        internal var _p1: (ChallengePart.() -> Unit)? = null
-        internal var _p2: (ChallengePart.() -> Unit)? = null
+        internal var _p1: (ChallengePart.() -> Any?)? = null
+        internal var _p2: (ChallengePart.() -> Any?)? = null
         internal var _test = false
         internal var _splitBy = "\n"
 
-        fun part1(block: ChallengePart.() -> Unit) {
+        fun part1(block: ChallengePart.() -> Any?) {
             _p1 = block
         }
 
-        fun part2(block: ChallengePart.() -> Unit) {
+        fun part2(block: ChallengePart.() -> Any?) {
             _p2 = block
         }
 

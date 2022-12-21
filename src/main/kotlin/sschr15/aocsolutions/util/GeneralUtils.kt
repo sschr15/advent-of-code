@@ -201,3 +201,33 @@ val Any?.truthiness get() = when (this) {
     is Truthy -> asBoolean()
     else -> true
 }
+
+fun <T : Any> I2d<T>.stringify(converter: (T) -> String = Any::toString) = buildString {
+    for (iter in this@stringify) {
+        for (item in iter) {
+            append(converter(item))
+        }
+        appendLine()
+    }
+}
+
+fun <T : Any> A2d<T>.stringify(converter: (T) -> String = Any::toString) = buildString {
+    for (arr in this@stringify) {
+        for (item in arr) {
+            append(converter(item))
+        }
+        appendLine()
+    }
+}
+
+operator fun Int.plus(other: Boolean) = this + if (other) 1 else 0
+operator fun Int.minus(other: Boolean) = this - if (other) 1 else 0
+operator fun Int.times(other: Boolean) = if (other) this else 0
+operator fun Int.div(other: Boolean) = if (other) this else throw ArithmeticException("Cannot divide by false")
+
+/**
+ * Gets the modulo of a number, but guarantees that the result is in the range `[0, mod)`.
+ * It acts similar to Python's `%` operator, instead of Java's `%` operator
+ * (which produces a negative result if the dividend is negative).
+ */
+infix fun Int.mod(other: Int) = (this % other + other) % other
