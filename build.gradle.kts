@@ -3,7 +3,7 @@ import java.nio.file.Path
 
 plugins {
     java
-    kotlin("jvm") version "1.8.0-Beta"
+    kotlin("jvm") version "1.8.0-RC2"
     application
 }
 
@@ -42,9 +42,11 @@ dependencies {
     ).forEach {
         implementation(kotlin(it))
     }
-    implementation("org.jetbrains:annotations:23.0.0")
+    implementation("org.jetbrains:annotations:23.1.0")
     implementation(kotlin("reflect"))
     implementation("sschr15.tools.qblo:quilt-but-less-okay:0.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }
 
 afterEvaluate {

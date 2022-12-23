@@ -54,6 +54,8 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         data[point.y()][point.x()] = value
     }
 
+    operator fun contains(point: AbstractPoint) = point.x() in 0 until width && point.y() in 0 until height
+
     fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<AbstractPoint, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
             .filter { it.x() in 0 until width && it.y() in 0 until height } // only get points in the grid
