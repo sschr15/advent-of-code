@@ -16,6 +16,15 @@ interface Challenge {
     fun solve(): Duration
 }
 
+sealed class Direction(val mod: (Point) -> Point) {
+    object North : Direction(Point::up)
+    object South : Direction(Point::down)
+    object West : Direction(Point::left)
+    object East : Direction(Point::right)
+
+    override fun toString() = this::class.simpleName!![0].toString()
+}
+
 /**
  * Get a challenge's file
  * @param year the year of the challenge, or `0` for the part 3 challenge
@@ -231,5 +240,8 @@ operator fun Int.div(other: Boolean) = if (other) this else throw ArithmeticExce
  * Gets the modulo of a number, but guarantees that the result is in the range `[0, mod)`.
  * It acts similar to Python's `%` operator, instead of Java's `%` operator
  * (which produces a negative result if the dividend is negative).
+ *
+ * Kotlin's `%` operator is equivalent to Java's `%` operator when running on the JVM, since
+ * Kotlin compiles `%` to `irem` or `lrem` (depending on the type of the operands).
  */
 infix fun Int.mod(other: Int) = (this % other + other) % other
