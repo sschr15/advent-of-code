@@ -2,70 +2,39 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 plugins {
-    java
-    kotlin("jvm") version "1.8.0-RC2"
-    application
+    kotlin("multiplatform") version "1.9.20"
 }
 
 group = "sschr15"
 version = "1.0-SNAPSHOT"
 
-application {
-    mainClass.set("sschr15.aocsolutions.MainKt")
-}
-
-java {
-    targetCompatibility = JavaVersion.VERSION_17
-    sourceCompatibility = JavaVersion.VERSION_17
-}
-
 repositories {
     mavenCentral()
-    maven("https://maven.concern.i.ng/releases/")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-    kotlinOptions.freeCompilerArgs = listOf(
-        "-Xuse-k2", // big boy compiler time
-        "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
-        "-opt-in=kotlin.ExperimentalStdlibApi", // because ..<
-    )
-}
+kotlin {
+    jvm()
 
-dependencies {
-    listOf(
-        "stdlib",
-        "stdlib-common",
-        "stdlib-jdk8",
-        "stdlib-jdk7",
-    ).forEach {
-        implementation(kotlin(it))
+    linuxX64 {
+//        kotlinOptions.freeCompilerArgs = listOf(
+//            "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
+//            "-opt-in=kotlin.ExperimentalStdlibApi", // because ..<
+//        )
     }
-    implementation("org.jetbrains:annotations:23.1.0")
-    implementation(kotlin("reflect"))
-    implementation("sschr15.tools.qblo:quilt-but-less-okay:0.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-}
 
-afterEvaluate {
-    fun path(name: String) = project.file(name).toPath()
-
-    Files.createDirectories(path("run"))
-    val isWin = "win" in System.getProperty("os.name").toLowerCase()
-    val pythonExecutable = if (isWin) "python.exe" else "python3"
-    val py3Exists = System.getenv("PATH").split(if (isWin) ";" else ":")
-        .map { Path.of(it, pythonExecutable) }
-        .filter { Files.exists(it) }
-        .map {
-            val process = ProcessBuilder(it.toString(), "--version").start()
-            process.waitFor()
-            process.inputStream.bufferedReader().readLine()
+    mingwX64 {
+        binaries {
+            executable()
         }
-        .any { it.startsWith("Python 3") }
+    }
 
-    if (!py3Exists) {
-        logger.error("Python 3 is not installed! Some challenges may not be solvable.")
+    sourceSets {
+        getByName("commonMain") {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+                implementation("com.sschr15.annotations:jb-annotations-kmp:24.0.1")
+            }
+        }
     }
 }
