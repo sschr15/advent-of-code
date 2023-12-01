@@ -2,10 +2,12 @@ package sschr15.aocsolutions.util
 
 import java.io.BufferedReader
 import java.io.File
+import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.time.Duration
 
 const val maxValue = 2147483647
@@ -33,8 +35,22 @@ sealed class Direction(val mod: (Point) -> Point) {
  */
 fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
     (if (year == 0) "part3" else "inputs/$year/day$day").let {
-        val text = (if (Path(it).exists()) Path(it) else Path("$it.txt")).readText()
-            .replace("\r\n", "\n")
+        val text = when {
+            Path(it).exists() -> Path(it).readText()
+            Path("$it.txt").exists() -> Path("$it.txt").readText()
+            Path("session.txt").exists() -> {
+                println("\u001b[1;103;30mWarning\u001b[0m: Could not find challenge file for $year day $day, downloading...")
+                val session = Path("session.txt").readText().trim()
+                val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
+                val result = url.openConnection().apply {
+                    setRequestProperty("Cookie", "session=$session")
+                }.getInputStream().reader().readText()
+                Path(it).writeText(result)
+                result
+            }
+            else -> error("Could not find challenge file for $year day $day")
+        }.replace("\r\n", "\n") // remove crlf, it breaks too many things (thanks windows)
+
         // return the input as a list of lines, or as a singleton list if the separator is null
         if (separator != null) text.split(separator) else listOf(text)
     }.let {

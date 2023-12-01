@@ -10,6 +10,8 @@ inputs/
 bin/
 run/
 
+session.txt
+
 # apparently gitignore doesn't like wildcards in the middle of the file name
 /day1_error.txt
 /day2_error.txt
