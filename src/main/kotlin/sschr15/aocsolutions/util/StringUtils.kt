@@ -9,6 +9,8 @@ inline operator fun String.times(amount: Int) = repeat(amount)
 inline operator fun String.get(start: Int, end: Int = length) = substring(start, end)
 inline operator fun String.get(range: IntRange) = substring(range)
 
+inline operator fun String.minus(c: Char) = map { it - c }
+
 inline fun String.charList() = map { it }
 @JvmName("charsI1d")
 inline fun I1d<String>.chars() = map(String::charList)
