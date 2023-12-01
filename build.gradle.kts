@@ -3,7 +3,7 @@ import java.nio.file.Path
 
 plugins {
     java
-    kotlin("jvm") version "1.8.0-RC2"
+    kotlin("jvm") version "1.9.21"
     application
 }
 
@@ -15,19 +15,17 @@ application {
 }
 
 java {
-    targetCompatibility = JavaVersion.VERSION_17
-    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
     mavenCentral()
-    maven("https://maven.concern.i.ng/releases/")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+    kotlinOptions.jvmTarget = "21"
     kotlinOptions.freeCompilerArgs = listOf(
-        "-Xuse-k2", // big boy compiler time
         "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
         "-opt-in=kotlin.ExperimentalStdlibApi", // because ..<
     )
@@ -42,9 +40,7 @@ dependencies {
     ).forEach {
         implementation(kotlin(it))
     }
-    implementation("org.jetbrains:annotations:23.1.0")
-    implementation(kotlin("reflect"))
-    implementation("sschr15.tools.qblo:quilt-but-less-okay:0.4.0")
+    implementation("com.sschr15.annotations:jb-annotations-kmp:24.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

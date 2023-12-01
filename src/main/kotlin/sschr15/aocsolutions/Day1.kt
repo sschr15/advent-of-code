@@ -1,26 +1,23 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.Challenge
-import sschr15.aocsolutions.util.ReflectivelyUsed
-import sschr15.aocsolutions.util.getChallenge
-import sschr15.aocsolutions.util.ints
+import sschr15.aocsolutions.util.*
 import kotlin.time.measureTime
 
 /**
- * AOC 2022 [Day 1](https://adventofcode.com/2022/day/1)
- * Challenge: Find elf with most Calories then find sum of the highest three
+ * AOC 2023 [Day 1](https://adventofcode.com/2023/day/1)
+ * Challenge: Unknown quite yet, as of writing it won't be out for another 35 minutes
  */
 object Day1 : Challenge {
     @ReflectivelyUsed
-    override fun solve() = measureTime {
-        val raw = getChallenge(2022, 1, "\n\n")
-
-        val data = raw.map { it.split("\n").filterNot(String::isEmpty).ints() }
-
-        val best = data.maxOf { it.sum() }
-        println("Part 1: $best")
-        val bestThree = data.sortedBy { it.sum() }.takeLast(3).sumOf { it.sum() }
-        println("Part 2: $bestThree")
+    override fun solve() = challenge(2023, 1) {
+//        test()
+        part1 {
+            val input = inputLines.ints()
+            input.reduce { acc, i -> (acc + i) % 2023 }
+        }
+//        part2 {
+//            "Some other result"
+//        }
     }
 
     @JvmStatic
