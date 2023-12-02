@@ -4,6 +4,7 @@ import sschr15.aocsolutions.util.Challenge
 import sschr15.aocsolutions.util.ReflectivelyUsed
 import sschr15.aocsolutions.util.challenge
 import sschr15.aocsolutions.util.ints
+import sschr15.aocsolutions.util.watched.sum
 
 /**
  * AOC 2023 [Day 1](https://adventofcode.com/2023/day/1)

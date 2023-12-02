@@ -1,5 +1,6 @@
 package sschr15.aocsolutions.util
 
+import sschr15.aocsolutions.util.watched.WatchedInt
 import java.io.BufferedReader
 import java.io.File
 import java.net.URI
@@ -58,7 +59,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         if (it.last().isBlank()) it.dropLast(1) else it
     }
 
-fun List<String>.ints() = map(String::toInt)
+fun List<String>.ints() = map(String::toInt).map(::WatchedInt) // WatchedInt checks for accidental overflow and underflow
 fun List<String>.csv() = map { it.split(",") }
 
 class Grid<T> private constructor(private val data: MutableList<MutableList<T>>) : Iterable<Iterable<T>> {
