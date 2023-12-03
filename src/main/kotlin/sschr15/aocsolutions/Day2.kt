@@ -9,7 +9,7 @@ import sschr15.aocsolutions.util.watched.watched
 
 /**
  * AOC 2023 [Day 2](https://adventofcode.com/2023/day/2)
- * Challenge: TODO (based on the day's description)
+ * Challenge: Figure out who's cheating in the box pulling contest, then un-rig the contest.
  */
 object Day2 : Challenge {
     @ReflectivelyUsed
