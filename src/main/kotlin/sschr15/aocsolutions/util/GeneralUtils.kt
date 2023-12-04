@@ -9,6 +9,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+import kotlin.math.pow
 import kotlin.time.Duration
 
 const val maxValue = 2147483647
@@ -262,3 +263,8 @@ operator fun Int.div(other: Boolean) = if (other) this else throw ArithmeticExce
  * Kotlin compiles `%` to `irem` or `lrem` (depending on the type of the operands).
  */
 infix fun Int.mod(other: Int) = (this % other + other) % other
+
+fun pow(a: Number, b: Number) = a.toDouble().pow(b.toDouble())
+fun powi(a: Number, b: Number) = a.toDouble().pow(b.toDouble()).toInt()
+
+infix fun Int.pow(other: Int) = powi(this, other)

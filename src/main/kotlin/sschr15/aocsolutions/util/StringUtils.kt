@@ -2,7 +2,7 @@
 
 package sschr15.aocsolutions.util
 
-inline fun Int.toString(chars: Int) = toString().padStart(chars, '0')
+fun String.findNumbers() = Regex("\\d+").findAll(this).map { it.value }.toList().ints()
 
 inline operator fun String.times(amount: Int) = repeat(amount)
 
