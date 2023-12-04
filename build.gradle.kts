@@ -37,6 +37,7 @@ dependencies {
         "stdlib-common",
         "stdlib-jdk8",
         "stdlib-jdk7",
+        "reflect"
     ).forEach {
         implementation(kotlin(it))
     }

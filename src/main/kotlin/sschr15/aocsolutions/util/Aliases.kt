@@ -1,5 +1,7 @@
 package sschr15.aocsolutions.util
 
+import sschr15.aocsolutions.util.watched.watched
+
 // Multi-dimensional iterables
 typealias I1d<T> = Iterable<T>
 typealias I2d<T> = Iterable<I1d<T>>
@@ -18,3 +20,7 @@ typealias A2d<T> = Array<A1d<T>>
 typealias A3d<T> = Array<A2d<T>>
 typealias A4d<T> = Array<A3d<T>>
 typealias A5d<T> = Array<A4d<T>>
+
+// for that tiny speed boost
+val Int.w get() = watched()
+val Long.w get() = watched()

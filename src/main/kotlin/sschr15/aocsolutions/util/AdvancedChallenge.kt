@@ -1,9 +1,13 @@
 @file:Suppress("PropertyName")
+@file:OptIn(ExperimentalContracts::class)
 
 package sschr15.aocsolutions.util
 
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind.EXACTLY_ONCE
+import kotlin.contracts.contract
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
@@ -73,10 +77,16 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         internal var _splitBy = "\n"
 
         fun part1(block: ChallengePart.() -> Any?) {
+            contract {
+                callsInPlace(block, EXACTLY_ONCE)
+            }
             _p1 = block
         }
 
         fun part2(block: ChallengePart.() -> Any?) {
+            contract {
+                callsInPlace(block, EXACTLY_ONCE)
+            }
             _p2 = block
         }
 
