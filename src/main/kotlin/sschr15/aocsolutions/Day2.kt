@@ -9,7 +9,8 @@ import sschr15.aocsolutions.util.watched.watched
 
 /**
  * AOC 2023 [Day 2](https://adventofcode.com/2023/day/2)
- * Challenge: Figure out who's cheating in the box pulling contest, then un-rig the contest.
+ * Challenge: Play a box guessing game, but first you have to see what would work with a predetermined guess,
+ * then you actually need to guess all on your own
  */
 object Day2 : Challenge {
     @ReflectivelyUsed

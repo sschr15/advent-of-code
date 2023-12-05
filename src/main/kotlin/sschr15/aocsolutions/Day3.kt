@@ -8,7 +8,7 @@ import sschr15.aocsolutions.util.watched.toLong
 
 /**
  * AOC 2023 [Day 3](https://adventofcode.com/2023/day/3)
- * Challenge: TODO (based on the day's description)
+ * Challenge: Fix an engine, but you can't see the engine, and the blueprint is neither blue nor a print
  */
 object Day3 : Challenge {
     @ReflectivelyUsed
