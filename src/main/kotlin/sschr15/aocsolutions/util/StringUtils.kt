@@ -3,6 +3,7 @@
 package sschr15.aocsolutions.util
 
 fun String.findNumbers() = Regex("\\d+").findAll(this).map { it.value }.toList().ints()
+fun String.findLongs() = Regex("\\d+").findAll(this).map { it.value }.toList().map { it.toLong() }
 
 inline operator fun String.times(amount: Int) = repeat(amount)
 
