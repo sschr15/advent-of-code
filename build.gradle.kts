@@ -27,7 +27,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "21"
     kotlinOptions.freeCompilerArgs = listOf(
         "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
-        "-opt-in=kotlin.ExperimentalStdlibApi", // because ..<
+        "-opt-in=kotlin.ExperimentalStdlibApi", // because previously needed
     )
 }
 
@@ -42,6 +42,7 @@ dependencies {
         implementation(kotlin(it))
     }
     implementation("com.sschr15.annotations:jb-annotations-kmp:24.0.1")
+    implementation("com.sschr15:templates-kt:1.0.0") // here because i want java 21 string templates
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

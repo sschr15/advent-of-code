@@ -1,8 +1,10 @@
 package sschr15.aocsolutions
 
+import com.sschr15.templates.invoke
 import sschr15.aocsolutions.util.Challenge
 import java.io.OutputStream
 import java.io.PrintStream
+import java.util.FormatProcessor.FMT
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.time.Duration
@@ -42,6 +44,12 @@ object SolutionTimer {
         println("Average: $average")
         println("Min: $min")
         println("Max: $max")
-        println("Standard deviation: ${"%.2f".format(stdDev)}")
+
+        // The string here uses Java's FMT String template, available in Java 21 and later.
+        // In java, the function's argument would be written as:
+        //     FMT."Standard Deviation: %.2f\{stdDev}ms"
+        // The exclamation point in this version is for my templates-kt library, in order
+        // to skirt around Kotlin's direct injection of variables into strings.
+        println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
     }
 }
