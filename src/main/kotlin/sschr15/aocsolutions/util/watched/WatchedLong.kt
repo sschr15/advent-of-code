@@ -8,20 +8,21 @@ value class WatchedLong(val value: Long) {
     operator fun compareTo(other: WatchedLong) = value.compareTo(other.value)
 
     operator fun plus(other: WatchedLong): WatchedLong {
-        require(value < Long.MAX_VALUE - other.value) { "Longeger Overflow" }
-        require(value > Long.MIN_VALUE + other.value) { "Longeger Underflow" }
+        require(value < Long.MAX_VALUE - other.value) { "Long Overflow" }
+        require(value > Long.MIN_VALUE + other.value) { "Long Underflow" }
         return WatchedLong(value + other.value)
     }
 
     operator fun minus(other: WatchedLong): WatchedLong {
-        require(value > Long.MIN_VALUE + other.value) { "Longeger Underflow" }
-        require(value < Long.MAX_VALUE - other.value) { "Longeger Overflow" }
+        require(value > Long.MIN_VALUE + other.value) { "Long Underflow" }
+        require(value < Long.MAX_VALUE - other.value) { "Long Overflow" }
         return WatchedLong(value - other.value)
     }
 
     operator fun times(other: WatchedLong): WatchedLong {
-        require(value < Long.MAX_VALUE / other.value) { "Longeger Overflow" }
-        require(value > Long.MIN_VALUE / other.value) { "Longeger Underflow" }
+        if (other.value == 0L) return WatchedLong(0L)
+        require(value < Long.MAX_VALUE / other.value) { "Long Overflow" }
+        require(value > Long.MIN_VALUE / other.value) { "Long Underflow" }
         return WatchedLong(value * other.value)
     }
 
