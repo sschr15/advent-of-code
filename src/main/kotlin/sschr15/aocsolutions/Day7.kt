@@ -39,6 +39,35 @@ fun String.handResult(part2: Boolean): HandResult {
     return result
 }
 
+data class Hand(val cards: String, val bid: Int, val result: HandResult) : Comparable<Hand> {
+    private val cardNums = cards.map { completeOrder.indexOf(it) }
+
+    fun toPart2(): Hand {
+        if (cards == "JJJJJ") return Hand("LLLLL", bid, result) // an all-jacks hand becomes the best hand (aside from sorting)
+        if ('J' !in cards) return this // no jokers, no change
+        return Hand(cards.replace('J', 'L'), bid, cards.handResult(true))
+    }
+
+    override fun compareTo(other: Hand): Int {
+        if (result != other.result) return other.result.compareTo(result)
+        repeat(5) {
+            val thisVal = cardNums[it]
+            val otherVal = other.cardNums[it]
+            if (thisVal != otherVal) return thisVal.compareTo(otherVal)
+        }
+        return 0 // equal
+    }
+
+    companion object {
+        private val completeOrder = listOf('L') + (2..9).map { it.digitToChar() } + listOf('T', 'J', 'Q', 'K', 'A')
+
+        fun fromString(input: String): Hand {
+            val (cards, bid) = input.split(" ")
+            return Hand(cards, bid.toInt(), cards.handResult(false))
+        }
+    }
+}
+
 /**
  * AOC 2023 [Day 7](https://adventofcode.com/2023/day/7)
  * Challenge: Playing Camel Cards (it's like poker but meant to be
@@ -48,50 +77,16 @@ object Day7 : Challenge {
     @ReflectivelyUsed
     override fun solve() = challenge(2023, 7) {
 //        test()
-        fun cardComparator(part2: Boolean = false): Comparator<List<String>> {
-            val defaultCardOrder = (2..9).map { it.digitToChar() } + listOf('T', 'J', 'Q', 'K', 'A')
-            val cardSymbols = if (!part2) defaultCardOrder else {
-                val new = defaultCardOrder.toMutableList()
-                new.remove('J')
-                new.addFirst('J')
-                new
-            }
-
-            return Comparator { a, b ->
-
-                val aResult = a.first().handResult(part2)
-                val bResult = b.first().handResult(part2)
-
-                if (aResult != bResult) return@Comparator bResult.compareTo(aResult)
-
-                val aValues = a.first().map { cardSymbols.indexOf(it) }
-                val bValues = b.first().map { cardSymbols.indexOf(it) }
-
-                repeat(5) {
-                    val aVal = aValues[it]
-                    val bVal = bValues[it]
-                    if (aVal != bVal) return@Comparator aVal.compareTo(bVal)
-                }
-
-                0
-            }
-        }
-
+        val hands: List<Hand>
         part1 {
-            inputLines
-                .map { it.split(" ") }
-                .sortedWith(cardComparator())
-                .mapIndexed { index, (cards, bid) ->
-                    bid.toLong() * (index + 1)
-                }.sum()
+            hands = inputLines.map(Hand::fromString)
+            hands.sorted()
+                .mapIndexed { index, hand -> hand.bid.toLong() * (index + 1) }.sum()
         }
         part2 {
-            inputLines
-                .map { it.split(" ") }
-                .sortedWith(cardComparator(true))
-                .mapIndexed { index, (cards, bid) ->
-                    bid.toLong() * (index + 1)
-                }.sum()
+            hands.map(Hand::toPart2)
+                .sorted()
+                .mapIndexed { index, hand -> hand.bid.toLong() * (index + 1) }.sum()
         }
     }
 
