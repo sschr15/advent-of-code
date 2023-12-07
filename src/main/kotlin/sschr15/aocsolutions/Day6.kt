@@ -6,7 +6,7 @@ import sschr15.aocsolutions.util.watched.times
 
 /**
  * AOC 2023 [Day 6](https://adventofcode.com/2023/day/6)
- * Challenge: TODO (based on the day's description)
+ * Challenge: How many ways can you get a boat down a river if you press a button for random amounts of time?
  */
 object Day6 : Challenge {
     @ReflectivelyUsed

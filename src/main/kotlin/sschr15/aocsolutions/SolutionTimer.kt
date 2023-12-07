@@ -16,8 +16,26 @@ object SolutionTimer {
     fun main(args: Array<String>) {
         System.setProperty("aoc.skip.clipboard.copy", "true") // Copying to clipboard is slow and unnecessary
 
+        if (args.isNotEmpty()) {
+            runDay(args[0])
+            return
+        }
+
+        // Run all the challenges
+        try {
+            repeat(25) {
+                runDay("Day${it + 1}")
+                println()
+            }
+        } catch (e: ClassNotFoundException) {
+            // If we get here, we've run out of days to run
+            println("Done!")
+        }
+    }
+
+    private fun runDay(dayString: String) {
         // Load the challenge class
-        val day = if (args[0].matches("Day\\d{1,2}".toRegex())) args[0] else error("Invalid day: ${args[0]}")
+        val day = if (dayString.matches("Day\\d{1,2}".toRegex())) dayString else error("Invalid day: $dayString")
         val dayClass = Class.forName("sschr15.aocsolutions.$day")
         val challenge = dayClass.kotlin.objectInstance as Challenge
 
@@ -28,7 +46,7 @@ object SolutionTimer {
 
         // Run the challenge 20 times
         val times = mutableListOf<Duration>()
-        repeat(100) { times.add(challenge.solve()) }
+        repeat(1000) { times.add(challenge.solve()) }
 
         // Re-enable output
         System.setOut(existingOut)
@@ -41,6 +59,7 @@ object SolutionTimer {
         val min = times.min()
         val max = times.max()
 
+        println("Times for day ${day.substring(3)}:")
         println("Average: $average")
         println("Min: $min")
         println("Max: $max")
