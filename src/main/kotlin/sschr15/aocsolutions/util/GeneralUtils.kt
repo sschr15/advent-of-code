@@ -10,6 +10,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.time.Duration
 
 const val maxValue = 2147483647
@@ -264,7 +265,13 @@ operator fun Int.div(other: Boolean) = if (other) this else throw ArithmeticExce
  */
 infix fun Int.mod(other: Int) = (this % other + other) % other
 
-fun pow(a: Number, b: Number) = a.toDouble().pow(b.toDouble())
-fun powi(a: Number, b: Number) = a.toDouble().pow(b.toDouble()).toInt()
+fun pow(base: Number, exponent: Number) = base.toDouble().pow(exponent.toDouble())
+fun powi(base: Number, exponent: Number) = base.toDouble().pow(exponent.toDouble()).toInt()
 
 infix fun Int.pow(other: Int) = powi(this, other)
+
+fun Iterable<Number>.stdDev(): Double {
+    val mean = sumOf { it.toDouble() } / count()
+    val sumOfSquares = sumOf { (it.toDouble() - mean).pow(2) }
+    return sqrt(sumOfSquares / count())
+}

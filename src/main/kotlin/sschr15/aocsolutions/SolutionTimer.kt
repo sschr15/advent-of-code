@@ -1,12 +1,18 @@
 package sschr15.aocsolutions
 
 import com.sschr15.templates.invoke
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import sschr15.aocsolutions.util.Challenge
+import sschr15.aocsolutions.util.stdDev
 import java.io.OutputStream
 import java.io.PrintStream
 import java.util.FormatProcessor.FMT
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.io.path.Path
+import kotlin.io.path.appendText
+import kotlin.io.path.createFile
+import kotlin.io.path.exists
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
@@ -34,6 +40,8 @@ object SolutionTimer {
     }
 
     private fun runDay(dayString: String) {
+        val now = Clock.System.now()
+
         // Load the challenge class
         val day = if (dayString.matches("Day\\d{1,2}".toRegex())) dayString else error("Invalid day: $dayString")
         val dayClass = Class.forName("sschr15.aocsolutions.$day")
@@ -44,7 +52,12 @@ object SolutionTimer {
         val nullOutput = PrintStream(OutputStream.nullOutputStream())
         System.setOut(nullOutput)
 
-        // Run the challenge 20 times
+        // Prep the challenge by running it a handful of times
+        // (because JVM startup is slow and class loading is slow)
+        val prepTimes = mutableListOf<Duration>()
+        repeat(20) { prepTimes.add(challenge.solve()) }
+
+        // Run the challenge many times
         val times = mutableListOf<Duration>()
         repeat(1000) { times.add(challenge.solve()) }
 
@@ -54,8 +67,7 @@ object SolutionTimer {
         // Calculate and print the times + fun stats
         val nsTimes = times.map { it.toDouble(DurationUnit.NANOSECONDS) }
         val average = nsTimes.average().nanoseconds
-        val varianceMs = times.map { (it - average).toDouble(DurationUnit.MILLISECONDS).pow(2) }.average()
-        val stdDev = sqrt(varianceMs)
+        val stdDev = times.map { it.toDouble(DurationUnit.MILLISECONDS) }.stdDev()
         val min = times.min()
         val max = times.max()
 
@@ -70,5 +82,20 @@ object SolutionTimer {
         // The exclamation point in this version is for my templates-kt library, in order
         // to skirt around Kotlin's direct injection of variables into strings.
         println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
+
+        // Store prep times to a file
+        val prepFile = Path("prep_times.txt")
+        if (!prepFile.exists()) prepFile.createFile()
+
+        val textToAppend = listOf(
+            "Day ${day.substring(3)} Preparation Times (20 runs):",
+            "Ran at ${now.toLocalDateTime(TimeZone.UTC)} (UTC)",
+            "Average: ${(prepTimes.sumOf { it.toDouble(DurationUnit.NANOSECONDS) } / prepTimes.size).nanoseconds}",
+            "Min: ${prepTimes.min()}",
+            "Max: ${prepTimes.max()}",
+            "Standard Deviation (ms): ${prepTimes.map { it.toDouble(DurationUnit.MILLISECONDS) }.stdDev()}",
+        ).joinToString("\n") + "\n\n"
+
+        prepFile.appendText(textToAppend)
     }
 }
