@@ -9,6 +9,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.time.Duration
@@ -275,3 +276,8 @@ fun Iterable<Number>.stdDev(): Double {
     val sumOfSquares = sumOf { (it.toDouble() - mean).pow(2) }
     return sqrt(sumOfSquares / count())
 }
+
+fun Double.floorToInt() = floor(this).toInt()
+fun Double.floorToLong() = floor(this).toLong()
+fun Double.ceilingToInt() = toInt() + if (this > toInt()) 1 else 0 // positives need 1 more, negatives get truncated to the ceiling
+fun Double.ceilingToLong() = toLong() + if (this > toLong()) 1 else 0
