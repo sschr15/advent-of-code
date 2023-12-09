@@ -196,6 +196,8 @@ fun List<Int>.gcf() = reduce { acc, i -> gcf(acc, i) }
  */
 fun lcm(a: Int, b: Int) = a * b / gcf(a, b)
 
+fun lcm(a: Long, b: Long) = a * b / gcf(a, b)
+
 /**
  * Get the greatest common factor of two numbers.
  */
@@ -204,6 +206,21 @@ fun gcf(a: Int, b: Int): Int {
     var a = a
     var b = b
     while (b != 0) {
+        val temp = b
+        b = a % b
+        a = temp
+    }
+    return a
+}
+
+/**
+ * Get the greatest common factor of two numbers.
+ */
+@Suppress("NAME_SHADOWING")
+fun gcf(a: Long, b: Long): Long {
+    var a = a
+    var b = b
+    while (b != 0L) {
         val temp = b
         b = a % b
         a = temp
