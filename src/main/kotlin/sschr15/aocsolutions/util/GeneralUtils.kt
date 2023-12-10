@@ -23,6 +23,20 @@ interface Challenge {
 }
 
 sealed class Direction(val mod: (Point) -> Point) {
+    fun turnLeft() = when (this) {
+        North -> West
+        South -> East
+        West -> South
+        East -> North
+    }
+
+    fun turnRight() = when (this) {
+        North -> East
+        South -> West
+        West -> North
+        East -> South
+    }
+
     object North : Direction(Point::up)
     object South : Direction(Point::down)
     object West : Direction(Point::left)
