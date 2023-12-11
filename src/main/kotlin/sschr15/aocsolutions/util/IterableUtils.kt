@@ -87,3 +87,10 @@ fun <T> I2d<T>.transpose(throwIfUneven: Boolean = true): L2d<T> {
 
 operator fun <T> L2d<T>.get(point: AbstractPoint) = this[point.y()][point.x()]
 operator fun <T> A2d<T>.get(point: AbstractPoint) = this[point.y()][point.x()]
+
+fun <T> I1d<T>.combinations(count: Int): List<List<T>> {
+    if (count == 0) return emptyList()
+    if (count == 1) return this.map { listOf(it) }
+    if (count == 2) return this.mapIndexed { i, t -> this.drop(i + 1).map { listOf(t, it) } }.flatten()
+    return this.mapIndexed { i, t -> this.drop(i + 1).combinations(count - 1).map { listOf(t) + it } }.flatten()
+}
