@@ -12,7 +12,7 @@ inline operator fun String.get(range: IntRange) = substring(range)
 
 inline operator fun String.minus(c: Char) = map { it - c }
 
-inline fun String.charList() = map { it }
+inline fun String.charList() = toList()
 @JvmName("charsI1d")
 inline fun I1d<String>.chars() = map(String::charList)
 @JvmName("charsI2d")

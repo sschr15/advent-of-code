@@ -3,6 +3,8 @@ package sschr15.aocsolutions
 import sschr15.aocsolutions.util.*
 import java.util.LinkedList
 import java.util.Queue
+import kotlin.io.path.Path
+import kotlin.io.path.writeText
 
 /**
  * AOC 2023 [Day 10](https://adventofcode.com/2023/day/10)
@@ -123,10 +125,27 @@ object Day10 : Challenge {
             bfsReplaceFoundPoints(bigGrid, Point(0, 0))
 
             var count = 0
+            val output = StringBuilder()
             for (y in 2..<bigGrid.height step 3) {
                 for (x in 2..<bigGrid.width step 3) {
-                    if (bigGrid[x, y] == ' ') { count++ }
+                    if (bigGrid[x, y] == ' ') {
+                        count++
+                        if (System.getProperty("datavis") == "true") {
+                            output.append("\u001b[44m \u001b[m")
+                        }
+                    } else if (System.getProperty("datavis") == "true") {
+                        val color = if (bigGrid[x, y] == '#') "\u001b[40m" else "\u001b[47m"
+                        output.append("$color \u001b[m")
+                    }
                 }
+                if (System.getProperty("datavis") == "true") {
+                    output.appendLine()
+                }
+            }
+
+            if (System.getProperty("datavis") == "true") {
+                println(output)
+                Path("day10.datavis.txt").writeText(output.toString())
             }
 
             count
