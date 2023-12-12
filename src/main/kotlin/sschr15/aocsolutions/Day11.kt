@@ -6,7 +6,7 @@ import kotlin.math.absoluteValue
 
 /**
  * AOC 2023 [Day 11](https://adventofcode.com/2023/day/11)
- * Challenge: TODO (based on the day's description)
+ * Challenge: whoops our spacetime is destroying itself right in front of our eyes
  */
 object Day11 : Challenge {
     @ReflectivelyUsed

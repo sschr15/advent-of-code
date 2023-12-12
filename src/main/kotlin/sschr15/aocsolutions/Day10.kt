@@ -8,7 +8,7 @@ import kotlin.io.path.writeText
 
 /**
  * AOC 2023 [Day 10](https://adventofcode.com/2023/day/10)
- * Challenge: TODO (based on the day's description)
+ * Challenge: that creature has wandered off! i wonder if it's *in* the pipes or just *in* the pipes
  */
 object Day10 : Challenge {
     @ReflectivelyUsed
