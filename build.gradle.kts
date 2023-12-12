@@ -26,8 +26,9 @@ repositories {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "21"
     kotlinOptions.freeCompilerArgs = listOf(
-        "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22213 attempted fix
+        "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22253 attempted fix
         "-opt-in=kotlin.ExperimentalStdlibApi", // because previously needed
+        "-opt-in=kotlin.contracts.ExperimentalContracts", // contracts are cool, regardless of how experimental they are (also KTIJ-22253)
     )
 }
 

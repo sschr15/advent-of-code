@@ -312,3 +312,24 @@ fun Double.floorToInt() = floor(this).toInt()
 fun Double.floorToLong() = floor(this).toLong()
 fun Double.ceilingToInt() = toInt() + if (this > toInt()) 1 else 0 // positives need 1 more, negatives get truncated to the ceiling
 fun Double.ceilingToLong() = toLong() + if (this > toLong()) 1 else 0
+
+class RecursiveCaller<T, R>(val f: RecursiveCaller<T, R>.(T) -> R) {
+    fun recurse(value: T): R = f(value)
+}
+
+inline fun <T, R> memoized(crossinline f: RecursiveCaller<T, R>.(T) -> R): (T) -> R {
+    val cache = mutableMapOf<T, R>()
+    val caller = RecursiveCaller { value ->
+        cache.getOrPut(value) { f(value) }
+    }
+    return caller::recurse
+}
+
+inline fun <A, B, R> RecursiveCaller<Pair<A, B>, R>.recurse(a: A, b: B) = recurse(a to b)
+inline fun <A, B, C, R> RecursiveCaller<Triple<A, B, C>, R>.recurse(a: A, b: B, c: C) = recurse(Triple(a, b, c))
+
+inline operator fun <A, B, R> ((Pair<A, B>) -> R).invoke(a: A, b: B) = invoke(a to b)
+inline operator fun <A, B, C, R> ((Triple<A, B, C>) -> R).invoke(a: A, b: B, c: C) = invoke(Triple(a, b, c))
+
+inline fun <A, B, R> memoized(crossinline f: RecursiveCaller<Pair<A, B>, R>.(A, B) -> R): (Pair<A, B>) -> R = memoized { (a, b) -> f(a, b) }
+inline fun <A, B, C, R> memoized(crossinline f: RecursiveCaller<Triple<A, B, C>, R>.(A, B, C) -> R): (Triple<A, B, C>) -> R = memoized { (a, b, c) -> f(a, b, c) }

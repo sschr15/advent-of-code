@@ -1,5 +1,4 @@
 @file:Suppress("PropertyName")
-@file:OptIn(ExperimentalContracts::class)
 
 package sschr15.aocsolutions.util
 
@@ -32,8 +31,10 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         if (builder._p2 != null) {
             val implicitResult2 = builder._p2!!.invoke(challengePart)
             val result2 = challengePart._res ?: implicitResult2
-            println("Part 2: $result2")
-            copyToClipboard(result2.toString())
+            if (result2 != "Some other result") {
+                println("Part 2: $result2")
+                copyToClipboard(result2.toString())
+            }
         } else {
             copyToClipboard(result.toString())
         }
