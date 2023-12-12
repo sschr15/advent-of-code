@@ -1,6 +1,5 @@
 package sschr15.aocsolutions
 
-import a
 import sschr15.aocsolutions.util.*
 import kotlin.math.absoluteValue
 
