@@ -13,7 +13,7 @@ object Day13 : Challenge {
     @ReflectivelyUsed
     override fun solve() = challenge(2023, 13) {
         splitBy("\n\n")
-        test()
+//        test()
         part1 {
             inputLines.sumOf {
                 val grid = it.trim().split("\n").chars().toGrid()
@@ -62,7 +62,7 @@ object Day13 : Challenge {
                 var toLeft = 1
                 while (true) {
                     if (toLeft >= columns.size) break
-                    val (left, right) = columns.take(toLeft).asReversed() to columns.drop(toLeft).take(toLeft)
+                    val (left, right) = columns.take(toLeft).asReversed() to columns.drop(toLeft)
                     val diffs = left.zip(right).map { (l, r) -> l.zip(r).count { (a, b) -> a != b } }
                     if (diffs.sum() == 1) {
                         // exactly one difference is what we want
@@ -74,7 +74,7 @@ object Day13 : Challenge {
                 var above = 1
                 while (true) {
                     if (above >= rows.size) break
-                    val (top, bottom) = rows.take(above).asReversed() to rows.drop(above).take(above)
+                    val (top, bottom) = rows.take(above).asReversed() to rows.drop(above)
                     val diffs = top.zip(bottom).map { (t, b) -> t.zip(b).count { (a, b) -> a != b } }
                     if (diffs.sum() == 1) {
                         return@sumOf above * 100
