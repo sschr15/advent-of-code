@@ -116,6 +116,9 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         row.mapIndexed { x, value -> Point(x, y) to value }
     }.flatten().toMap()
 
+    fun columns(): List<List<T>> = (0 until width).map { getColumn(it) }
+    fun rows(): List<List<T>> = data
+
     override fun toString(): String {
         val allStrings = data.map { it.map { t -> t.toString() } }
         val longestLength = allStrings.maxOfOrNull { it.maxByOrNull { s -> s.length }?.length ?: 0 } ?: 0
