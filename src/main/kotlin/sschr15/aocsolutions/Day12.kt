@@ -21,20 +21,34 @@ object Day12 : Challenge {
                 return@memoized if ('#' !in remaining) 1 else 0
             }
 
+            if (requirements.first() < 0L) return@memoized 0 // already took too many hashes
+
             val (first, rest) = remaining.first() to remaining.drop(1)
-            if (first == '?') {
-                return@memoized recurse(".$rest", requirements, inRequirement) +
-                        recurse("#$rest", requirements, inRequirement)
-            } else if (first == '#') {
-                if (requirements.isEmpty()) return@memoized 0
-                val newRequirements = listOf(requirements.first() - 1) + requirements.drop(1)
-                return@memoized recurse(rest, newRequirements, true)
-            } else if (inRequirement) {
-                val (firstReq, restReq) = requirements.first() to requirements.drop(1)
-                return@memoized if (firstReq == 0L) recurse(rest, restReq, false) else 0 // invalid if there's still a partially unsatisfied requirement
-            } else {
-                val noStartDot = rest.dropWhile { c -> c == '.' }
-                return@memoized recurse(noStartDot, requirements, false)
+            when {
+                first == '?' -> {
+                    val withHash = recurse("#$rest", requirements, false)
+                    val withoutHash = if (!inRequirement || requirements.first() == 0L) {
+                        // only do this if it doesn't break a requirement
+                        val newReqs = if (inRequirement) requirements.drop(1) else requirements
+                        recurse(".${rest.dropWhile { c -> c == '.' }}", newReqs, false)
+                    } else 0
+                    withHash + withoutHash
+                }
+                first == '#' -> {
+                    if (requirements.isEmpty()) return@memoized 0
+                    val newRest = rest.dropWhile { c -> c == '#' }
+                    val removed = 1 + (rest.length - newRest.length)
+                    val newRequirements = listOf(requirements.first() - removed) + requirements.drop(1)
+                    recurse(newRest, newRequirements, true)
+                }
+                inRequirement -> {
+                    val (firstReq, restReq) = requirements.first() to requirements.drop(1)
+                    if (firstReq == 0L) recurse(rest, restReq, false) else 0 // invalid if there's still a partially unsatisfied requirement
+                }
+                else -> {
+                    val noStartDot = rest.dropWhile { c -> c == '.' }
+                    recurse(noStartDot, requirements, false)
+                }
             }
         }
 

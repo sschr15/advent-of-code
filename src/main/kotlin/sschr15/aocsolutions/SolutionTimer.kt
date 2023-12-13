@@ -14,6 +14,7 @@ import kotlin.io.path.appendText
 import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
@@ -40,7 +41,7 @@ object SolutionTimer {
     }
 
     private fun runDay(dayString: String) {
-        val now = Clock.System.now()
+        val start = Clock.System.now()
 
         // Load the challenge class
         val day = if (dayString.matches("Day\\d{1,2}".toRegex())) dayString else error("Invalid day: $dayString")
@@ -58,8 +59,16 @@ object SolutionTimer {
         repeat(20) { prepTimes.add(challenge.solve()) }
 
         // Run the challenge many times
+        val actualTestStart = Clock.System.now()
         val times = mutableListOf<Duration>()
-        repeat(1000) { times.add(challenge.solve()) }
+        run outer@{
+            repeat(1000) {
+                // fun fact: you can return from broader scopes when in (certain) lambdas
+                if (Clock.System.now() - actualTestStart > 5.minutes) return@outer // stop after 5 minutes (extremely slow solutions)
+
+                times.add(challenge.solve())
+            }
+        }
 
         // Re-enable output
         System.setOut(existingOut)
@@ -83,13 +92,17 @@ object SolutionTimer {
         // to skirt around Kotlin's direct injection of variables into strings.
         println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
 
+        if (times.size < 1000) {
+            println("Skipped ${1000 - times.size} runs due to slow solutions")
+        }
+
         // Store prep times to a file
         val prepFile = Path("prep_times.txt")
         if (!prepFile.exists()) prepFile.createFile()
 
         val textToAppend = listOf(
             "Day ${day.substring(3)} Preparation Times (20 runs):",
-            "Ran at ${now.toLocalDateTime(TimeZone.UTC)} (UTC)",
+            "Ran at ${start.toLocalDateTime(TimeZone.UTC)} (UTC)",
             "Average: ${(prepTimes.sumOf { it.toDouble(DurationUnit.NANOSECONDS) } / prepTimes.size).nanoseconds}",
             "Min: ${prepTimes.min()}",
             "Max: ${prepTimes.max()}",
