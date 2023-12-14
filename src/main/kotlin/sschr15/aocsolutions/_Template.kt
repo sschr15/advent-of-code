@@ -5,19 +5,19 @@ import sschr15.aocsolutions.util.ReflectivelyUsed
 import sschr15.aocsolutions.util.challenge
 
 /**
- * AOC 2022 [Day N](https://adventofcode.com/2022/day/N)
+ * AOC 2023 [Day N](https://adventofcode.com/2023/day/N)
  * Challenge: TODO (based on the day's description)
  */
 object DayN : Challenge {
     @ReflectivelyUsed
-    override fun solve() = challenge(2022, 0) {
+    override fun solve() = challenge(2023, 0) {
 //        test()
         part1 {
-            "Some result"
+            inputLines
         }
-//        part2 {
-//            "Some other result"
-//        }
+        part2 {
+            "Some other result"
+        }
     }
 
     @JvmStatic
