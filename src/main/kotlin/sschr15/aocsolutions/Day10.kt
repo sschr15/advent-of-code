@@ -187,11 +187,11 @@ object Day10 : Challenge {
     }
 
     private fun bfsReplaceFoundPoints(grid: Grid<Char>, start: Point) {
-        val queue: Queue<Point> = LinkedList()
+        val queue = ArrayDeque<Point>()
         queue.add(start)
 
         while (queue.isNotEmpty()) {
-            val current = queue.poll() ?: break // should never be null
+            val current = queue.first() // should never be null
             if (current.x < 0 || current.y < 0 || current.x >= grid.width || current.y >= grid.height) continue // out of bounds
             val currentChar = grid[current]
             if (currentChar == '.' || currentChar == '#') continue // wall or already visited
