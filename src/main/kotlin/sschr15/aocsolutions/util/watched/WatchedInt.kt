@@ -20,6 +20,7 @@ value class WatchedInt(val value: Int) {
     }
 
     operator fun times(other: WatchedInt): WatchedInt {
+        if (other.value == 0) return WatchedInt(0)
         require(value < Int.MAX_VALUE / other.value) { "Integer Overflow" }
         require(value > Int.MIN_VALUE / other.value) { "Integer Underflow" }
         return WatchedInt(value * other.value)
