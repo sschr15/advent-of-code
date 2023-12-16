@@ -29,6 +29,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22253 attempted fix
         "-opt-in=kotlin.ExperimentalStdlibApi", // because previously needed
         "-opt-in=kotlin.contracts.ExperimentalContracts", // contracts are cool, regardless of how experimental they are (also KTIJ-22253)
+        "-opt-in=kotlin.experimental.ExperimentalTypeInference", // because OverloadResolutionByLambdaReturnType
     )
 }
 
