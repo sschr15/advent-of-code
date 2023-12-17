@@ -23,3 +23,5 @@ inline fun I3d<String>.chars() = map(I2d<String>::chars)
 inline fun I4d<String>.chars() = map(I3d<String>::chars)
 @JvmName("charsI5d")
 inline fun I5d<String>.chars() = map(I4d<String>::chars)
+
+inline fun List<String>.toGrid() = chars().toGrid()
