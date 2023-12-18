@@ -94,3 +94,6 @@ fun <T> I1d<T>.combinations(count: Int): List<List<T>> {
     if (count == 2) return this.mapIndexed { i, t -> this.drop(i + 1).map { listOf(t, it) } }.flatten()
     return this.mapIndexed { i, t -> this.drop(i + 1).combinations(count - 1).map { listOf(t) + it } }.flatten()
 }
+
+fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
+fun <A, B : Any> Iterable<Pair<A, B?>>.filterSecondNotNull() = filter { it.second != null }.map { it.first to it.second!! }

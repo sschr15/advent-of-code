@@ -83,7 +83,7 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
     val height: Int
         get() = data.size
     val width: Int
-        get() = (data.map { it.size }.firstOrNull() ?: 0)
+        get() = data.firstOrNull()?.size ?: 0
 
     fun getRow(row: Int) = data[row]
     fun getColumn(col: Int) = data.map { it[col] }.toMutableList()
@@ -97,7 +97,7 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         data[point.y()][point.x()] = value
     }
 
-    operator fun contains(point: AbstractPoint) = point.x() in 0 until width && point.y() in 0 until height
+    operator fun contains(point: AbstractPoint) = point.x() in 0..<width && point.y() in 0..<height
 
     fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<AbstractPoint, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
@@ -336,3 +336,5 @@ inline operator fun <A, B, C, R> ((Triple<A, B, C>) -> R).invoke(a: A, b: B, c: 
 
 inline fun <A, B, R> memoized(crossinline f: RecursiveCaller<Pair<A, B>, R>.(A, B) -> R): (Pair<A, B>) -> R = memoized { (a, b) -> f(a, b) }
 inline fun <A, B, C, R> memoized(crossinline f: RecursiveCaller<Triple<A, B, C>, R>.(A, B, C) -> R): (Triple<A, B, C>) -> R = memoized { (a, b, c) -> f(a, b, c) }
+
+infix fun <A, B, C> Pair<A, B>.and(c: C) = Triple(first, second, c)
