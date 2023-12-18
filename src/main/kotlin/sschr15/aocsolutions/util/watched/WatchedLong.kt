@@ -4,8 +4,8 @@ package sschr15.aocsolutions.util.watched
  * A wrapper around [Long] that throws an exception if an operation would cause an overflow or underflow.
  */
 @JvmInline
-value class WatchedLong(val value: Long) {
-    operator fun compareTo(other: WatchedLong) = value.compareTo(other.value)
+value class WatchedLong(val value: Long) : Comparable<WatchedLong> {
+    override operator fun compareTo(other: WatchedLong) = value.compareTo(other.value)
 
     operator fun plus(other: WatchedLong): WatchedLong {
         require(value < Long.MAX_VALUE - other.value) { "Long Overflow" }
