@@ -1,9 +1,6 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.Challenge
-import sschr15.aocsolutions.util.ReflectivelyUsed
-import sschr15.aocsolutions.util.challenge
-import sschr15.aocsolutions.util.w
+import sschr15.aocsolutions.util.*
 import sschr15.aocsolutions.util.watched.sumOf
 import sschr15.aocsolutions.util.watched.times
 import java.util.ArrayDeque
@@ -165,7 +162,7 @@ object Day19 : Challenge {
                 queue.addAll(newStates)
             }
 
-            discoveredStates.sumOf { (x, m, a, s) -> x.count().toLong().w * m.count() * a.count() * s.count() }
+            discoveredStates.sumOf { (x, m, a, s) -> x.range.toLong() * m.range * a.range * s.range }
         }
     }
 

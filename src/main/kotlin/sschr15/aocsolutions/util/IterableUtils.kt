@@ -97,3 +97,11 @@ fun <T> I1d<T>.combinations(count: Int): List<List<T>> {
 
 fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
 fun <A, B : Any> Iterable<Pair<A, B?>>.filterSecondNotNull() = filter { it.second != null }.map { it.first to it.second!! }
+
+val IntRange.range get() = last - first + 1
+val LongRange.range get() = last - first + 1
+val CharRange.range get() = last - first + 1
+
+val ClosedFloatingPointRange<Float>.range get() = endInclusive - start
+@get:JvmName("doubleRange")
+val ClosedFloatingPointRange<Double>.range get() = endInclusive - start
