@@ -53,6 +53,7 @@ dependencies {
     implementation("com.sschr15:templates-kt:1.0.0") // here because i want java 21 string templates
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("it.unimi.dsi:fastutil:8.5.12")
 }
 
 afterEvaluate {

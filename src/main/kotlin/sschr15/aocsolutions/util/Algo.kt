@@ -1,5 +1,6 @@
 package sschr15.aocsolutions.util
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import sschr15.aocsolutions.util.watched.WatchedLong
 import java.math.BigInteger
 import java.util.*
@@ -13,22 +14,24 @@ fun <T> dijkstra(
     getNeighbors: (T) -> List<T>,
     getCost: (T) -> Int,
 ): Map<T, Int> {
+    data class Node(val value: T, val cost: Int)
+
     val visited = mutableSetOf<T>()
-    val costs = mutableMapOf<T, Int>()
-    val queue = PriorityQueue<T>(compareBy { costs.getOrDefault(it, Int.MAX_VALUE) })
-    queue.add(start)
-    costs[start] = 0
+    val costs = Object2IntOpenHashMap<T>()
+    val queue = PriorityQueue<Node>(compareBy { it.cost })
+    queue.add(Node(start, 0))
+    costs.put(start, 0)
 
     while (queue.isNotEmpty()) {
-        val current = queue.poll()
+        val (current, currentCost) = queue.poll()
         if (current in visited) continue
         visited.add(current)
 
         for (neighbor in getNeighbors(current)) {
-            val newCost = costs[current]!! + getCost(neighbor)
-            if (newCost < costs.getOrDefault(neighbor, Int.MAX_VALUE)) {
-                costs[neighbor] = newCost
-                queue.add(neighbor)
+            val newCost = currentCost + getCost(neighbor)
+            if (newCost < costs.getOrDefault(neighbor as Any, Int.MAX_VALUE)) {
+                costs.put(neighbor, newCost)
+                queue.add(Node(neighbor, newCost))
             }
         }
     }
