@@ -1,0 +1,5 @@
+console-reports:
+  active: true
+
+output-reports:
+  active: false
