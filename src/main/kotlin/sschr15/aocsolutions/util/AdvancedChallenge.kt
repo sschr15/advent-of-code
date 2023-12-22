@@ -34,7 +34,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
             if (result2 != "Some other result") {
                 println("Part 2: $result2")
                 copyToClipboard(result2.toString())
-            }
+            } else copyToClipboard(result.toString()) // copy part 1 result if part 2 is not implemented
         } else {
             copyToClipboard(result.toString())
         }

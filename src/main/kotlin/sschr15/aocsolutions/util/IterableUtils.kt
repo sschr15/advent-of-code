@@ -105,3 +105,5 @@ val CharRange.range get() = last - first + 1
 val ClosedFloatingPointRange<Float>.range get() = endInclusive - start
 @get:JvmName("doubleRange")
 val ClosedFloatingPointRange<Double>.range get() = endInclusive - start
+
+fun <T> Iterable<T>.repeat(times: Int): List<T> = List(times) { this }.flatten()

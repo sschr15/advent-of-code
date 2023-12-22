@@ -60,6 +60,9 @@ fun AbstractPoint.chessDistance(other: AbstractPoint): Int = max((x() - other.x(
 
 fun AbstractPoint.toPoint() = Point(x(), y())
 
+operator fun AbstractPoint.plus(other: AbstractPoint) = Point(x() + other.x(), y() + other.y())
+operator fun AbstractPoint.minus(other: AbstractPoint) = Point(x() - other.x(), y() - other.y())
+
 interface AbstractPoint {
     fun x(): Int
     fun y(): Int
