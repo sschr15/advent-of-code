@@ -107,3 +107,21 @@ val ClosedFloatingPointRange<Float>.range get() = endInclusive - start
 val ClosedFloatingPointRange<Double>.range get() = endInclusive - start
 
 fun <T> Iterable<T>.repeat(times: Int): List<T> = List(times) { this }.flatten()
+
+infix fun IntRange.rangeIntersect(other: IntRange): IntRange? {
+    val start = maxOf(this.first, other.first)
+    val end = minOf(this.last, other.last)
+    return if (start <= end) start..end else null
+}
+
+infix fun LongRange.rangeIntersect(other: LongRange): LongRange? {
+    val start = maxOf(this.first, other.first)
+    val end = minOf(this.last, other.last)
+    return if (start <= end) start..end else null
+}
+
+infix fun CharRange.rangeIntersect(other: CharRange): CharRange? {
+    val start = maxOf(this.first, other.first)
+    val end = minOf(this.last, other.last)
+    return if (start <= end) start..end else null
+}
