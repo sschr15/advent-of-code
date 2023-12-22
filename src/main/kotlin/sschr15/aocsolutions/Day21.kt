@@ -3,8 +3,8 @@ package sschr15.aocsolutions
 import sschr15.aocsolutions.util.*
 
 /**
- * AOC 2023 [Day N](https://adventofcode.com/2023/day/N)
- * Challenge: TODO (based on the day's description)
+ * AOC 2023 [Day 21](https://adventofcode.com/2023/day/21)
+ * Challenge: The farmer elf needs to figure out where is traversable in their infinitely large field...
  */
 object Day21 : Challenge {
     @ReflectivelyUsed
