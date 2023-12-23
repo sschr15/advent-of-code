@@ -4,11 +4,11 @@ package sschr15.aocsolutions.util
 
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind.EXACTLY_ONCE
 import kotlin.contracts.contract
 import kotlin.time.Duration
 import kotlin.time.measureTime
+import kotlin.time.measureTimedValue
 
 fun challenge(year: Int, day: Int, block: AdvancedChallenge.Builder.() -> Unit): Duration {
     val builder = AdvancedChallenge.Builder()
@@ -25,14 +25,14 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     override fun solve() = measureTime {
         val lines = getChallenge(year, day, builder._splitBy)
         val challengePart = ChallengePart(lines)
-        val implicitResult = builder._p1!!.invoke(challengePart)
-        val result = challengePart._res ?: implicitResult
-        println("Part 1: $result")
+        val p1Result = measureTimedValue { builder._p1!!.invoke(challengePart) }
+        val result = challengePart._res ?: p1Result.value
+        println("Part 1: $result (calculated in ${p1Result.duration})")
         if (builder._p2 != null) {
-            val implicitResult2 = builder._p2!!.invoke(challengePart)
-            val result2 = challengePart._res ?: implicitResult2
+            val p2Result = measureTimedValue { builder._p2!!.invoke(challengePart) }
+            val result2 = challengePart._res ?: p2Result.value
             if (result2 != "Some other result") {
-                println("Part 2: $result2")
+                println("Part 2: $result2 (calculated in ${p2Result.duration})")
                 copyToClipboard(result2.toString())
             } else copyToClipboard(result.toString()) // copy part 1 result if part 2 is not implemented
         } else {

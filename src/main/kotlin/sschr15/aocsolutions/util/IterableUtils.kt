@@ -2,8 +2,15 @@
 
 package sschr15.aocsolutions.util
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.*
+import java.util.function.Consumer
+import kotlin.NoSuchElementException
 
 /**
  * A [Map] which returns non-null values for missing keys.
@@ -124,4 +131,158 @@ infix fun CharRange.rangeIntersect(other: CharRange): CharRange? {
     val start = maxOf(this.first, other.first)
     val end = minOf(this.last, other.last)
     return if (start <= end) start..end else null
+}
+
+@Suppress("UNCHECKED_CAST")
+class EmptyCollection<T> : List<T>, Set<T>, Sequence<T>, Flow<T> {
+    object EmptyIterator : ListIterator<Any?>, Spliterator<Any?> {
+        override fun forEachRemaining(action: Consumer<in Any?>) = Unit
+        override fun hasNext() = false
+        override fun hasPrevious() = false
+        override fun next() = throw NoSuchElementException("This data structure is empty")
+        override fun nextIndex() = 0
+        override fun previous() = throw NoSuchElementException("This data structure is empty")
+        override fun previousIndex() = 0
+        override fun tryAdvance(action: Consumer<in Any?>?) = false
+        override fun trySplit(): Spliterator<Any?> = this
+        override fun estimateSize() = 0L
+        override fun characteristics() = Spliterator.IMMUTABLE
+    }
+
+    override val size = 0
+    override fun contains(element: T) = false
+    override fun containsAll(elements: Collection<T>) = false
+    override fun get(index: Int): T = throw IndexOutOfBoundsException("This data structure is empty")
+    override fun indexOf(element: T) = -1
+    override fun isEmpty() = true
+    override fun iterator() = EmptyIterator as Iterator<T>
+    override fun lastIndexOf(element: T) = -1
+    override fun listIterator() = EmptyIterator as ListIterator<T>
+    override fun listIterator(index: Int) = EmptyIterator as ListIterator<T>
+    override fun spliterator() = EmptyIterator as Spliterator<T>
+    override fun subList(fromIndex: Int, toIndex: Int) = this
+    override suspend fun collect(collector: FlowCollector<T>) = Unit
+
+    companion object {
+        val instance = EmptyCollection<Any?>()
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> empty() = EmptyCollection.instance as EmptyCollection<T>
+
+class MaxStatesSet<T> private constructor(
+    private val statesToBits: Object2IntMap<T>,
+    private val statesArray: Array<T>,
+    private val currentState: BitSet
+) : MutableSet<T> {
+    constructor(states: Set<T>) : this(Object2IntOpenHashMap(states.size, 0.99f), arrayOfNulls<Any?>(states.size) as Array<T>, BitSet()) {
+        for ((i, state) in states.withIndex()) {
+            statesToBits.put(state, i)
+            statesArray[i] = state
+        }
+    }
+
+    override var size = 0
+        private set
+
+    override fun add(element: T): Boolean {
+        val idx = statesToBits.getInt(element)
+        val current = currentState[idx]
+        currentState.set(idx)
+        if (!current) size++
+        return !current
+    }
+
+    override fun addAll(elements: Collection<T>): Boolean {
+        var added = false
+        for (t in elements) {
+            val idx = statesToBits.getInt(t)
+            val current = currentState[idx]
+            added = added || current
+            currentState.set(idx)
+            if (!current) size++
+        }
+
+        return added
+    }
+
+    override fun clear() {
+        currentState.clear()
+        size = 0
+    }
+
+    override fun isEmpty() = size == 0
+
+    override fun containsAll(elements: Collection<T>) = elements.stream().mapToInt(statesToBits::getInt).allMatch(currentState::get)
+
+    override fun contains(element: T) = currentState[statesToBits.getInt(element)]
+
+    override fun iterator() = object : MutableIterator<T> {
+        var currentIndex = 0
+        var hasRemoved = true
+
+        override fun hasNext() = currentIndex != -1
+        override fun next(): T {
+            currentIndex = currentState.nextSetBit(currentIndex)
+            val presentItem = statesArray[currentIndex++]
+            hasRemoved = false
+            return presentItem
+        }
+
+        override fun remove() {
+            if (hasRemoved) throw IllegalStateException("Must call next before removal is possible")
+            currentState.clear(currentIndex - 1)
+            hasRemoved = true
+        }
+    }
+
+    override fun retainAll(elements: Collection<T>): Boolean {
+        val itr = iterator()
+        var removed = false
+        while (itr.hasNext()) {
+            if (itr.next() !in elements) {
+                itr.remove()
+                removed = true
+            }
+        }
+
+        return removed
+    }
+
+    override fun removeAll(elements: Collection<T>): Boolean {
+        val itr = iterator()
+        var removed = false
+        while (itr.hasNext()) {
+            if (itr.next() in elements) {
+                itr.remove()
+                removed = true
+            }
+        }
+
+        return removed
+    }
+
+    override fun remove(element: T): Boolean {
+        val idx = statesToBits.getInt(element)
+        if (currentState[idx]) {
+            currentState.clear(idx)
+            return true
+        }
+        return false
+    }
+
+    fun immutable() = Immutable()
+
+    inner class Immutable : Set<T> by this {
+        operator fun plus(t: T) = MaxStatesSet(statesToBits, statesArray, BitSet().also { 
+            it.or(currentState)
+            it.set(statesToBits.getInt(t))
+        }).Immutable()
+
+        operator fun minus(t: T) = MaxStatesSet(statesToBits, statesArray, BitSet().also { 
+            it.or(currentState)
+            it.clear(statesToBits.getInt(t))
+        }).Immutable()
+    }
 }
