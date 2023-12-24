@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalStdlibApi::class)
+@file:Suppress("MemberVisibilityCanBePrivate")
 
 package sschr15.aocsolutions.util
 
@@ -229,4 +230,52 @@ data class NonPointLine(val x1: Double, val x2: Double, val y1: Double, val y2: 
         val y = slope * x + yIntercept
         return Pair(x, y)
     }
+}
+
+/**
+ * A ray extending infinitely in only one direction.
+ */
+data class Ray(val startX: Double, val startY: Double, val x2: Double, val y2: Double) {
+    constructor(start: Point, end: Point) : this(start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble())
+
+    val length = sqrt((startX - x2).pow(2) + (startY - y2).pow(2))
+    val slope = (startY - y2) / (startX - x2)
+    val yIntercept = startY - slope * startX
+
+    val validXRange = if (startX < x2) startX..Double.POSITIVE_INFINITY else Double.NEGATIVE_INFINITY..startX
+    val validYRange = if (startY < y2) startY..Double.POSITIVE_INFINITY else Double.NEGATIVE_INFINITY..startY
+
+    /**
+     * Get the point at which this line intersects with the given line,
+     * `Inf, NaN` if they *would* intersect but the ray is going the wrong way,
+     * `NaN, NaN` if they are parallel,
+     * or `NaN, Inf` if they are the same line.
+     */
+    fun intersection(other: Ray): Pair<Double, Double> {
+        if (slope == other.slope) {
+            return if (yIntercept == other.yIntercept) {
+                // same line
+                Pair(Double.NaN, Double.POSITIVE_INFINITY)
+            } else {
+                // parallel lines
+                Pair(Double.NaN, Double.NaN)
+            }
+        }
+        val x = (other.yIntercept - yIntercept) / (slope - other.slope)
+        val y = slope * x + yIntercept
+        return if (x in validXRange && y in validYRange && x in other.validXRange && y in other.validYRange) {
+            Pair(x, y)
+        } else {
+            Pair(Double.POSITIVE_INFINITY, Double.NaN)
+        }
+    }
+}
+
+data class Ray3d(
+    val startX: Double, val startY: Double, val startZ: Double,
+    val x2: Double, val y2: Double, val z2: Double
+) {
+    val validXRange = if (startX < x2) startX..Double.POSITIVE_INFINITY else Double.NEGATIVE_INFINITY..startX
+    val validYRange = if (startY < y2) startY..Double.POSITIVE_INFINITY else Double.NEGATIVE_INFINITY..startY
+    val validZRange = if (startZ < z2) startZ..Double.POSITIVE_INFINITY else Double.NEGATIVE_INFINITY..startZ
 }

@@ -36,6 +36,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         "-opt-in=kotlin.ExperimentalStdlibApi", // because previously needed
         "-opt-in=kotlin.contracts.ExperimentalContracts", // contracts are cool, regardless of how experimental they are (also KTIJ-22253)
         "-opt-in=kotlin.experimental.ExperimentalTypeInference", // because OverloadResolutionByLambdaReturnType
+        "-Xcontext-receivers" // For my z3 kotlin wrapper
     )
 }
 
@@ -54,6 +55,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.12")
+
+    implementation(files("kotlin-z3-bindings.jar"))
 }
 
 afterEvaluate {
