@@ -16,8 +16,8 @@ object Day24 : Challenge {
             val min = 200000000000000.0
             val max = 400000000000000.0
             val range = if (!_test) min..max else 7.0..27.0
-            val stones = inputLines.map {
-                val (pos, vel) = it.split(" @ ")
+            val stones = inputLines.map { line ->
+                val (pos, vel) = line.split(" @ ")
                 val (x, y, _) = pos.split(", ").map { it.trim().toLong().toDouble() }
                 val (dx, dy, _) = vel.split(", ").map { it.trim().toLong().toDouble() }
 

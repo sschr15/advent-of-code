@@ -1,0 +1,64 @@
+%! Author = sschr15
+%! Date = 12/24/2023
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{amsmath,amsfonts}
+\usepackage[margin=0.5in]{geometry}
+
+% Document
+\begin{document}
+
+\section{Advent of Code 2023 - Day 24}
+\label{sec:advent-of-code-2023---day-24}
+
+Today's challenge is to break up hail disrupting the newly-restored snow production.
+
+Each hail stone is defined in the input as \texttt{x, y, z @ a, b, c} where \texttt{x, y, z} are the coordinates of
+the stone and \texttt{a, b, c} are the velocity of the stone in the \texttt{x, y, z} directions respectively.
+Each number is an integer.
+
+If not constrained to the X-Y plane, the hail stones would never intersect.
+
+\subsection{Part 1}
+\label{subsec:part-1}
+
+The challenge for Part 1 of AoC 2023 Day 24 is to find every possible pair of hail stones that, if constrained to
+the X-Y plane, would hit each other at some point in the future.
+Each hail stone can be represented as a ray in 2D space, and the intersection of two rays can be found by solving the
+system of equations and ensuring that the solution is along both rays.
+By representing each stone's travel as a ray, it ensures that the hail stones intersecting in the past are not
+counted.
+The answer to Part 1 is the number of pairs of rays that intersect.
+
+\subsection{Part 2}
+\label{subsec:part-2}
+
+The second part of the challenge is to find a single trajectory and starting location that will hit every hail stone
+    at some point.
+I found no simple programmatic solution to this problem, but I \textit{do} know the set of equations that must be solved
+    to find the solution.
+
+\subsubsection{Equations}
+\label{subsubsec:equations}
+
+Suppose a hail stone can be defined as $h_i$ for $i \in \{1, 2, \dots, n\}$, and the trajectory of the hail stone
+    can be defined as some function $h_i(t)$ for $t \in \mathbb{W}$.
+The trajectory of the rock, $r(t)$ must intersect with every hail stone at some point in time, so the following
+    equations must be satisfied:
+
+\begin{align*}
+    \forall i \in \{1, 2, \dots, n\}, \exists t_i \in \mathbb{W} \text{ such that } r(t_i) = h_i(t_i)
+\end{align*}
+
+\subsubsection{Solution}
+\label{subsubsec:solution}
+
+With information from other users online, I used Microsoft's Z3 Theorem Prover to solve this system of equations.
+By defining a starting position and velocity for the thrown rock and a $t_i$ for each hail stone's time of impact, each
+    component of the equation can be defined as a constraint.
+One final constraint is added for each $t_i$ to ensure it is non-negative, i.e.\ the hail stone is hit in the future.
+
+\end{document}
