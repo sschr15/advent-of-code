@@ -48,6 +48,19 @@ class Graph<T> {
     fun addNode(value: T, name: String? = null, ) = Node(name, value).also(nodes::add)
 
     override fun toString() = "Graph(nodes=$nodes, edges=$edges)"
+
+    fun toGraphviz() = buildString { 
+        append("digraph {\n")
+        nodes.forEach { node ->
+            append("    n_${node.name ?: node.value.hashCode()} [label=\"${node.name ?: node.value}\"];\n")
+        }
+
+        edges.forEach { edge ->
+            append("    n_${edge.from.name ?: edge.from.value.hashCode()} -> n_${edge.to.name ?: edge.to.value.hashCode()};\n")
+        }
+
+        append("}")
+    }
 }
 
 fun <T> Graph<T>.Node.bfs(): Sequence<Graph<T>.Node> {
