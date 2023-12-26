@@ -34,6 +34,8 @@ class Graph<T> {
         override fun toString(): String {
             return "Node(name=$name, value=$value, edges.size=${edges.size})"
         }
+
+        internal val parent get() = this@Graph
     }
 
     inner class Edge internal constructor(val from: Node, val to: Node, val weight: Int? = null) {
@@ -48,6 +50,18 @@ class Graph<T> {
     fun addNode(value: T, name: String? = null, ) = Node(name, value).also(nodes::add)
 
     override fun toString() = "Graph(nodes=$nodes, edges=$edges)"
+
+    fun removeNode(node: Node) {
+        nodes.remove(node)
+        edges.removeAll(node.edges.toSet())
+        node.edges.forEach { it.to.edges.remove(it.reversed()) }
+    }
+
+    fun removeEdge(edge: Edge) {
+        edges.remove(edge)
+        edge.from.edges.remove(edge)
+        edge.to.edges.remove(edge.reversed())
+    }
 
     fun toGraphviz() = buildString { 
         append("digraph {\n")
@@ -100,3 +114,32 @@ fun <T> Graph<T>.Node.dijkstra(): Map<Graph<T>.Node, Int> = dijkstra(
     { (node, _) -> node.edges.map { it.to to it.weight }.filterSecondNotNull() },
     { (_, cost) -> cost }
 ).mapKeys { it.key.first }
+
+fun <T> Graph<T>.Node.findPathTo(other: Graph<T>.Node): List<Graph<T>.Edge>? {
+    require(parent == other.parent) { "Nodes must be in the same graph" }
+
+    val visited = mutableSetOf<Graph<T>.Node>()
+    val queue = ArrayDeque<Graph<T>.Node>()
+    val path = mutableMapOf<Graph<T>.Node, Pair<Graph<T>.Node, Graph<T>.Edge>>()
+
+    queue.add(this)
+    visited.add(this)
+
+    while (queue.isNotEmpty()) {
+        val next = queue.removeFirst()
+        next.edges.filter { it.to !in visited }.forEach {
+            queue.add(it.to)
+            visited.add(it.to)
+            path[it.to] = next to it
+        }
+
+        if (next == other) {
+            return generateSequence(next to null as Graph<T>.Edge?) { path[it.first] }
+                .mapNotNull { it.second }
+                .toList()
+                .reversed()
+        }
+    }
+
+    return null // no path found
+}
