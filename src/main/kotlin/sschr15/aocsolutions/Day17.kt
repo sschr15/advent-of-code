@@ -1,74 +1,84 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
+import java.util.*
 
-/**
- * AOC 2023 [Day 17](https://adventofcode.com/2023/day/17)
- * Challenge: How do you best fuel all those metal crucibles, anyway?
- */
 object Day17 : Challenge {
     @ReflectivelyUsed
-    override fun solve() = challenge(2023, 17) {
+    override fun solve() = challenge(2022) {
 //        test()
-
-        val grid: Grid<Int>
-        val start = Point.origin
-        val end: Point
         part1 {
-            grid = inputLines.map { it.map(Char::digitToInt) }.toGrid()
-            end = Point(grid.width - 1, grid.height - 1)
-            val result = dijkstra(
-                Triple(start, Direction.East as Direction, 0),
-                { (pt, dir, count) ->
-                    if (count > 3 || pt !in grid) emptyList() else listOf(
-                        Triple(dir.mod(pt), dir, count + 1),
-                        Triple(dir.turnRight().mod(pt), dir.turnRight(), 1),
-                        Triple(dir.turnLeft().mod(pt), dir.turnLeft(), 1)
-                    )
-                },
-                { (pt, _, count) -> if (count > 3 || pt !in grid) 2 pow 24 else grid[pt] }
-            )
-            result.filterKeys { (pt, _, _) -> pt == end }.values.min()
-        }
-        part2 {
-            val result = dijkstra(
-                Triple(start, Direction.North as Direction, 0),
-                { (pt, dir, cumulativeCost) ->
-                    val list = mutableListOf<Triple<Point, Direction, Int>>()
-                    val left = dir.turnLeft()
-                    val right = dir.turnRight()
+            val jetSequence = inputLines.single().toList().looping { if (it == '<') Direction.West else Direction.East }.iterator()
+            val pieceSequence = listOf(
+                "####",
+                """
+                    .#.
+                    ###
+                    .#.
+                """.trimIndent(),
+                """
+                    ..#
+                    ..#
+                    ###
+                """.trimIndent(),
+                """
+                    #
+                    #
+                    #
+                    #
+                """.trimIndent(),
+                """
+                    ##
+                    ##
+                """.trimIndent()
+            ).looping()
+                .map { it.lines().asReversed() }
+                .map { it.flatMapIndexed { y, s -> s.mapIndexedNotNull { x, c -> 
+                    if (c == '#') Point(x, y) else null
+                } } to it.first().length and it.size }
+                .iterator()
 
-                    var leftSide = pt
-                    var leftSum = -grid[pt] // offset for adding the current point
-                    var rightSide = pt
-                    var rightSum = -grid[pt]
+            val resultingStack = Stack<List<Char>>()
 
-                    repeat(4) {
-                        leftSum += if (leftSide in grid) grid[leftSide] else 0 // fail silently
-                        leftSide = left.mod(leftSide)
-                        rightSum += if (rightSide in grid) grid[rightSide] else 0
-                        rightSide = right.mod(rightSide)
+            repeat(2022) {
+                val (piece, width, height) = pieceSequence.next()
+                var currentPosition = Point(2, resultingStack.size + 3)
+                val maxX = 7 - width
+                val currentGrid = resultingStack.toGrid()
+
+                while (true) {
+                    var new = jetSequence.next().mod(currentPosition)
+                    // coerce into legal bounds
+                    new = new.copy(x = new.x.coerceIn(0..maxX))
+
+                    val hitSomethingTryingToMove = piece.any { point ->
+                        val realPoint = point + new
+                        realPoint in currentGrid && currentGrid[realPoint] == '#'
                     }
 
-                    repeat(7) {
-                        if (leftSide in grid) {
-                            leftSum += grid[leftSide]
-                            list.add(Triple(leftSide, left, leftSum))
-                            leftSide = left.mod(leftSide)
-                        }
-                        if (rightSide in grid) {
-                            rightSum += grid[rightSide]
-                            list.add(Triple(rightSide, right, rightSum))
-                            rightSide = right.mod(rightSide)
-                        }
+                    if (!hitSomethingTryingToMove) {
+                        currentPosition = new
                     }
 
-                    list
-                },
-                { (_, _, cumulativeCost) -> cumulativeCost }
-            )
+                    val down = currentPosition.up() // "up" refers to y decreasing (but our y increases)
+                    val hitSomething = piece.any { point ->
+                        val realPoint = point + down
+                        realPoint in currentGrid && currentGrid[realPoint] == '#'
+                    } || down.y < 0
 
-            result.filterKeys { (pt, _, _) -> pt == end }.values.min()
+                    if (hitSomething) {
+                        piece.map { it + currentPosition }.forEach { (x, y) ->
+                            while (resultingStack.size <= y) resultingStack.push(".......".toList())
+                            resultingStack[y] = resultingStack[y].toMutableList().apply { this[x] = '#' }
+                        }
+                        break
+                    }
+
+                    currentPosition = down
+                }
+            }
+
+            resultingStack.size
         }
     }
 

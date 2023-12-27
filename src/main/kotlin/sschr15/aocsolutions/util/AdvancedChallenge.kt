@@ -10,6 +10,13 @@ import kotlin.time.Duration
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
+fun challenge(year: Int, block: AdvancedChallenge.Builder.() -> Unit): Duration {
+    // Infer the current day from the file name (discovered by the stack trace)
+    val theDayClass = Thread.currentThread().stackTrace.first { it.className.startsWith("sschr15.aocsolutions.Day") }
+    val day = theDayClass.className.substringAfter("Day").substringBefore(".").toInt()
+    return challenge(year, day, block)
+}
+
 fun challenge(year: Int, day: Int, block: AdvancedChallenge.Builder.() -> Unit): Duration {
     val builder = AdvancedChallenge.Builder()
     builder.block()

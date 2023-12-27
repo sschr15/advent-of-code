@@ -55,6 +55,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.12")
+    implementation("org.jgrapht:jgrapht-core:1.5.2")
 
     implementation(files("kotlin-z3-bindings.jar"))
 }

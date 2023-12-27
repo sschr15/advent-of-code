@@ -1,89 +1,92 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.*
+import sschr15.aocsolutions.util.Challenge
+import sschr15.aocsolutions.util.ReflectivelyUsed
+import sschr15.aocsolutions.util.challenge
 
-/**
- * AOC 2023 [Day 13](https://adventofcode.com/2023/day/13)
- * Challenge: Find a bunch of mirrors (so you don't run into them in such an embarrassing way)
- * 
- * but wait! the mirrors actually got smudged so now you gotta make sure you can avoid them even though they're
- * in unexpected places
- */
-object Day13 : Challenge {
-    @ReflectivelyUsed
-    override fun solve() = challenge(2023, 13) {
-        splitBy("\n\n")
-//        test()
-        part1 {
-            inputLines.sumOf {
-                val grid = it.trim().split("\n").chars().toGrid()
+private sealed class Element : Comparable<Element> {
+    data class Number(val value: Int) : Element() {
+        override fun compareTo(other: Element) = when (other) {
+            is Number -> value.compareTo(other.value)
+            is Collection -> Collection(listOf(this)).compareTo(other)
+        }
+    }
 
-                var toLeft = 1
-                outer@while (true) {
-                    var distance = 0
-                    while (true) {
-                        // check if we're at the edge
-                        if (toLeft - 1 - distance < 0) break@outer
-                        if (toLeft + distance >= grid.width) break@outer
-
-                        val leftCol = grid.getColumn(toLeft - 1 - distance)
-                        val rightCol = grid.getColumn(toLeft + distance)
-                        if (leftCol != rightCol) break // reached a mismatch
-                        distance++
+    data class Collection(val elements: List<Element>) : Element() {
+        override fun compareTo(other: Element): Int {
+            return when (other) { // type necessary because of recursive call
+                is Number -> compareTo(Collection(listOf(other)))
+                is Collection -> {
+                    val thisIterator = elements.iterator()
+                    val otherIterator = other.elements.iterator()
+                    while (thisIterator.hasNext() && otherIterator.hasNext()) {
+                        val thisNext = thisIterator.next()
+                        val otherNext = otherIterator.next()
+                        val comparison = thisNext.compareTo(otherNext)
+                        if (comparison != 0) return comparison
                     }
-                    toLeft++
+                    if (thisIterator.hasNext()) 1
+                    else if (otherIterator.hasNext()) -1
+                    else 0
                 }
-                if (toLeft != grid.width) return@sumOf toLeft
-
-                var above = 1
-                outer@while (true) {
-                    var distance = 0
-                    while (true) {
-                        if (above - 1 - distance < 0) break@outer
-                        if (above + distance >= grid.height) break@outer
-
-                        val topRow = grid.getRow(above - 1 - distance)
-                        val bottomRow = grid.getRow(above + distance)
-                        if (topRow != bottomRow) break
-                        distance++
-                    }
-                    above++
-                }
-
-                above * 100
             }
         }
-        part2 {
-            inputLines.sumOf {
-                val grid = it.trim().split("\n").chars().toGrid()
-                val columns = grid.columns()
-                val rows = grid.rows()
+    }
 
-                var toLeft = 1
-                while (true) {
-                    if (toLeft >= columns.size) break
-                    val (left, right) = columns.take(toLeft).asReversed() to columns.drop(toLeft)
-                    val diffs = left.zip(right).map { (l, r) -> l.zip(r).count { (a, b) -> a != b } }
-                    if (diffs.sum() == 1) {
-                        // exactly one difference is what we want
-                        return@sumOf toLeft
+    companion object {
+        fun parse(input: String): Element {
+            if (input == "[]") return Collection(emptyList())
+            if (!input.startsWith('['))
+                return Number(input.toInt())
+
+            val elements = mutableListOf<Element>()
+            var currentElement = ""
+            var depth = 0
+            for (char in input.substring(1, input.length - 1)) {
+                currentElement += char
+                when {
+                    char == '[' -> depth++
+                    char == ']' -> depth--
+                    char == ',' && depth == 0 -> {
+                        currentElement = currentElement.dropLast(1) // remove comma
+                        elements.add(parse(currentElement))
+                        currentElement = ""
                     }
-                    toLeft++
                 }
-
-                var above = 1
-                while (true) {
-                    if (above >= rows.size) break
-                    val (top, bottom) = rows.take(above).asReversed() to rows.drop(above)
-                    val diffs = top.zip(bottom).map { (t, b) -> t.zip(b).count { (a, b) -> a != b } }
-                    if (diffs.sum() == 1) {
-                        return@sumOf above * 100
-                    }
-                    above++
-                }
-
-                error("no solution found")
             }
+            elements.add(parse(currentElement))
+            return Collection(elements)
+        }
+    }
+}
+
+object Day13 : Challenge {
+    @ReflectivelyUsed
+    override fun solve() = challenge(2022) {
+//        test()
+        splitBy("\n\n")
+
+        part1 {
+            val lists = inputLines.map { twoLines -> 
+                val (a, b) = twoLines.trim().split("\n").map(Element::parse)
+                a to b
+            }
+
+            lists.mapIndexedNotNull { i, (a, b) -> if (a < b) i + 1 else null }.sum()
+        }
+        part2 {
+            val entries = inputLines.flatMap { twoLines ->
+                val (a, b) = twoLines.trim().split("\n").map(Element::parse)
+                listOf(a, b)
+            }.sorted()
+
+            val dividerA = Element.parse("[[2]]")
+            val dividerB = Element.parse("[[6]]")
+
+            val a = entries.indexOfFirst { it > dividerA } + 1
+            val b = entries.indexOfFirst { it > dividerB } + 2 // extra 1 because of dividerA
+
+            a * b
         }
     }
 

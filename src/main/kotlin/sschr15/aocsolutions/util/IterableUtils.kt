@@ -10,7 +10,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import java.util.function.Consumer
-import kotlin.NoSuchElementException
 
 /**
  * A [Map] which returns non-null values for missing keys.
@@ -183,7 +182,7 @@ class MaxStatesSet<T> private constructor(
         }
     }
 
-    override var size = 0
+    override var size = currentState.cardinality()
         private set
 
     override fun add(element: T): Boolean {
@@ -219,20 +218,20 @@ class MaxStatesSet<T> private constructor(
     override fun contains(element: T) = currentState[statesToBits.getInt(element)]
 
     override fun iterator() = object : MutableIterator<T> {
-        var currentIndex = 0
+        var idx = 0
         var hasRemoved = true
 
-        override fun hasNext() = currentIndex != -1
+        override fun hasNext() = currentState.nextSetBit(idx).also { idx = it } != -1
+
         override fun next(): T {
-            currentIndex = currentState.nextSetBit(currentIndex)
-            val presentItem = statesArray[currentIndex++]
+            if (!hasNext()) throw NoSuchElementException("No more elements")
             hasRemoved = false
-            return presentItem
+            return statesArray[idx++]
         }
 
         override fun remove() {
-            if (hasRemoved) throw IllegalStateException("Must call next before removal is possible")
-            currentState.clear(currentIndex - 1)
+            if (hasRemoved) throw IllegalStateException("Cannot remove the same element twice")
+            currentState.clear(idx - 1)
             hasRemoved = true
         }
     }
@@ -272,6 +271,8 @@ class MaxStatesSet<T> private constructor(
         return false
     }
 
+    override fun toString() = "MaxStatesSet(${statesArray.filterIndexed { i, _ -> currentState[i] }.joinToString(", ", "{", "}")})"
+
     fun immutable() = Immutable()
 
     inner class Immutable : Set<T> by this {
@@ -284,5 +285,41 @@ class MaxStatesSet<T> private constructor(
             it.or(currentState)
             it.clear(statesToBits.getInt(t))
         }).Immutable()
+
+        override fun toString() = statesArray.filterIndexed { i, _ -> currentState[i] }.joinToString(", ", "{", "}")
+    }
+}
+
+/**
+ * Creates a sequence with an infinite number of elements, looping through the elements of this list.
+ */
+fun <T> List<T>.looping() = object : Sequence<T> {
+    override fun iterator() = object : Iterator<T> {
+        var idx = 0
+
+        override fun hasNext() = true
+
+        override fun next(): T {
+            val result = this@looping[idx++]
+            idx %= size
+            return result
+        }
+    }
+}
+
+/**
+ * Creates a sequence with an infinite number of elements, looping through the elements of this list and transforming each element.
+ */
+inline fun <T, R> List<T>.looping(crossinline transform: (T) -> R) = object : Sequence<R> {
+    override fun iterator() = object : Iterator<R> {
+        var idx = 0
+
+        override fun hasNext() = true
+
+        override fun next(): R {
+            val result = transform(this@looping[idx++])
+            idx %= size
+            return result
+        }
     }
 }

@@ -1,89 +1,118 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.*
+import com.microsoft.z3.IntExpr
+import com.sschr15.z3kt.*
+import sschr15.aocsolutions.util.Challenge
+import sschr15.aocsolutions.util.ReflectivelyUsed
+import sschr15.aocsolutions.util.challenge
 
-/**
- * AOC 2023 [Day 21](https://adventofcode.com/2023/day/21)
- * Challenge: The farmer elf needs to figure out where is traversable in their infinitely large field...
- */
+private sealed class Monkey(val name: String) {
+    enum class Operation {
+        Plus, Minus, Times, DividedBy;
+        companion object {
+            fun fromString(string: String) = when (string) {
+                "+" -> Plus
+                "-" -> Minus
+                "*" -> Times
+                "/" -> DividedBy
+                else -> throw IllegalArgumentException("Unknown operation: $string")
+            }
+        }
+    }
+
+    class Operator(name: String, val first: String, val second: String, val operation: Operation) : Monkey(name)
+    class Number(name: String, val value: Int) : Monkey(name)
+}
+
 object Day21 : Challenge {
     @ReflectivelyUsed
-    override fun solve() = challenge(2023, 21) {
-//        test()
+    override fun solve() = challenge(2022) {
+        //        test()
 
-        fun <T> Grid<T>.getNeighborsInfinity(point: Point) =
-            listOf(point.up(), point.down(), point.left(), point.right()).associateWith {
-                Point(it.x mod width, it.y mod height)
-            }
-
-        fun Grid<*>.coercePoint(point: Point) = Point(point.x mod width, point.y mod height)
-
-        val grid: Grid<Char>
+        val monkeys: Map<String, Monkey>
         part1 {
-            grid = inputLines.toGrid()
-            var locations = setOf(grid.toPointMap().filterValues { it == 'S' }.keys.single())
-
-            repeat(64) {
-                locations = locations.asSequence()
-                    .flatMap { grid.getNeighbors(it, includeDiagonals = false).entries }
-                    .filter { it.value != '#' }
-                    .map { it.key }
-                    .map { it.toPoint() }
-                    .toSet()
+            monkeys = inputLines.associate { line ->
+                val name = line.substringBefore(": ")
+                val value = line.substringAfter(": ").split(" ")
+                val monkey = if (value.size == 1) {
+                    Monkey.Number(name, value.single().toInt())
+                } else {
+                    Monkey.Operator(name, value[0], value[2], Monkey.Operation.fromString(value[1]))
+                }
+                name to monkey
             }
 
-            locations.size
-        }
-        part2 {
-            val start = grid.toPointMap().filterValues { it == 'S' }.keys.single()
-            val everyPointValidNeighbors = grid.toPointMap().filterValues { it != '#' }.mapValues { (pt, _) ->
-                listOf(pt.up(), pt.down(), pt.left(), pt.right())
-                    .associateWith { grid.coercePoint(it) }
-                    .filterValues { grid[it] != '#' }
-                    .map { (k, v) ->
-                        when { // Pair of (point in grid, grid "offset")
-                            k.x < 0 -> v to Point(-1, 0)
-                            k.x >= grid.width -> v to Point(1, 0)
-                            k.y < 0 -> v to Point(0, -1)
-                            k.y >= grid.height -> v to Point(0, 1)
-                            else -> v to Point(0, 0)
+            z3 {
+                val monkeyExprs = mutableMapOf<String, IntExpr>()
+
+                // first pass: create all variables / constants
+                for ((name, monkey) in monkeys) {
+                    monkeyExprs[name] = when (monkey) {
+                        is Monkey.Number -> monkey.value.toZ3Int()
+                        is Monkey.Operator -> int(name)
+                    }
+                }
+
+                val model = solve {
+                    // second pass: specify all constraints (literally just solve for `root`)
+                    for ((name, monkey) in monkeys) {
+                        if (monkey !is Monkey.Operator) continue
+                        val expr = monkeyExprs.getValue(name)
+                        val first = monkeyExprs.getValue(monkey.first)
+                        val second = monkeyExprs.getValue(monkey.second)
+                        when (monkey.operation) {
+                            Monkey.Operation.Plus -> add(expr eq first + second)
+                            Monkey.Operation.Minus -> add(expr eq first - second)
+                            Monkey.Operation.Times -> add(expr eq first * second)
+                            Monkey.Operation.DividedBy -> add(expr eq first / second)
                         }
                     }
+                } ?: error("Model was deemed unsatisfiable")
+
+                val rootExpr = monkeyExprs.getValue("root")
+                model.eval(rootExpr, true).toString()
             }
+        }
+        part2 {
+            z3 {
+                val human = int("humn")
+                val monkeyExprs = mutableMapOf("humn" to human)
 
-            // each state point refers to a given copy of the grid
-            var currentState = everyPointValidNeighbors.keys.associateWith { emptySet<Point>() }.toMutableMap()
-            currentState[start] = setOf(Point.origin) // original grid
-
-            val threeValues = LongArray(3)
-            repeat(131 * 2 + 65) { i ->
-                val nextState = mutableMapOf<Point, Set<Point>>()
-                currentState.filterValues(Set<*>::isNotEmpty).forEach { (pt, current) ->
-                    val neighbors = everyPointValidNeighbors[pt]!!
-                    for ((neighbor, gridOffset) in neighbors) {
-                        val newOffsets = current.map { it + gridOffset }
-                        nextState[neighbor] = (nextState[neighbor] ?: emptySet()) + newOffsets
+                // very similar first pass, but skip the humn variable (that's what needs solving)
+                for ((name, monkey) in monkeys) {
+                    if (name == "humn") continue
+                    monkeyExprs[name] = when (monkey) {
+                        is Monkey.Number -> monkey.value.toZ3Int()
+                        is Monkey.Operator -> int(name)
                     }
                 }
 
-                currentState = nextState
+                val model = solve {
+                    // second pass also similar, but the inputs to root must now be equal instead
+                    for ((name, monkey) in monkeys) {
+                        if (monkey !is Monkey.Operator) continue
 
-                if (i % 131 == 64) {
-                    val value = currentState.values.sumOf(Set<*>::size)
-                    threeValues[i / 131] = value.toLong()
-                }
+                        if (name == "root") {
+                            val first = monkeyExprs.getValue(monkey.first)
+                            val second = monkeyExprs.getValue(monkey.second)
+                            add(first eq second)
+                            continue
+                        }
+
+                        val expr = monkeyExprs.getValue(name)
+                        val first = monkeyExprs.getValue(monkey.first)
+                        val second = monkeyExprs.getValue(monkey.second)
+                        when (monkey.operation) {
+                            Monkey.Operation.Plus -> add(expr eq first + second)
+                            Monkey.Operation.Minus -> add(expr eq first - second)
+                            Monkey.Operation.Times -> add(expr eq first * second)
+                            Monkey.Operation.DividedBy -> add(expr eq first / second)
+                        }
+                    }
+                } ?: error("Model was deemed unsatisfiable")
+
+                model.eval(human, true).toString()
             }
-
-            // funky arithmetic somehow makes it work for 26501365 steps
-            val (a, b, c) = threeValues
-            val x = 202300L // 26501365 / 131 (rounded down)
-
-            // i need to learn how this works instead of just seeing something about triangle numbers and asking others for help
-            (
-                  a
-                + (b - a) * x
-                + (c - 2 * b + a) * x * (x - 1) / 2
-            )
         }
     }
 
