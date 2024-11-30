@@ -31,7 +31,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         if (builder._p2 != null) {
             val p2Result = measureTimedValue { builder._p2!!.invoke(challengePart) }
             val result2 = challengePart._res ?: p2Result.value
-            if (result2 != "Some other result") {
+            if (result2 != "Some other result" && result2 != Unit) {
                 println("Part 2: $result2 (calculated in ${p2Result.duration})")
                 copyToClipboard(result2.toString())
             } else copyToClipboard(result.toString()) // copy part 1 result if part 2 is not implemented
