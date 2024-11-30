@@ -1,9 +1,11 @@
-import java.nio.file.Files
-import java.nio.file.Path
+
+import org.jetbrains.kotlin.gradle.internal.config.LanguageFeature
 
 plugins {
     java
-    kotlin("jvm") version "1.9.21"
+    // if kotlin is so good why isn't there a kotlin 2
+    // oh, it's here
+    kotlin("jvm") version "2.1.0"
     application
     id("io.gitlab.arturbosch.detekt") version "1.23.4"
 }
@@ -16,8 +18,9 @@ application {
 }
 
 java {
-    targetCompatibility = JavaVersion.VERSION_21
-    sourceCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -29,15 +32,32 @@ detekt {
     config.from("detekt-config.yml")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "21"
-    kotlinOptions.freeCompilerArgs = listOf(
-        "-opt-in=kotlin.time.ExperimentalTime", // KTIJ-22253 attempted fix
-        "-opt-in=kotlin.ExperimentalStdlibApi", // because previously needed
-        "-opt-in=kotlin.contracts.ExperimentalContracts", // contracts are cool, regardless of how experimental they are (also KTIJ-22253)
-        "-opt-in=kotlin.experimental.ExperimentalTypeInference", // because OverloadResolutionByLambdaReturnType
-        "-Xcontext-receivers" // For my z3 kotlin wrapper
-    )
+kotlin {
+    compilerOptions {
+        optIn.addAll(listOf( // opting in works around KTIJ-22253 and makes code a slight bit cleaner
+            "kotlin.time.ExperimentalTime",
+            "kotlin.ExperimentalStdlibApi",
+            "kotlin.contracts.ExperimentalContracts",
+            "kotlin.experimental.ExperimentalTypeInference",
+        ))
+
+        listOf(
+            "NOTHING_TO_INLINE",
+            "PropertyName",
+            "NAME_SHADOWING",
+        )
+    }
+
+    sourceSets.configureEach { 
+        languageSettings { 
+            listOf(
+                LanguageFeature.ContextReceivers, // for my z3 wrapper
+                LanguageFeature.BreakContinueInInlineLambdas, // because very useful
+                LanguageFeature.WhenGuards, // copying java's "new" switch guards
+                LanguageFeature.MultiDollarInterpolation, // just in case
+            ).forEach { enableLanguageFeature(it.toString()) }
+        }
+    }
 }
 
 dependencies {
@@ -50,32 +70,12 @@ dependencies {
     ).forEach {
         implementation(kotlin(it))
     }
-    implementation("com.sschr15.annotations:jb-annotations-kmp:24.0.1")
+    implementation("org.jetbrains:annotations:26.0.1")
     implementation("com.sschr15:templates-kt:1.0.0") // here because i want java 21 string templates
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.12")
+    implementation("org.jgrapht:jgrapht-core:1.5.2")
 
     implementation(files("kotlin-z3-bindings.jar"))
-}
-
-afterEvaluate {
-    fun path(name: String) = project.file(name).toPath()
-
-    Files.createDirectories(path("run"))
-    val isWin = "win" in System.getProperty("os.name").toLowerCase()
-    val pythonExecutable = if (isWin) "python.exe" else "python3"
-    val py3Exists = System.getenv("PATH").split(if (isWin) ";" else ":")
-        .map { Path.of(it, pythonExecutable) }
-        .filter { Files.exists(it) }
-        .map {
-            val process = ProcessBuilder(it.toString(), "--version").start()
-            process.waitFor()
-            process.inputStream.bufferedReader().readLine()
-        }
-        .any { it.startsWith("Python 3") }
-
-    if (!py3Exists) {
-        logger.error("Python 3 is not installed! Some challenges may not be solvable.")
-    }
 }
