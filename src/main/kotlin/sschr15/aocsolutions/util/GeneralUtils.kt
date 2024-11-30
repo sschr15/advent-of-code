@@ -1,10 +1,12 @@
 package sschr15.aocsolutions.util
 
+import org.jsoup.Jsoup
 import sschr15.aocsolutions.util.watched.WatchedInt
 import java.io.BufferedReader
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
+import kotlin.collections.sumOf
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -56,7 +58,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         val text = when {
             Path(it).exists() -> Path(it).readText()
             Path("$it.txt").exists() -> Path("$it.txt").readText()
-            Path("session.txt").exists() -> {
+            Path("session.txt").exists() && day in 1..25 -> {
                 println("\u001b[1;103;30mWarning\u001b[0m: Could not find challenge file for $year day $day, downloading...")
                 val session = Path("session.txt").readText().trim()
                 val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
@@ -66,6 +68,12 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
                 Path(it).writeText(result)
                 result
             }
+            Path("session.txt").exists() && day in 31..55 -> {
+                val nonTestDay = day - 30
+                println("\u001b[1;103;30mWarning\u001b[0m: Could not find test case for $year day $nonTestDay, guessing in download...")
+                attemptDownloadTest(year, nonTestDay).also { s -> Path(it).writeText(s) }
+            }
+            day !in 1..25 && day !in 31..55 -> error("Day $day is not a valid day")
             else -> error("Could not find challenge file for $year day $day")
         }.replace("\r\n", "\n") // remove crlf, it breaks too many things (thanks windows)
 
@@ -75,6 +83,22 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         // if the file ends with a newline, remove it
         if (it.last().isBlank()) it.dropLast(1) else it
     }
+
+/**
+ * Get the best guess of a challenge's test case. This isn't guaranteed to be correct.
+ */
+fun attemptDownloadTest(year: Int, day: Int): String {
+    val session = Path("session.txt").readText().trim()
+    val url = URI("https://adventofcode.com/$year/day/$day").toURL()
+    val result = url.openConnection().apply {
+        setRequestProperty("Cookie", "session=$session")
+    }.getInputStream().reader().readText()
+
+    val element = Jsoup.parse(result).select("main article pre code").first()
+    requireNotNull(element) { "No test case found" }
+
+    return element.text()
+}
 
 fun List<String>.ints() = map(String::toInt).map(::WatchedInt) // WatchedInt checks for accidental overflow and underflow
 fun List<String>.csv() = map { it.split(",") }
