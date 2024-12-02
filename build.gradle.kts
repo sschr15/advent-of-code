@@ -41,11 +41,9 @@ kotlin {
             "kotlin.experimental.ExperimentalTypeInference",
         ))
 
-        listOf(
+        freeCompilerArgs.addAll(listOf(
             "NOTHING_TO_INLINE",
-            "PropertyName",
-            "NAME_SHADOWING",
-        )
+        ).map { "-Xsuppress-warning=$it" })
     }
 
     sourceSets.configureEach { 

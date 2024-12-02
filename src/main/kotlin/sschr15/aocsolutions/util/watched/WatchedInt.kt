@@ -1,11 +1,13 @@
 package sschr15.aocsolutions.util.watched
 
+import kotlin.math.absoluteValue
+
 /**
  * A wrapper around [Int] that throws an exception if an operation would cause an overflow or underflow.
  */
 @JvmInline
-value class WatchedInt(val value: Int) {
-    operator fun compareTo(other: WatchedInt) = value.compareTo(other.value)
+value class WatchedInt(val value: Int) : Comparable<WatchedInt> {
+    override fun compareTo(other: WatchedInt) = value.compareTo(other.value)
 
     operator fun plus(other: WatchedInt): WatchedInt {
         require(value < Int.MAX_VALUE - other.value) { "Integer Overflow" }
@@ -72,6 +74,10 @@ operator fun Int.div(other: WatchedInt) = WatchedInt(this) / other
 operator fun Int.rem(other: WatchedInt) = WatchedInt(this) % other
 operator fun Int.rangeTo(other: WatchedInt) = WatchedInt(this)..other
 operator fun Int.rangeUntil(other: WatchedInt) = WatchedInt(this)..<other
+
+inline val WatchedInt.absoluteValue get() = WatchedInt(value.absoluteValue)
+
+inline operator fun Iterable<Int>.contains(value: WatchedInt) = value.value in this
 
 //region: Bitwise operators (no need to check for overflow - purely here for completeness)
 infix fun WatchedInt.and(other: WatchedInt) = WatchedInt(value and other.value)

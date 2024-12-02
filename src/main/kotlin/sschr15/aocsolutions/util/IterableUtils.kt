@@ -10,7 +10,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import java.util.function.Consumer
-import kotlin.NoSuchElementException
 
 /**
  * A [Map] which returns non-null values for missing keys.
@@ -286,3 +285,21 @@ class MaxStatesSet<T> private constructor(
         }).Immutable()
     }
 }
+
+/**
+ * Count the number of occurrences of each element in the iterable, and return the result as a map.
+ */
+fun <T> Iterable<T>.counts(): Map<T, Int> = groupingBy { it }.eachCount()
+
+class DefaultMap<K, V> internal constructor(
+    private val map: MutableMap<K, V>,
+    private val default: (K) -> V
+) : MutableMap<K, V> by map {
+    override operator fun get(key: K): V = map[key] ?: default(key)
+    override fun getOrDefault(key: K, defaultValue: V) = map.getOrDefault(key, defaultValue)
+}
+
+fun <K, V> Map<K, V>.default(default: V): DefaultMap<K, V> = DefaultMap(toMutableMap()) { default }
+fun <K, V> Map<K, V>.default(default: (K) -> V): DefaultMap<K, V> = DefaultMap(toMutableMap(), default)
+fun <K, V> Map<K, V>.default(default: () -> V): DefaultMap<K, V> = DefaultMap(toMutableMap()) { default() }
+fun <K, V> defaultMap(default: V, vararg pairs: Pair<K, V>) = mutableMapOf(*pairs).default(default)

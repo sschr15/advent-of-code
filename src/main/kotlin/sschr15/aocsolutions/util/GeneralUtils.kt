@@ -1,11 +1,13 @@
 package sschr15.aocsolutions.util
 
+import kotlinx.datetime.*
 import org.jsoup.Jsoup
 import sschr15.aocsolutions.util.watched.WatchedInt
 import java.io.BufferedReader
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
+import java.time.Month
 import kotlin.collections.sumOf
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -15,6 +17,7 @@ import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 const val maxValue = 2147483647
 
@@ -60,6 +63,18 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
             Path("$it.txt").exists() -> Path("$it.txt").readText()
             Path("session.txt").exists() && day in 1..25 -> {
                 println("\u001b[1;103;30mWarning\u001b[0m: Could not find challenge file for $year day $day, downloading...")
+
+                val date = LocalDate(year, Month.DECEMBER, day)
+                val dateTime = date.atTime(LocalTime(0, 0))
+                val puzzleReleaseInstant = dateTime.toInstant(UtcOffset(hours = -5))
+
+                val now = Clock.System.now()
+                if (now < puzzleReleaseInstant) {
+                    val timeUntilRelease = puzzleReleaseInstant - now
+                    println("Waiting for puzzle release... ($timeUntilRelease)")
+                    Thread.sleep(timeUntilRelease.toJavaDuration())
+                }
+
                 val session = Path("session.txt").readText().trim()
                 val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
                 val result = url.openConnection().apply {
@@ -76,6 +91,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
             day !in 1..25 && day !in 31..55 -> error("Day $day is not a valid day")
             else -> error("Could not find challenge file for $year day $day")
         }.replace("\r\n", "\n") // remove crlf, it breaks too many things (thanks windows)
+            .trim()
 
         // return the input as a list of lines, or as a singleton list if the separator is null
         if (separator != null) text.split(separator) else listOf(text)
