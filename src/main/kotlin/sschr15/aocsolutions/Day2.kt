@@ -3,17 +3,9 @@ package sschr15.aocsolutions
 import sschr15.aocsolutions.util.*
 import sschr15.aocsolutions.util.watched.*
 
-private enum class Report {
-    Increasing,
-    Decreasing,
-    FirstValue,
-    NoInput,
-    Unsafe
-}
-
 /**
- * AOC 2024 [Day 1](https://adventofcode.com/2024/day/1)
- * Challenge: (TODO: do this)
+ * AOC 2024 [Day 2](https://adventofcode.com/2024/day/2)
+ * Challenge: double-check that the Red-Nosed Reindeer Nuclear Fusion/Fission Plant has safe reports
  */
 object Day2 : Challenge {
     override fun solve() = challenge(2024, 2) {

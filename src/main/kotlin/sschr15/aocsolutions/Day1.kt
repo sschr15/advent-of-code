@@ -5,7 +5,7 @@ import sschr15.aocsolutions.util.watched.*
 
 /**
  * AOC 2024 [Day 1](https://adventofcode.com/2024/day/1)
- * Challenge: (TODO: do this)
+ * Challenge: Make sure two historic location lists are "close enough"
  */
 object Day1 : Challenge {
     override fun solve() = challenge(2024, 1) {
