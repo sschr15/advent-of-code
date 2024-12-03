@@ -41,10 +41,19 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
     }
 
     private fun copyToClipboard(text: String) {
-        if (System.getProperty("aoc.skip.clipboard.copy") == "true" || builder._test) return
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val selection = StringSelection(text)
-        clipboard.setContents(selection, selection)
+        if (System.getProperty("aoc.clipboard.skip") == "true" || builder._test) return
+
+        val copyUtility = System.getProperty("aoc.clipboard.cli")
+        if (copyUtility == null) {
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            val selection = StringSelection(text)
+            clipboard.setContents(selection, selection)
+        } else {
+            val process = ProcessBuilder(copyUtility)
+                .start()
+            process.outputStream.bufferedWriter().use { it.write(text) }
+            process.waitFor()
+        }
     }
 
     class ChallengePart(
@@ -75,7 +84,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         internal var _p1: (ChallengePart.() -> Any?)? = null
         internal var _p2: (ChallengePart.() -> Any?)? = null
         internal var _test = false
-        internal var _splitBy = "\n"
+        internal var _splitBy: String? = "\n"
 
         fun part1(block: ChallengePart.() -> Any?) {
             contract {
@@ -95,7 +104,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
             _test = true
         }
 
-        fun splitBy(splitBy: String) {
+        fun splitBy(splitBy: String?) {
             _splitBy = splitBy
         }
     }

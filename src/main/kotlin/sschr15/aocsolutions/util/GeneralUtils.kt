@@ -9,10 +9,7 @@ import java.net.URI
 import java.nio.file.Path
 import java.time.Month
 import kotlin.collections.sumOf
-import kotlin.io.path.Path
-import kotlin.io.path.exists
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.*
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -80,7 +77,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
                 val result = url.openConnection().apply {
                     setRequestProperty("Cookie", "session=$session")
                 }.getInputStream().reader().readText()
-                Path(it).writeText(result)
+                Path(it).apply { parent.createDirectories() }.writeText(result)
                 result
             }
             Path("session.txt").exists() && day in 31..55 -> {
