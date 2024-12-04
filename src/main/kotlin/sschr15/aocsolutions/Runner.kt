@@ -1,6 +1,6 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.Challenge
+import sschr15.aocsolutions.util.*
 
 object Runner {
     @JvmStatic
