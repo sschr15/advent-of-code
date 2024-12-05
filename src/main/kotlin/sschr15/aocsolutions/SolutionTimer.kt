@@ -4,8 +4,7 @@ import com.sschr15.templates.invoke
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import sschr15.aocsolutions.util.Challenge
-import sschr15.aocsolutions.util.stdDev
+import sschr15.aocsolutions.util.*
 import java.io.OutputStream
 import java.io.PrintStream
 import java.util.FormatProcessor.FMT
@@ -21,7 +20,7 @@ import kotlin.time.DurationUnit
 object SolutionTimer {
     @JvmStatic
     fun main(args: Array<String>) {
-        System.setProperty("aoc.skip.clipboard.copy", "true") // Copying to clipboard is slow and unnecessary
+        System.setProperty("aoc.clipboard.skip", "true") // Copying to clipboard is slow and unnecessary
 
         if (args.isNotEmpty()) {
             runDay(args[0])

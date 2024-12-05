@@ -28,14 +28,23 @@ object Day3 : Challenge {
                     if (input.substring(pos).startsWith("do()")) {
                         allow = true
                         append(' ')
-                        pos += 4
+                        pos += 3
                     } else if (input.substring(pos).startsWith("don't()")) {
                         allow = false
                         append(' ')
-                        pos += 7
+                        pos += 6
+                    } else if (!allow) {
+                        pos = input.indexOf('d', pos + 1)
+                        if (pos == -1) break
                     } else {
-                        if (allow) append(input[pos])
-                        pos++
+                        val newPos = input.indexOf('d', pos + 1)
+                        if (newPos == -1) {
+                            append(input.substring(pos))
+                            break
+                        } else {
+                            append(input.substring(pos, newPos))
+                            pos = newPos
+                        }
                     }
                 }
             }
