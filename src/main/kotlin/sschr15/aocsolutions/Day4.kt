@@ -16,32 +16,32 @@ object Day4 : Challenge {
                     Point::up, Point::down, Point::left, Point::right,
                     { p: Point -> p.up().left() }, { p: Point -> p.down().left() }, { p: Point -> p.up().right() }, { p: Point -> p.down().right() }
                 ).count { next ->
-                    next(next(next(point))) in this && get(point).lowercase() == "x" &&
-                    get(next(point)).lowercase() == "m" && get(next(next(point))).lowercase() == "a" &&
-                    get(next(next(next(point)))).lowercase() == "s"
+                    next(next(next(point))) in this && get(point) == 'X' &&
+                    get(next(point)) == 'M' && get(next(next(point))) == 'A' &&
+                    get(next(next(next(point)))) == 'S'
                 }
 
             inputLines.toGrid().let { it.toPointMap().keys.sumOf { p -> it.findXmas(p) } }
         }
         part2 {
             fun Grid<Char>.findXmas(point: Point): Boolean {
-                if (point !in this || get(point).lowercase() != "a") return false
+                if (point !in this || get(point) != 'A') return false
                 if (point.up() !in this || point.left() !in this || point.down() !in this || point.right() !in this) return false
 
-                val topLeft = get(point.up().left()).lowercaseChar()
-                val topRight = get(point.up().right()).lowercaseChar()
-                val bottomLeft = get(point.down().left()).lowercaseChar()
-                val bottomRight = get(point.down().right()).lowercaseChar()
+                val topLeft = get(point.up().left())
+                val topRight = get(point.up().right())
+                val bottomLeft = get(point.down().left())
+                val bottomRight = get(point.down().right())
 
                 when (topLeft) {
-                    'm' -> if (bottomRight != 's') return false
-                    's' -> if (bottomRight != 'm') return false
+                    'M' -> if (bottomRight != 'S') return false
+                    'S' -> if (bottomRight != 'M') return false
                     else -> return false
                 }
 
                 when (topRight) {
-                    'm' -> if (bottomLeft != 's') return false
-                    's' -> if (bottomLeft != 'm') return false
+                    'M' -> if (bottomLeft != 'S') return false
+                    'S' -> if (bottomLeft != 'M') return false
                     else -> return false
                 }
 
