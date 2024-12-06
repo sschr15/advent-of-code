@@ -3,8 +3,8 @@ package sschr15.aocsolutions
 import sschr15.aocsolutions.util.*
 
 /**
- * AOC 2024 [Day 1](https://adventofcode.com/2024/day/1)
- * Challenge: Make sure two historic location lists are "close enough"
+ * AOC 2024 [Day 6](https://adventofcode.com/2024/day/6)
+ * Challenge: cause a temporary time loop in the past!
  */
 object Day6 : Challenge {
     override fun solve() = challenge(2024, 6) {
@@ -40,18 +40,44 @@ object Day6 : Challenge {
         }
         part2 {
             val possibleCollisionPoints = grid.toPointMap().filterValues { it == 'X' }
-            val newGrid = inputLines.toGrid()
 
-            var possibilities = mutableListOf<Point>()
-            for ((point) in possibleCollisionPoints) {
-                newGrid[point] = '#'
-                if (!checkForEscape(start, newGrid, false)) {
-                    possibilities.add(point)
-                }
-                newGrid[point] = '.'
+//            val newGrid = inputLines.toGrid()
+//
+//            var possibilities = mutableListOf<Point>()
+//            for ((point) in possibleCollisionPoints) {
+//                newGrid[point] = '#'
+//                if (!checkForEscape(start, newGrid, false)) {
+//                    possibilities.add(point)
+//                }
+//                newGrid[point] = '.'
+//            }
+//
+//            possibilities.size
+
+            val result = object {
+                var count = 0
             }
 
-            possibilities.size
+            val divvied = possibleCollisionPoints.keys.chunked(possibleCollisionPoints.size / 16)
+            val threads = divvied.map { chunk ->
+                Thread {
+                    val newGrid = grid.toGrid() // copy
+                    var count = 0
+                    for (point in chunk) {
+                        newGrid[point] = '#'
+                        if (!checkForEscape(start, newGrid, false)) count++
+                        newGrid[point] = '.'
+                    }
+                    synchronized(result) {
+                        result.count += count
+                    }
+                }
+            }
+
+            threads.forEach { it.start() }
+            threads.forEach { it.join() }
+
+            result.count
         }
     }
 

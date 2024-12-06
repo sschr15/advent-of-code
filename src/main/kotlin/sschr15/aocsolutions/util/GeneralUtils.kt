@@ -24,7 +24,9 @@ interface Challenge {
     fun solve(): Duration
 }
 
-sealed class Direction(val mod: (Point) -> Point) {
+sealed class Direction {
+    abstract fun mod(point: AbstractPoint): Point
+
     fun turnLeft() = when (this) {
         North -> West
         South -> East
@@ -39,10 +41,21 @@ sealed class Direction(val mod: (Point) -> Point) {
         East -> South
     }
 
-    object North : Direction(Point::up)
-    object South : Direction(Point::down)
-    object West : Direction(Point::left)
-    object East : Direction(Point::right)
+    object North : Direction() {
+        override fun mod(point: AbstractPoint) = point.up()
+    }
+
+    object South : Direction() {
+        override fun mod(point: AbstractPoint) = point.down()
+    }
+
+    object West : Direction() {
+        override fun mod(point: AbstractPoint) = point.left()
+    }
+
+    object East : Direction() {
+        override fun mod(point: AbstractPoint) = point.right()
+    }
 
     override fun toString() = this::class.simpleName!![0].toString()
 }
