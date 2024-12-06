@@ -15,6 +15,7 @@ import kotlin.io.path.exists
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 object SolutionTimer {
@@ -29,6 +30,7 @@ object SolutionTimer {
 
         // Run all the challenges
         try {
+            System.setProperty("aoc.timeout", "5s") // Running tests synchronously, decrease wait time
             repeat(25) {
                 runDay("Day${it + 1}")
                 println()
@@ -60,13 +62,11 @@ object SolutionTimer {
         // Run the challenge many times
         val actualTestStart = Clock.System.now()
         val times = mutableListOf<Duration>()
-        run outer@{
-            repeat(1000) {
-                // fun fact: you can return from broader scopes when in (certain) lambdas
-                if (Clock.System.now() - actualTestStart > 5.minutes) return@outer // stop after 5 minutes (extremely slow solutions)
 
-                times.add(challenge.solve())
-            }
+        val timeout = System.getProperty("aoc.timeout")?.let(Duration::parse) ?: 30.seconds
+
+        while (Clock.System.now() - actualTestStart < timeout || (times.size < 250 && Clock.System.now() - actualTestStart < 5.minutes)) {
+            times.add(challenge.solve())
         }
 
         // Re-enable output
@@ -91,8 +91,17 @@ object SolutionTimer {
         // to skirt around Kotlin's direct injection of variables into strings.
         println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
 
-        if (times.size < 1000) {
-            println("Skipped ${1000 - times.size} runs due to slow solutions")
+        if (times.size > 500) {
+            println("(${times.size} runs)")
+        } else if (times.size > 100) {
+            // Yellow: starting to get slow
+            println("\u001B[33m(${times.size} runs)\u001B[0m")
+        } else if (times.size > 10) {
+            // Red: quite slow
+            println("\u001B[31m(${times.size} runs)\u001B[0m")
+        } else {
+            // Highlighted red: extraordinarily, outrageously, preposterously slow
+            println("\u001B[41m(${times.size} runs, very slow)\u001B[0m")
         }
 
         // Store prep times to a file
