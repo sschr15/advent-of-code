@@ -13,7 +13,7 @@ object Day6 : Challenge {
             var dir: Direction = Direction.North
             var i = 0
 
-            while (pt in grid && i++ < grid.width * grid.height * 10) {
+            while (pt in grid && i++ < 10_000) {
                 if (dir.mod(pt) in grid && grid[dir.mod(pt)] == '#') {
                     dir = dir.turnRight()
                 } else {
@@ -40,15 +40,15 @@ object Day6 : Challenge {
         }
         part2 {
             val possibleCollisionPoints = grid.toPointMap().filterValues { it == 'X' }
-            val freshGrid = { inputLines.toGrid() }
+            val newGrid = inputLines.toGrid()
 
             var possibilities = mutableListOf<Point>()
             for ((point) in possibleCollisionPoints) {
-                val newGrid = freshGrid()
                 newGrid[point] = '#'
                 if (!checkForEscape(start, newGrid, false)) {
                     possibilities.add(point)
                 }
+                newGrid[point] = '.'
             }
 
             possibilities.size
