@@ -22,7 +22,7 @@ object Day5 : Challenge {
             val lists: List<List<WatchedInt>> = inputLines[1].split("\n").map { it.split(",").ints() }
             val updates = lists.partition { list ->
                 list.mapIndexed { i, pg ->
-                    requirements[pg]?.all { prio -> prio !in list.subList(i, list.size) }
+                    requirements[pg]?.none { prio -> prio in list.subList(i, list.size) }
                 }.all { it != false }
             }
             invalid = updates.second

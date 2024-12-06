@@ -7,14 +7,13 @@ plugins {
     // oh, it's here
     kotlin("jvm") version "2.1.0"
     application
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
 }
 
 group = "sschr15"
 version = "1.0-SNAPSHOT"
 
 application {
-    mainClass.set("sschr15.aocsolutions.MainKt")
+    mainClass = "sschr15.aocsolutions.MainKt"
 }
 
 java {
@@ -25,11 +24,6 @@ java {
 
 repositories {
     mavenCentral()
-}
-
-detekt {
-    buildUponDefaultConfig = false
-    config.from("detekt-config.yml")
 }
 
 kotlin {
