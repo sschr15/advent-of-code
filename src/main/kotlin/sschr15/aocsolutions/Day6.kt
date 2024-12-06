@@ -9,23 +9,25 @@ import sschr15.aocsolutions.util.*
 object Day6 : Challenge {
     override fun solve() = challenge(2024, 6) {
         fun checkForEscape(start: Point, grid: Grid<Char>, write: Boolean): Boolean {
-            var pt = start
+            var pt = start.toMutablePoint()
             var dir: Direction = Direction.North
             var i = 0
 
-            while (pt in grid && i++ < 10_000) {
-                if (dir.mod(pt) in grid && grid[dir.mod(pt)] == '#') {
+            var ptInGrid = pt in grid
+            while (ptInGrid && i++ < 10_000) {
+                pt.move(dir)
+                ptInGrid = pt in grid
+                if (ptInGrid && grid[pt] == '#') {
+                    pt.moveBack(dir)
                     dir = dir.turnRight()
                 } else {
-                    if (write) {
+                    if (write && ptInGrid) {
                         grid[pt] = 'X'
                     }
-
-                    pt = dir.mod(pt)
                 }
             }
 
-            return pt !in grid
+            return !ptInGrid
         }
 
         val grid: Grid<Char>
@@ -36,7 +38,7 @@ object Day6 : Challenge {
 
             require(checkForEscape(start, grid, true))
 
-            grid.sumOf { it.count { c -> c == 'X' } }
+            grid.sumOf { it.count { c -> c == 'X' } } + 1 // add 1 for the start point
         }
         part2 {
             val possibleCollisionPoints = grid.toPointMap().filterValues { it == 'X' }

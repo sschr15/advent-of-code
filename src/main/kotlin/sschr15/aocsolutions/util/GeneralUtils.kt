@@ -2,13 +2,11 @@ package sschr15.aocsolutions.util
 
 import kotlinx.datetime.*
 import org.jsoup.Jsoup
-import sschr15.aocsolutions.util.watched.WatchedInt
 import java.io.BufferedReader
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.time.Month
-import kotlin.collections.sumOf
 import kotlin.io.path.*
 import kotlin.math.floor
 import kotlin.math.pow
@@ -126,14 +124,12 @@ fun attemptDownloadTest(year: Int, day: Int): String {
     return element.text()
 }
 
-fun List<String>.ints() = map(String::toInt).map(::WatchedInt) // WatchedInt checks for accidental overflow and underflow
+fun List<String>.ints() = map(String::toInt).map { sschr15.aocsolutions.util.watched.WatchedInt(it) } // WatchedInt checks for accidental overflow and underflow
 fun List<String>.csv() = map { it.split(",") }
 
 class Grid<T> private constructor(private val data: MutableList<MutableList<T>>) : Iterable<Iterable<T>> {
-    val height: Int
-        get() = data.size
-    val width: Int
-        get() = data.firstOrNull()?.size ?: 0
+    val height: Int = data.size
+    val width: Int = data.firstOrNull()?.size ?: 0
 
     fun getRow(row: Int) = data[row]
     fun getColumn(col: Int) = data.map { it[col] }.toMutableList()
@@ -147,7 +143,8 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         data[point.y()][point.x()] = value
     }
 
-    operator fun contains(point: AbstractPoint) = point.x() in 0..<width && point.y() in 0..<height
+    operator fun contains(point: AbstractPoint) =
+        point.x().let { it >= 0 && it < width } && point.y().let { it >= 0 && it < height }
 
     fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<AbstractPoint, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)

@@ -55,14 +55,58 @@ fun AbstractPoint.left() = Point(x() - 1, y())
 fun AbstractPoint.right() = Point(x() + 1, y())
 
 /**
+ * Get a mutable copy of this point.
+ */
+fun AbstractPoint.toMutablePoint() = MutablePoint(x(), y())
+
+/**
+ * Get an immutable copy of this point.
+ */
+fun AbstractPoint.toPoint() = Point(x(), y())
+
+/**
  * Get the chess-board equivalent distance between two points.
  */
 fun AbstractPoint.chessDistance(other: AbstractPoint): Int = max((x() - other.x()).absoluteValue, (y() - other.y()).absoluteValue)
 
-fun AbstractPoint.toPoint() = Point(x(), y())
-
 operator fun AbstractPoint.plus(other: AbstractPoint) = Point(x() + other.x(), y() + other.y())
 operator fun AbstractPoint.minus(other: AbstractPoint) = Point(x() - other.x(), y() - other.y())
+
+/**
+ * Move this point in the given direction.
+ */
+fun MutablePoint.move(direction: AbstractPoint.Direction) {
+    x += direction.dx
+    y += direction.dy
+}
+
+/**
+ * Move this point in the given direction.
+ */
+fun MutablePoint.move(direction: Direction) = when (direction) {
+    Direction.North -> y--
+    Direction.South -> y++
+    Direction.East -> x++
+    Direction.West -> x--
+}
+
+/**
+ * Move this point in the opposite direction.
+ */
+fun MutablePoint.moveBack(direction: AbstractPoint.Direction) {
+    x -= direction.dx
+    y -= direction.dy
+}
+
+/**
+ * Move this point in the opposite direction.
+ */
+fun MutablePoint.moveBack(direction: Direction) = when (direction) {
+    Direction.North -> y++
+    Direction.South -> y--
+    Direction.East -> x--
+    Direction.West -> x++
+}
 
 interface AbstractPoint {
     fun x(): Int

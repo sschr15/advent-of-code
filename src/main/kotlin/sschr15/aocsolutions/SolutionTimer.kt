@@ -79,7 +79,21 @@ object SolutionTimer {
         val min = times.min()
         val max = times.max()
 
-        println("Times for day ${day.substring(3)}:")
+        print("Times for day ${day.substring(3)} ")
+
+        if (times.size > 500) {
+            println("(${times.size} runs):")
+        } else if (times.size > 100) {
+            // Yellow: starting to get slow
+            println("\u001B[33m(${times.size} runs)\u001B[0m:")
+        } else if (times.size > 10) {
+            // Red: quite slow
+            println("\u001B[31m(${times.size} runs)\u001B[0m:")
+        } else {
+            // Highlighted red: extraordinarily, outrageously, preposterously slow
+            println("\u001B[41m(${times.size} runs, very slow)\u001B[0m:")
+        }
+
         println("Average: $average")
         println("Min: $min")
         println("Max: $max")
@@ -90,19 +104,6 @@ object SolutionTimer {
         // The exclamation point in this version is for my templates-kt library, in order
         // to skirt around Kotlin's direct injection of variables into strings.
         println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
-
-        if (times.size > 500) {
-            println("(${times.size} runs)")
-        } else if (times.size > 100) {
-            // Yellow: starting to get slow
-            println("\u001B[33m(${times.size} runs)\u001B[0m")
-        } else if (times.size > 10) {
-            // Red: quite slow
-            println("\u001B[31m(${times.size} runs)\u001B[0m")
-        } else {
-            // Highlighted red: extraordinarily, outrageously, preposterously slow
-            println("\u001B[41m(${times.size} runs, very slow)\u001B[0m")
-        }
 
         // Store prep times to a file
         val prepFile = Path("prep_times.txt")
