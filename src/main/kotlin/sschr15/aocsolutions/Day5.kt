@@ -11,33 +11,34 @@ object Day5 : Challenge {
     override fun solve() = challenge(2024, 5) {
 //        test()
         splitBy("\n\n")
-        val dependents: Map<WatchedInt, List<WatchedInt>>
+
+        val requirements: Map<WatchedInt, List<WatchedInt>>
         val invalid: List<List<WatchedInt>>
         part1 {
-            dependents = inputLines.first().split("\n").map { it.split("|").ints() }
-                .groupBy { (a) -> a }
-                .mapValues { (_, v) -> v.map { ints -> ints[1] } }
-
-            val lists: List<List<WatchedInt>> = inputLines[1].split("\n").map { it.split(",").ints() }
-            val updates = lists.groupBy { 
-                it.mapIndexed { i, pg -> dependents[pg]?.all { prio -> prio !in it.subList(0, i) } }
-                    .all { it != false }
-            }
-            val valid = updates[true]!!
-            invalid = updates[false]!!
-            valid.sumOf { it[it.size / 2] }
-        }
-        part2 {
-            val requirements = inputLines.first().split("\n").map { it.split("|").ints() }
+            requirements = inputLines.first().split("\n").map { it.split("|").ints() }
                 .groupBy { (_, a) -> a }
                 .mapValues { (_, v) -> v.map { ints -> ints[0] } }
 
+            val lists: List<List<WatchedInt>> = inputLines[1].split("\n").map { it.split(",").ints() }
+            val updates = lists.partition { list ->
+                list.mapIndexed { i, pg ->
+                    requirements[pg]?.all { prio -> prio !in list.subList(i, list.size) }
+                }.all { it != false }
+            }
+            invalid = updates.second
+            updates.first.sumOf { it[it.size / 2] }
+        }
+        part2 {
             invalid.map {
-                val dependencies = it.groupBy { i ->
-                    requirements[i]?.filter { req -> req in it }?.size
+                val asSet = it.toSet()
+                val dependencies = asSet.groupBy { i ->
+                    requirements[i]
+                        ?.filter { req -> req in asSet }
+                        ?.size
                         ?: 0
                 }
-                dependencies.entries.sortedBy { (k, v) -> k }
+                dependencies.entries
+                    .sortedBy { (k) -> k }
                     .flatMap { (_, v) -> v }
             }.sumOf { it[it.size / 2] }
         }
