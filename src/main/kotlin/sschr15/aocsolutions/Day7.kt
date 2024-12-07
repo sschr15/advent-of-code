@@ -67,33 +67,40 @@ object Day7 : Challenge {
                 .divided(System.getProperty("aoc.threads")?.toInt() ?: 16)
                 .map { threadLines ->
                     thread {
-                        val sum = threadLines.filter {
-                            val (answer, values) = it.split(": ")
+                        val sum = threadLines.sumOf { s ->
+                            val (answer, values) = s.split(": ")
                             val valueInts = values.split(" ").map(String::toLong)
                             val answerInt = answer.toLong()
 
                             fun testSolution(bits: Int): Boolean {
-                                val bitSet = bits.toString(3).padEnd(valueInts.size, '0')
-                                return valueInts.reduceIndexed { i, acc, int -> 
-                                    when (bitSet[i]) {
-                                        '0' -> acc * int
-                                        '1' -> acc + int
-                                        '2' -> "$acc$int".toLong()
-                                        else -> error("Unexpected")
+                                var remaining = bits / 3
+                                var current = bits % 3
+
+                                var acc = valueInts[0]
+
+                                for (i in 1..<valueInts.size) {
+                                    acc = when (current) {
+                                        0 -> acc * valueInts[i]
+                                        1 -> acc + valueInts[i]
+                                        2 -> "$acc${valueInts[i]}".toLong()
+                                        else -> error("Unexpected non-ternary digit")
                                     }
-                                } == answerInt
+
+                                    current = remaining % 3
+                                    remaining /= 3
+                                }
+
+                                return acc == answerInt
                             }
 
                             var i = 0
                             while (log(i.toDouble(), 3.0) < valueInts.size) {
                                 if (testSolution(i++)) {
-                                    return@filter true
+                                    return@sumOf answerInt
                                 }
                             }
 
-                            false
-                        }.sumOf {
-                            it.substringBefore(':').toLong()
+                            0L
                         }
 
                         synchronized(result) {
