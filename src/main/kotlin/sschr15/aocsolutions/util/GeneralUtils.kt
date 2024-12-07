@@ -353,6 +353,19 @@ infix fun Int.mod(other: Int) = (this % other + other) % other
 fun pow(base: Number, exponent: Number) = base.toDouble().pow(exponent.toDouble())
 
 fun powi(base: Int, exponent: Int): Int {
+    // Special bases can always succeed (or fail for 0^0)
+    if (base == 0) return if (exponent == 0) throw ArithmeticException("Undefined 0^0") else 0
+    if (base == 1) return 1
+    if (base == -1) return if (exponent and 1 == 0) 1 else -1
+
+    // negative exponents result in fractions (not possible), and large exponents are just *too* large
+    if (exponent < 0) throw IllegalArgumentException("Exponent must be non-negative")
+    if (exponent >= 32) throw ArithmeticException("Overflow")
+
+    // One last special base: 2
+    if (base == 2) return 1 shl exponent
+
+    // Otherwise, exponentiation by squaring (usually a pretty good solution)
     var base = base
     var exponent = exponent
     var result = 1
@@ -368,14 +381,14 @@ fun powi(base: Int, exponent: Int): Int {
 }
 
 fun powi(base: Long, exponent: Int): Long {
-    // Special bases can always succeed (or fail for 0^0)
     if (base == 0L) return if (exponent == 0) throw ArithmeticException("Undefined 0^0") else 0
     if (base == 1L) return 1
     if (base == -1L) return if (exponent and 1 == 0) 1 else -1
 
-    // negative exponents result in fractions (not possible), and large exponents are just *too* large
     if (exponent < 0) throw IllegalArgumentException("Exponent must be non-negative")
     if (exponent >= 64) throw ArithmeticException("Overflow")
+
+    if (base == 2L) return 1L shl exponent
 
     var base = base
     var exponent = exponent
