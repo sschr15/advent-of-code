@@ -303,3 +303,21 @@ fun <K, V> Map<K, V>.default(default: V): DefaultMap<K, V> = DefaultMap(toMutabl
 fun <K, V> Map<K, V>.default(default: (K) -> V): DefaultMap<K, V> = DefaultMap(toMutableMap(), default)
 fun <K, V> Map<K, V>.default(default: () -> V): DefaultMap<K, V> = DefaultMap(toMutableMap()) { default() }
 fun <K, V> defaultMap(default: V, vararg pairs: Pair<K, V>) = mutableMapOf(*pairs).default(default)
+
+/**
+ * Similar to [Iterable.chunked], but instead of creating a dynamic number of lists of a given size,
+ * creates a fixed number of lists of a dynamic size.
+ */
+fun <T> List<T>.divided(divisions: Int): List<List<T>> {
+    val chunkSize = (size + divisions - 1) / divisions
+    return chunked(chunkSize)
+}
+
+/**
+ * Similar to [Iterable.chunked], but instead of creating a dynamic number of lists of a given size,
+ * creates a fixed number of lists of a dynamic size.
+ */
+fun <T, R> List<T>.divided(divisions: Int, transform: (List<T>) -> R): List<R> {
+    val chunkSize = (size + divisions - 1) / divisions
+    return chunked(chunkSize, transform)
+}
