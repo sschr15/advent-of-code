@@ -72,3 +72,12 @@ dependencies {
 
     implementation(files("kotlin-z3-bindings.jar"))
 }
+
+tasks {
+    val benchmark by registering(JavaExec::class) {
+        group = "application"
+        description = "Run SolutionTimer, benchmarking every solution"
+        mainClass = "sschr15.aocsolutions.SolutionTimer"
+        classpath = sourceSets["main"].runtimeClasspath
+    }
+}
