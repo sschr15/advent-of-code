@@ -82,7 +82,21 @@ object Day7 : Challenge {
                                     acc = when (current) {
                                         0 -> acc * valueInts[i]
                                         1 -> acc + valueInts[i]
-                                        2 -> "$acc${valueInts[i]}".toLong()
+//                                        2 -> "$acc${valueInts[i]}".toLong() // 300ms
+//                                        2 -> { // 135ms
+//                                            val n = valueInts[i]
+//                                            val digits = log10iSmall(n)
+//                                            acc * (10L.pow(digits + 1)) + n
+//                                        }
+                                        2 -> { // 120ms
+                                            var a = acc
+                                            var b = valueInts[i]
+                                            while (b > 0) {
+                                                a *= 10
+                                                b /= 10
+                                            }
+                                            a + valueInts[i]
+                                        }
                                         else -> error("Unexpected non-ternary digit")
                                     }
 

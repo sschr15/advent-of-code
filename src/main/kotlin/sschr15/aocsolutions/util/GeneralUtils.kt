@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING", "unused", "NOTHING_TO_INLINE")
+
 package sschr15.aocsolutions.util
 
 import kotlinx.datetime.*
@@ -8,6 +10,7 @@ import java.net.URI
 import java.nio.file.Path
 import java.time.Month
 import kotlin.io.path.*
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -348,9 +351,47 @@ operator fun Int.div(other: Boolean) = if (other) this else throw ArithmeticExce
 infix fun Int.mod(other: Int) = (this % other + other) % other
 
 fun pow(base: Number, exponent: Number) = base.toDouble().pow(exponent.toDouble())
-fun powi(base: Number, exponent: Number) = base.toDouble().pow(exponent.toDouble()).toInt()
 
-infix fun Int.pow(other: Int) = powi(this, other)
+fun powi(base: Int, exponent: Int): Int {
+    var base = base
+    var exponent = exponent
+    var result = 1
+    while (exponent != 0) {
+        if (exponent and 1 != 0) {
+            result *= base
+        }
+        base *= base
+        exponent = exponent ushr 1
+    }
+
+    return result
+}
+
+fun powi(base: Long, exponent: Int): Long {
+    // Special bases can always succeed (or fail for 0^0)
+    if (base == 0L) return if (exponent == 0) throw ArithmeticException("Undefined 0^0") else 0
+    if (base == 1L) return 1
+    if (base == -1L) return if (exponent and 1 == 0) 1 else -1
+
+    // negative exponents result in fractions (not possible), and large exponents are just *too* large
+    if (exponent < 0) throw IllegalArgumentException("Exponent must be non-negative")
+    if (exponent >= 64) throw ArithmeticException("Overflow")
+
+    var base = base
+    var exponent = exponent
+    var result = 1L
+    while (exponent != 0) {
+        if (exponent and 1 != 0) {
+            result *= base
+        }
+        base *= base
+        exponent = exponent ushr 1
+    }
+
+    return result
+}
+
+fun Long.pow(exponent: Int) = powi(this, exponent)
 
 fun Iterable<Number>.stdDev(): Double {
     val mean = sumOf { it.toDouble() } / count()
@@ -360,8 +401,8 @@ fun Iterable<Number>.stdDev(): Double {
 
 fun Double.floorToInt() = floor(this).toInt()
 fun Double.floorToLong() = floor(this).toLong()
-fun Double.ceilingToInt() = toInt() + if (this > toInt()) 1 else 0 // positives need 1 more, negatives get truncated to the ceiling
-fun Double.ceilingToLong() = toLong() + if (this > toLong()) 1 else 0
+fun Double.ceilingToInt() = ceil(this).toInt()
+fun Double.ceilingToLong() = ceil(this).toLong()
 
 class RecursiveCaller<T, R>(val f: RecursiveCaller<T, R>.(T) -> R) {
     fun recurse(value: T): R = f(value)
@@ -385,3 +426,98 @@ inline fun <A, B, R> memoized(crossinline f: RecursiveCaller<Pair<A, B>, R>.(A, 
 inline fun <A, B, C, R> memoized(crossinline f: RecursiveCaller<Triple<A, B, C>, R>.(A, B, C) -> R): (Triple<A, B, C>) -> R = memoized { (a, b, c) -> f(a, b, c) }
 
 infix fun <A, B, C> Pair<A, B>.and(c: C) = Triple(first, second, c)
+
+/**
+ * Calculate the integer logarithm of a number. Efficient for small numbers.
+ */
+fun logiSmall(n: Int, base: Int): Int {
+    if (n == 1) return 0
+
+    var i = 0
+    var p = 1
+    while (p <= n) {
+        p *= base
+        i++
+    }
+    return i - 1
+}
+
+/**
+ * Calculate the integer logarithm-base-10 of a number. Efficient for small numbers.
+ */
+fun log10iSmall(n: Int): Int {
+    if (n == 1) return 0
+
+    var i = 0
+    var p = 1
+    while (p <= n) {
+        p *= 10
+        i++
+    }
+    return i - 1
+}
+
+/**
+ * Calculate the integer logarithm-base-10 of a number. Reasonably efficient for all numbers,
+ * but [log10iSmall] is more efficient for small numbers.
+ */
+fun log10i(n: Int): Int {
+    // The master of if statements
+    // first, divide at e4 (giving less detriment to small numbers)
+    return if (n >= 10_000) {
+        // divide at e7
+        if (n >= 10_000_000) {
+            // check e7, e8, and e9 uniquely
+            when {
+                n >= 1_000_000_000 -> 9
+                n >= 100_000_000 -> 8
+                else -> 7
+            }
+        } else { // n < e7
+            // check e4, e5, and e6 uniquely
+            when {
+                n >= 1_000_000 -> 6
+                n >= 100_000 -> 5
+                else -> 4
+            }
+        }
+    } else { // n < e4
+        // check e1, e2, and e3 (bonus: e0)
+        when {
+            n >= 1_000 -> 3
+            n >= 100 -> 2
+            n >= 10 -> 1
+            else -> 0
+        }
+    }
+}
+
+/**
+ * Calculate the integer logarithm of a number. Efficient for small numbers.
+ */
+fun logiSmall(n: Long, base: Long): Int {
+    if (n == 1L) return 0
+
+    var i = 0
+    var p = 1L
+    while (p <= n) {
+        p *= base
+        i++
+    }
+    return i - 1
+}
+
+/**
+ * Calculate the integer logarithm-base-10 of a number. Efficient for small numbers.
+ */
+fun log10iSmall(n: Long): Int {
+    if (n == 1L) return 0
+
+    var i = 0
+    var p = 1L
+    while (p <= n) {
+        p *= 10
+        i++
+    }
+    return i - 1
+}
