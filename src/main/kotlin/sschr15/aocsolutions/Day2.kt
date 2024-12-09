@@ -11,12 +11,17 @@ object Day2 : Challenge {
     override fun solve() = challenge(2024, 2) {
 //        test()
         fun checkLine(nums: List<WatchedInt>): Boolean {
-            var direction: Boolean? = null
-            var prev = nums.first()
-            for (next in nums.drop(1)) {
-                when (prev - next) {
-                    in -3..-1 -> if (direction == null) direction = true else if (!direction) return false
-                    in 1..3 -> if (direction == null) direction = false else if (direction) return false
+            var direction = when ((nums[1] - nums[0]).value) {
+                -3, -2, -1 -> true
+                1, 2, 3 -> false
+                else -> return false
+            }
+
+            var prev = nums[1]
+            for (next in nums.subList(2, nums.size)) {
+                when ((prev - next).value) {
+                    -3, -2, -1 -> if (!direction) return false
+                    1, 2, 3 -> if (direction) return false
                     else -> return false
                 }
                 prev = next
@@ -33,7 +38,7 @@ object Day2 : Challenge {
             inputLines.count { line ->
                 val nums = line.split(' ').ints()
                 checkLine(nums) || nums.indices.any { 
-                    checkLine(nums.take(it) + nums.drop(it + 1))
+                    checkLine(nums.subList(0, it) + nums.subList(it + 1, nums.size))
                 }
             }
         }

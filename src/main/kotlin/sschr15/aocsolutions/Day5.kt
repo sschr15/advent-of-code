@@ -12,35 +12,35 @@ object Day5 : Challenge {
 //        test()
         splitBy("\n\n")
 
-        val requirements: Map<WatchedInt, List<WatchedInt>>
+        val requirements: Map<WatchedInt, Set<WatchedInt>>
         val invalid: List<List<WatchedInt>>
         part1 {
             requirements = inputLines.first().split("\n").map { it.split("|").ints() }
-                .groupBy { (_, a) -> a }
-                .mapValues { (_, v) -> v.map { ints -> ints[0] } }
+                .groupBy({ (_, a) -> a }) { (i) -> i }
+                .mapValues { (_, list) -> list.toSet() }
 
             val lists: List<List<WatchedInt>> = inputLines[1].split("\n").map { it.split(",").ints() }
             val updates = lists.partition { list ->
-                list.mapIndexed { i, pg ->
-                    requirements[pg]?.none { prio -> prio in list.subList(i, list.size) }
-                }.all { it != false }
+                list.asSequence().allIndexed { i, pg ->
+                    val reqs = requirements[pg] ?: return@allIndexed true
+                    list.subList(i, list.size).none { it in reqs }
+                }
             }
             invalid = updates.second
             updates.first.sumOf { it[it.size / 2] }
         }
         part2 {
-            invalid.map {
+            invalid.asSequence().sumOf {
                 val asSet = it.toSet()
-                val dependencies = asSet.groupBy { i ->
+                asSet.groupBy { i ->
                     requirements[i]
-                        ?.filter { req -> req in asSet }
-                        ?.size
+                        ?.count { req -> req in asSet }
                         ?: 0
-                }
-                dependencies.entries
+                }.entries
                     .sortedBy { (k) -> k }
                     .flatMap { (_, v) -> v }
-            }.sumOf { it[it.size / 2] }
+                    .let { it[it.size / 2] }
+            }
         }
     }
 

@@ -63,10 +63,17 @@ object SolutionTimer {
         val actualTestStart = Clock.System.now()
         val times = mutableListOf<Duration>()
 
-        val timeout = System.getProperty("aoc.timeout")?.let(Duration::parse) ?: 30.seconds
+        val runCount = System.getProperty("aoc.runs")?.toInt()
+        if (runCount == null) {
+            val timeout = System.getProperty("aoc.timeout")?.let(Duration::parse) ?: 30.seconds
 
-        while (Clock.System.now() - actualTestStart < timeout || (times.size < 250 && Clock.System.now() - actualTestStart < 5.minutes)) {
-            times.add(challenge.solve())
+            while (Clock.System.now() - actualTestStart < timeout || (times.size < 250 && Clock.System.now() - actualTestStart < 5.minutes)) {
+                times.add(challenge.solve())
+            }
+        } else {
+            repeat(runCount) {
+                times.add(challenge.solve())
+            }
         }
 
         // Re-enable output

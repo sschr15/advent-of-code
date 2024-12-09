@@ -166,9 +166,9 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
      *     34
      * This example will create a map of `(0, 0) to 1, (0, 1) to 2, (1, 0) to 3, (1, 1) to 4`.
      */
-    fun toPointMap() = data.mapIndexed { y, row ->
+    fun toPointMap() = data.flatMapIndexed { y, row ->
         row.mapIndexed { x, value -> Point(x, y) to value }
-    }.flatten().toMap()
+    }.toMap()
 
     fun columns(): List<List<T>> = (0 until width).map { getColumn(it) }
     fun rows(): List<List<T>> = data

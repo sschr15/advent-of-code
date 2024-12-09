@@ -14,7 +14,7 @@ object Day3 : Challenge {
         val regex = Regex("""mul\((\d{1,3}),(\d{1,3})\)""")
         part1 {
             val input = inputLines.single()
-            regex.findAll(input).toList().sumOf { 
+            regex.findAll(input).sumOf { 
                 val (a, b) = it.groupValues.drop(1).ints()
                 a * b
             }
@@ -49,7 +49,7 @@ object Day3 : Challenge {
                 }
             }
 
-            regex.findAll(sanitized).toList().sumOf {
+            regex.findAll(sanitized).sumOf {
                 val (a, b) = it.groupValues.drop(1).ints()
                 a * b
             }

@@ -321,3 +321,36 @@ fun <T, R> List<T>.divided(divisions: Int, transform: (List<T>) -> R): List<R> {
     val chunkSize = (size + divisions - 1) / divisions
     return chunked(chunkSize, transform)
 }
+
+inline fun <T> Iterable<T>.countIndexed(predicate: (Int, T) -> Boolean): Int {
+    var count = 0
+    var index = 0
+    for (element in this) {
+        if (predicate(index++, element)) count++
+    }
+    return count
+}
+
+inline fun <T> Iterable<T>.allIndexed(predicate: (Int, T) -> Boolean): Boolean {
+    var index = 0
+    for (element in this) {
+        if (!predicate(index++, element)) return false
+    }
+    return true
+}
+
+inline fun <T> Iterable<T>.anyIndexed(predicate: (Int, T) -> Boolean): Boolean {
+    var index = 0
+    for (element in this) {
+        if (predicate(index++, element)) return true
+    }
+    return false
+}
+
+inline fun <T> Iterable<T>.noneIndexed(predicate: (Int, T) -> Boolean): Boolean {
+    var index = 0
+    for (element in this) {
+        if (predicate(index++, element)) return false
+    }
+    return true
+}

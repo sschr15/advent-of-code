@@ -17,8 +17,7 @@ object Day8 : Challenge {
             signals = grid.toPointMap()
                 .filterValues { it != '.' }
                 .entries
-                .groupBy { (_, c) -> c }
-                .mapValues { (_, l) -> l.map { it.key } }
+                .groupBy({ (_, c) -> c }) { (p) -> p }
 
             for (pts in signals.values) {
                 pts.combinations(2).forEach { (p1, p2) ->
@@ -52,7 +51,6 @@ object Day8 : Challenge {
                 }
             }
 
-//            println(grid.stringify())
             grid.sumOf { row -> row.count { it == '#' } }
         }
     }
