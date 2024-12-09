@@ -86,13 +86,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
                     Thread.sleep(timeUntilRelease.toJavaDuration())
                 }
 
-                val session = Path("session.txt").readText().trim()
-                val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
-                val result = url.openConnection().apply {
-                    setRequestProperty("Cookie", "session=$session")
-                }.getInputStream().reader().readText()
-                Path(it).apply { parent.createDirectories() }.writeText(result)
-                result
+                downloadPuzzle(year, day)
             }
             Path("session.txt").exists() && day in 31..55 -> {
                 val nonTestDay = day - 30
@@ -110,6 +104,16 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
         // if the file ends with a newline, remove it
         if (it.last().isBlank()) it.dropLast(1) else it
     }
+
+internal fun downloadPuzzle(year: Int, day: Int): String {
+    val session = Path("session.txt").readText().trim()
+    val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
+    val result = url.openConnection().apply {
+        setRequestProperty("Cookie", "session=$session")
+    }.getInputStream().reader().readText()
+    Path("inputs/$year/day$day").apply { parent.createDirectories() }.writeText(result)
+    return result
+}
 
 /**
  * Get the best guess of a challenge's test case. This isn't guaranteed to be correct.

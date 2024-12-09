@@ -80,6 +80,7 @@ class AdvancedChallenge(private val year: Int, private val day: Int, private val
         }
     }
 
+    @Suppress("LEAKED_IN_PLACE_LAMBDA", "WRONG_INVOCATION_KIND") // lying for fun and profit
     class Builder {
         internal var _p1: (ChallengePart.() -> Any?)? = null
         internal var _p2: (ChallengePart.() -> Any?)? = null

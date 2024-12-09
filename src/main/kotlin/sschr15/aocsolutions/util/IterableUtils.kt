@@ -97,8 +97,8 @@ operator fun <T> A2d<T>.get(point: AbstractPoint) = this[point.y()][point.x()]
 fun <T> I1d<T>.combinations(count: Int): List<List<T>> {
     if (count == 0) return emptyList()
     if (count == 1) return this.map { listOf(it) }
-    if (count == 2) return this.mapIndexed { i, t -> this.drop(i + 1).map { listOf(t, it) } }.flatten()
-    return this.mapIndexed { i, t -> this.drop(i + 1).combinations(count - 1).map { listOf(t) + it } }.flatten()
+    if (count == 2) return this.flatMapIndexed { i, t -> this.drop(i + 1).map { listOf(t, it) } }
+    return this.flatMapIndexed { i, t -> this.drop(i + 1).combinations(count - 1).map { listOf(t) + it } }
 }
 
 fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
