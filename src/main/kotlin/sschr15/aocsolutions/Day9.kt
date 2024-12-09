@@ -30,55 +30,39 @@ object Day9 : Challenge {
             storage.take(storage.indexOf(-1)).mapIndexed { i, id -> i.toLong() * id }.sum()
         }
         part2 {
+            data class Data(var start: Int, val size: Int, val id: Int) : Comparable<Data> {
+                override fun compareTo(other: Data) = start.compareTo(other.start)
+                inline val end get() = start + size
+            }
+
             var id = 0
-            val storage = inputLines.drop(1).dropLastWhile { it == "\n" }.mapIndexed { i, c ->
-                c.toInt() to if (i % 2 == 1) -1 else id++
+            var currentPos = 0
+            val storage = inputLines.drop(1).dropLastWhile { it == "\n" }.mapIndexedNotNull { i, c -> 
+                val size = c.toInt()
+                val data = if (i % 2 == 1 || size == 0) null else Data(currentPos, size, id++)
+                currentPos += size
+                data
             }.toMutableList()
 
-            fun recombine() {
-                var i = -1
-                while (++i < storage.size) {
-                    if (storage[i].second != -1) continue
-                    if (i != storage.size - 1 && storage[i + 1].second == -1) {
-                        val (a) = storage[i]
-                        val (b) = storage[i + 1]
-                        storage[i] = a + b to -1
-                        storage.removeAt(i-- + 1)
+            for (block in storage.reversed()) {
+                var j = 0
+                val currentIndex = storage.indexOf(block)
+                while (j < currentIndex) {
+                    val a = storage[j]
+                    val b = storage[j + 1]
+                    if (b.start - a.end >= block.size) {
+                        storage.add(block.copy(start = a.end))
+                        storage.remove(block)
+                        storage.sort()
+                        break
                     }
+                    j++
                 }
             }
 
-            var workDone: Boolean
-            outer@while (true) {
-                workDone = false
-                var location = storage.lastIndex
-                while (location > 0) {
-                    val file = storage[location--]
-                    if (file.second == -1) continue
-
-                    val firstOpenBlock = storage.indexOfFirst { (sz, id) -> id == -1 && sz >= file.first }
-                    if (firstOpenBlock != -1 && firstOpenBlock <= location) {
-                        val (avail) = storage.removeAt(firstOpenBlock)
-                        val idx = storage.indexOf(file)
-                        storage.add(idx, file.first to -1)
-                        storage.remove(file)
-                        storage.add(firstOpenBlock, file)
-                        storage.add(firstOpenBlock + 1, avail - file.first to -1)
-                        workDone = true
-                        continue@outer
-                    }
-                }
-
-                if (!workDone) break@outer
-
-                recombine()
+            storage.sumOf {
+                (it.start..<it.end).sumOf { i -> i.toLong() * it.id }
             }
-
-            storage.asSequence()
-                .flatMap { (sz, id) -> listOf(id).repeat(sz) }
-                .mapIndexed { i, id -> id.toLong() * i }
-                .filter { i -> i > 0 }
-                .sum()
         }
     }
 
