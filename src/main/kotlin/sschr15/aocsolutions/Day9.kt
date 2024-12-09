@@ -14,20 +14,21 @@ object Day9 : Challenge {
 
         part1 {
             var id = 0
-            val storage = inputLines.drop(1).dropLastWhile { it == "\n" }.flatMapIndexed { i, c -> 
+            val storage = inputLines.dropLastWhile { it == "\n" }.asSequence().drop(1).flatMapIndexed { i, c -> 
                 listOf(if (i % 2 == 1) -1 else id++).repeat(c.toInt())
             }.toMutableList()
 
             var currentEnd = storage.indexOfLast { it != -1 }
-            while (-1 in storage.subList(0, currentEnd + 1)) {
-                val firstAvailable = storage.indexOf(-1)
+            var firstAvailable = storage.indexOf(-1)
+            while (firstAvailable < currentEnd) {
                 val lastUnavailable = currentEnd--
                 storage[firstAvailable] = storage[lastUnavailable]
                 storage[lastUnavailable] = -1
                 while (storage[currentEnd] == -1) currentEnd--
+                firstAvailable += storage.subList(firstAvailable, storage.size).indexOf(-1)
             }
 
-            storage.take(storage.indexOf(-1)).mapIndexed { i, id -> i.toLong() * id }.sum()
+            storage.subList(0, currentEnd + 1).sumOfIndexed { i, id -> i.toLong() * id }
         }
         part2 {
             data class Data(var start: Int, val size: Int, val id: Int) : Comparable<Data> {
@@ -37,7 +38,7 @@ object Day9 : Challenge {
 
             var id = 0
             var currentPos = 0
-            val storage = inputLines.drop(1).dropLastWhile { it == "\n" }.mapIndexedNotNull { i, c -> 
+            val storage = inputLines.dropLastWhile { it == "\n" }.asSequence().drop(1).mapIndexedNotNull { i, c -> 
                 val size = c.toInt()
                 val data = if (i % 2 == 1 || size == 0) null else Data(currentPos, size, id++)
                 currentPos += size
@@ -51,9 +52,8 @@ object Day9 : Challenge {
                     val a = storage[j]
                     val b = storage[j + 1]
                     if (b.start - a.end >= block.size) {
-                        storage.add(block.copy(start = a.end))
+                        storage.add(j + 1, block.copy(start = a.end))
                         storage.remove(block)
-                        storage.sort()
                         break
                     }
                     j++
