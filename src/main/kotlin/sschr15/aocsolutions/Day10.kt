@@ -34,23 +34,22 @@ object Day10 : Challenge {
             nines.values.sumOf { it.count() }
         }
         part2 {
-            val currentPaths = ArrayDeque(starts.keys.map { listOf(it) to it })
-            val trails = mutableMapOf<Pair<Point, Point>, MutableSet<List<Point>>>()
+            val currentPoints = ArrayDeque(starts.keys)
+            var nines = 0
 
-            while (currentPaths.isNotEmpty()) {
-                val (path, start) = currentPaths.removeFirst()
-                val pt = path.last()
+            while (currentPoints.isNotEmpty()) {
+                val pt = currentPoints.removeFirst()
                 val height = grid[pt]
                 if (height == 9) {
-                    trails.getOrPut(start to pt) { mutableSetOf() }.add(path)
+                    nines++
                     continue
                 }
 
                 val adjacent = grid.getNeighbors(pt, includeDiagonals = false)
-                currentPaths.addAll(adjacent.mapNotNull { (pt, h) -> if (h != height + 1) return@mapNotNull null else path + pt to start })
+                currentPoints.addAll(adjacent.mapNotNull { (pt, h) -> if (h == height + 1) pt else null })
             }
 
-            trails.values.sumOf { it.count() }
+            nines
         }
     }
 
