@@ -153,7 +153,7 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
     operator fun contains(point: AbstractPoint) =
         point.x().let { it >= 0 && it < width } && point.y().let { it >= 0 && it < height }
 
-    fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<AbstractPoint, T> {
+    fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
             .filter { it.x() in 0 until width && it.y() in 0 until height } // only get points in the grid
         return points.associateWith { this[it] }
@@ -206,7 +206,7 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
                 AbstractPoint::down,
                 AbstractPoint::left,
                 AbstractPoint::right,
-            ) + if (includeDiagonals) listOf<(AbstractPoint) -> AbstractPoint>(
+            ) + if (includeDiagonals) listOf<(AbstractPoint) -> Point>(
                 { it.up().left() },
                 { it.up().right() },
                 { it.down().left() },
