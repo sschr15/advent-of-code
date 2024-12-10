@@ -153,9 +153,9 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
     operator fun contains(point: AbstractPoint) =
         point.x().let { it >= 0 && it < width } && point.y().let { it >= 0 && it < height }
 
-    fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1): Map<Point, T> {
+    fun getNeighbors(point: AbstractPoint, includeDiagonals: Boolean = false, searchDistance: Int = 1): Map<Point, T> {
         val points = getNeighboringPoints(point, includeDiagonals, searchDistance)
-            .filter { it.x() in 0 until width && it.y() in 0 until height } // only get points in the grid
+            .filter { it.x() in 0..<width && it.y() in 0..<height } // only get points in the grid
         return points.associateWith { this[it] }
     }
 
@@ -200,24 +200,36 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
          * @param includeDiagonals should points diagonal to that point be included?
          * @return a list of neighboring points
          */
-        fun getNeighboringPoints(point: AbstractPoint, includeDiagonals: Boolean = true, searchDistance: Int = 1) =
-            (listOf(
-                AbstractPoint::up,
-                AbstractPoint::down,
-                AbstractPoint::left,
-                AbstractPoint::right,
-            ) + if (includeDiagonals) listOf<(AbstractPoint) -> Point>(
-                { it.up().left() },
-                { it.up().right() },
-                { it.down().left() },
-                { it.down().right() },
-            ) else emptyList()).flatMap { buildList {
-                var prev = point
+        fun getNeighboringPoints(point: AbstractPoint, includeDiagonals: Boolean = false, searchDistance: Int = 1): List<Point> {
+            val points = mutableListOf<Point>()
+            val directions =
+                listOf(AbstractPoint.Direction.LTR, AbstractPoint.Direction.RTL, AbstractPoint.Direction.TTB, AbstractPoint.Direction.BTT)
+            for (dir in directions) {
+                var current = point.toPoint()
                 repeat(searchDistance) {
-                    prev = it(prev)
-                    add(prev)
+                    current = dir.next(current)
+                    points.add(current)
                 }
-            } }
+            }
+
+            if (includeDiagonals) {
+                val diagonals = listOf(
+                    AbstractPoint.Direction.BL_TR,
+                    AbstractPoint.Direction.BR_TL,
+                    AbstractPoint.Direction.TL_BR,
+                    AbstractPoint.Direction.TR_BL,
+                )
+                for (dir in diagonals) {
+                    var current = point.toPoint()
+                    repeat(searchDistance) {
+                        current = dir.next(current)
+                        points.add(current)
+                    }
+                }
+            }
+
+            return points
+        }
     }
 
     override fun iterator(): Iterator<Iterable<T>> = data.iterator()
