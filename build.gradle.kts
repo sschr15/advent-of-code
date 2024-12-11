@@ -1,4 +1,6 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.internal.config.LanguageFeature
 
 plugins {
@@ -6,6 +8,7 @@ plugins {
     // if kotlin is so good why isn't there a kotlin 2
     // oh, it's here
     kotlin("jvm") version "2.1.0"
+    kotlin("plugin.power-assert") version "2.1.0"
     application
 }
 
@@ -24,6 +27,11 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+powerAssert {
+    functions = listOf("kotlin.assert", "kotlin.require", "kotlin.check")
+    includedSourceSets = listOf("main")
 }
 
 kotlin {
