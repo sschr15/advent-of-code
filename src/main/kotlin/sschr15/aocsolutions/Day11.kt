@@ -12,46 +12,38 @@ object Day11 : Challenge {
 
         splitBy(" ")
 
-        var state: List<Long>
-        part1 {
-            state = inputLines.map { it.toLong() }
-            repeat(25) {
-                val newState = mutableListOf<Long>()
-                for (s in state) {
-                    if (s == 0L) {
-                        newState.add(1)
-                    } else if (log10iSmall(s) % 2 == 1) {
-                        val half = (log10iSmall(s) + 1) / 2
-                        val pow10 = powi(10, half)
-                        newState.add(s / pow10)
-                        newState.add(s % pow10)
-                    } else {
-                        newState.add(s * 2024)
-                    }
+        fun iterate(existing: Map<Long, Long>): Map<Long, Long> {
+            val newState = mutableMapOf<Long, Long>().default(0)
+            for ((s, n) in existing.entries) {
+                if (s == 0L) {
+                    newState[1] += n
+                } else if (log10iSmall(s) % 2 == 1) {
+                    val half = (log10iSmall(s) + 1) / 2
+                    val pow10 = powi(10, half)
+                    newState[s / pow10] += n
+                    newState[s % pow10] += n
+                } else {
+                    newState[s * 2024] += n
                 }
-                state = newState
-//                println(state.joinToString(" "))
             }
-            state.size
+
+            return newState
+        }
+
+        var state: Map<Long, Long>
+        part1 {
+            state = inputLines.map { it.toLong() }.counts().mapValues { (_, v) -> v.toLong() }
+
+            repeat(25) {
+                state = iterate(state)
+            }
+            state.values.sum()
         }
         part2 {
-            var state1 = inputLines.map { it.toLong() }.counts().mapValues { (_, v) -> v.toLong() }
-            repeat(75) {
-                val newState = mutableMapOf<Long, Long>().default(0)
-                for ((s, n) in state1.entries) {
-                    if (s == 0L) newState[1L] += n
-                    else if (log10iSmall(s) % 2 == 1) {
-                        val half = (log10iSmall(s) + 1) / 2
-                        val pow10 = powi(10, half)
-                        newState[s / pow10] += n
-                        newState[s % pow10] += n
-                    } else {
-                        newState[s * 2024] += n
-                    }
-                }
-                state1 = newState
+            repeat(50) {
+                state = iterate(state)
             }
-            state1.values.sum()
+            state.values.sum()
         }
     }
 
