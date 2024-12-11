@@ -27,8 +27,7 @@ object Day10 : Challenge {
                     continue
                 }
 
-                val adjacent = grid.getNeighbors(pt, includeDiagonals = false)
-                currentLocations.addAll(adjacent.mapNotNull { (pt, h) -> if (h == height + 1) pt to start else null })
+                currentLocations.addAll(pt.neighborsIn(grid).mapNotNull { if (grid[pt] == height + 1) it to start else null })
             }
 
             nines.values.sumOf { it.count() }
@@ -45,8 +44,7 @@ object Day10 : Challenge {
                     continue
                 }
 
-                val adjacent = grid.getNeighbors(pt, includeDiagonals = false)
-                currentPoints.addAll(adjacent.mapNotNull { (pt, h) -> if (h == height + 1) pt else null })
+                currentPoints.addAll(pt.neighborsIn(grid).filter { grid[it] == height + 1 })
             }
 
             nines

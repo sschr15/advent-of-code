@@ -237,6 +237,12 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
 
 fun <T> Iterable<Iterable<T>>.toGrid() = Grid(this.toList().map { it.toList() })
 
+fun Point.neighborsIn(grid: Grid<*>, includeDiagonals: Boolean = false, searchDistance: Int = 1) =
+    Grid.getNeighboringPoints(this, includeDiagonals, searchDistance).filter { it in grid }
+
+fun Point.neighbors(includeDiagonals: Boolean = false, searchDistance: Int = 1) =
+    Grid.getNeighboringPoints(this, includeDiagonals, searchDistance)
+
 /**
  * Perform a binary tree traversal to get an index.
  * @param items a list of instructions
