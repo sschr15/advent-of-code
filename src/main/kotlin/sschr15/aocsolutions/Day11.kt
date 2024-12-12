@@ -6,7 +6,8 @@ import java.math.BigInteger
 
 /**
  * AOC 2024 [Day 11](https://adventofcode.com/2024/day/11)
- * Challenge: 
+ * Challenge: what if [lanternfish](https://adventofcode.com/2021/day/6) were actually stones
+ * that change when you blink? (not to be confused with weeping angels)
  */
 object Day11 : Challenge {
     override fun solve() = challenge(2024, 11) {
@@ -47,6 +48,7 @@ object Day11 : Challenge {
             }
             state.values.sum()
 
+            // Bonus: a really big version by reason of taking the puzzle to its logical conclusion
             try { assert(false) } catch (_: AssertionError) {
                 var longRunningState = inputLines.map { it.toLong().w }.counts().mapValues { (_, v) -> v.toBigInteger() }
                 val zero = 0.toBigInteger()
