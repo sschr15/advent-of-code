@@ -1,6 +1,5 @@
 package sschr15.aocsolutions
 
-import com.sschr15.z3kt.get
 import com.sschr15.z3kt.int
 import com.sschr15.z3kt.solve
 import com.sschr15.z3kt.z3
@@ -27,8 +26,8 @@ object Day13 : Challenge {
                 match.groupValues.drop(1).map(String::toInt).toIntArray()
             }
 
-            prizeList.sumOf { (ax, ay, bx, by, px, py) ->
-                z3 {
+            z3 {
+                prizeList.sumOf { (ax, ay, bx, by, px, py) ->
                     val aPresses by int
                     val bPresses by int
 
@@ -40,13 +39,13 @@ object Day13 : Challenge {
                     }
                     if (result == null) return@sumOf 0
 
-                    result.evaluate((result[aPresses] * 3 + result[bPresses]), true).toInt()
+                    result.evaluate(aPresses * 3 + bPresses, true).toLong()
                 }
             }
         }
         part2 {
-            prizeList.sumOf { (ax, ay, bx, by, px, py) ->
-                z3 {
+            z3 {
+                prizeList.sumOf { (ax, ay, bx, by, px, py) ->
                     val aPresses by int
                     val bPresses by int
 
@@ -58,7 +57,7 @@ object Day13 : Challenge {
                     }
                     if (result == null) return@sumOf 0
 
-                    result.evaluate((result[aPresses] * 3 + result[bPresses]), true).toLong()
+                    result.evaluate(aPresses * 3 + bPresses, true).toLong()
                 }
             }
         }

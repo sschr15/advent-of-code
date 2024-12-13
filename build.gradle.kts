@@ -78,7 +78,7 @@ dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.2")
     implementation("org.jsoup:jsoup:1.15.3")
 
-    implementation(files("kotlin-z3-bindings.jar"))
+    implementation(files("z3/kotlin-z3-wrapper.jar"))
 }
 
 tasks {
