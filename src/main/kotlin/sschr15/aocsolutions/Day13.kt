@@ -7,7 +7,7 @@ import sschr15.aocsolutions.util.*
 
 /**
  * AOC 2024 [Day 13](https://adventofcode.com/2024/day/13)
- * Challenge: TODO
+ * Challenge: let's win some prizes! it's going to take *a lot* of tokens
  */
 object Day13 : Challenge {
     override fun solve() = challenge(2024, 13) {
