@@ -1,7 +1,6 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
-import sschr15.aocsolutions.util.watched.*
 import java.math.BigInteger
 
 /**
@@ -50,16 +49,16 @@ object Day11 : Challenge {
 
             // Bonus: a really big version by reason of taking the puzzle to its logical conclusion
             try { assert(false) } catch (_: AssertionError) {
-                var longRunningState = inputLines.map { it.toLong().w }.counts().mapValues { (_, v) -> v.toBigInteger() }
+                var longRunningState = inputLines.map { it.toLong() }.counts().mapValues { (_, v) -> v.toBigInteger() }
                 val zero = 0.toBigInteger()
 
                 repeat(100000) {
-                    val newState = mutableMapOf<WatchedLong, BigInteger>().default(zero)
+                    val newState = mutableMapOf<Long, BigInteger>().default(zero)
                     for ((s, n) in longRunningState.entries) {
-                        if (s == 0L.w) {
-                            newState[1L.w] += n
-                        } else if (log10iSmall(s.value) % 2 == 1) {
-                            val half = (log10iSmall(s.value) + 1) / 2
+                        if (s == 0L) {
+                            newState[1L] += n
+                        } else if (log10iSmall(s) % 2 == 1) {
+                            val half = (log10iSmall(s) + 1) / 2
                             val pow10 = 10L.pow(half.toInt())
                             newState[s / pow10] += n
                             newState[s % pow10] += n

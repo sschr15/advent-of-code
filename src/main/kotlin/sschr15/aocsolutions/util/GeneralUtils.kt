@@ -131,7 +131,8 @@ fun attemptDownloadTest(year: Int, day: Int): String {
     return element.text()
 }
 
-fun List<String>.ints() = map(String::toInt).map { sschr15.aocsolutions.util.watched.WatchedInt(it) } // WatchedInt checks for accidental overflow and underflow
+fun List<String>.ints() = map(String::toInt)
+fun List<String>.longs() = map(String::toLong)
 fun List<String>.csv() = map { it.split(",") }
 
 class Grid<T> private constructor(private val data: MutableList<MutableList<T>>) : Iterable<Iterable<T>> {

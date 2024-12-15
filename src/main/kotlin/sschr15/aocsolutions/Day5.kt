@@ -1,7 +1,6 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
-import sschr15.aocsolutions.util.watched.*
 
 /**
  * AOC 2024 [Day 5](https://adventofcode.com/2024/day/5)
@@ -12,14 +11,14 @@ object Day5 : Challenge {
 //        test()
         splitBy("\n\n")
 
-        val requirements: Map<WatchedInt, Set<WatchedInt>>
-        val invalid: List<List<WatchedInt>>
+        val requirements: Map<Int, Set<Int>>
+        val invalid: List<List<Int>>
         part1 {
             requirements = inputLines.first().split("\n").map { it.split("|").ints() }
                 .groupBy({ (_, a) -> a }) { (i) -> i }
                 .mapValues { (_, list) -> list.toSet() }
 
-            val lists: List<List<WatchedInt>> = inputLines[1].split("\n").map { it.split(",").ints() }
+            val lists: List<List<Int>> = inputLines[1].split("\n").map { it.split(",").ints() }
             val updates = lists.partition { list ->
                 list.asSequence().allIndexed { i, pg ->
                     val reqs = requirements[pg] ?: return@allIndexed true

@@ -1,6 +1,7 @@
 package sschr15.aoc.annotations
 
 fun plus(a: Int, b: Int): Int {
+    if (b < 0) return minus(a, -b)
     if (a > Int.MAX_VALUE - b) {
         throw ArithmeticException("Integer Overflow")
     } else if (a < Int.MIN_VALUE + b) {
@@ -10,6 +11,7 @@ fun plus(a: Int, b: Int): Int {
 }
 
 fun minus(a: Int, b: Int): Int {
+    if (b < 0) return plus(a, -b)
     if (a < Int.MIN_VALUE + b) {
         throw ArithmeticException("Integer Underflow")
     } else if (a > Int.MAX_VALUE - b) {
@@ -43,6 +45,7 @@ fun dec(a: Int): Int {
 }
 
 fun plus(a: Long, b: Long): Long {
+    if (b < 0) return minus(a, -b)
     if (a > Long.MAX_VALUE - b) {
         throw ArithmeticException("Long Overflow")
     } else if (a < Long.MIN_VALUE + b) {
@@ -52,6 +55,7 @@ fun plus(a: Long, b: Long): Long {
 }
 
 fun minus(a: Long, b: Long): Long {
+    if (b < 0) return plus(a, -b)
     if (a < Long.MIN_VALUE + b) {
         throw ArithmeticException("Long Underflow")
     } else if (a > Long.MAX_VALUE - b) {

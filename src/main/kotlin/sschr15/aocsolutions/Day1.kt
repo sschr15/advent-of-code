@@ -1,7 +1,7 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
-import sschr15.aocsolutions.util.watched.*
+import kotlin.math.absoluteValue
 
 /**
  * AOC 2024 [Day 1](https://adventofcode.com/2024/day/1)
@@ -9,9 +9,9 @@ import sschr15.aocsolutions.util.watched.*
  */
 object Day1 : Challenge {
     override fun solve() = challenge(2024, 1) {
-        val parts: List<List<WatchedInt>>
-        val a: List<WatchedInt>
-        val b: List<WatchedInt>
+        val parts: List<List<Int>>
+        val a: List<Int>
+        val b: List<Int>
         part1 {
             parts = inputLines.map { it.split("   ").ints() }
             a = parts.map { it[0] }

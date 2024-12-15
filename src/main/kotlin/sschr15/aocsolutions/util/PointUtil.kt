@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalStdlibApi::class)
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package sschr15.aocsolutions.util
 

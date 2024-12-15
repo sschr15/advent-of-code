@@ -1,7 +1,6 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
-import sschr15.aocsolutions.util.watched.*
 
 /**
  * AOC 2024 [Day 3](https://adventofcode.com/2024/day/3)

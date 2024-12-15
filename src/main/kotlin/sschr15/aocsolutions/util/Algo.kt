@@ -1,12 +1,11 @@
 package sschr15.aocsolutions.util
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
-import sschr15.aocsolutions.util.watched.WatchedLong
 import java.math.BigInteger
 import java.util.*
 import kotlin.math.absoluteValue
 
-typealias BigPoint = Pair<WatchedLong, WatchedLong>
+typealias BigPoint = Pair<Long, Long>
 typealias BiggerPoint = Pair<BigInteger, BigInteger>
 
 fun <T> dijkstra(
@@ -52,8 +51,8 @@ fun shoelace(points: List<Point>): Int {
 }
 
 @JvmName("shoelaceBig")
-fun shoelace(points: List<BigPoint>): WatchedLong {
-    var sum = WatchedLong(0)
+fun shoelace(points: List<BigPoint>): Long {
+    var sum = 0L
     for (i in points.indices) {
         if (i == points.lastIndex) break
         sum += points[i].first * points[i + 1].second
