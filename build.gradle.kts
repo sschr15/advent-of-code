@@ -88,8 +88,8 @@ tasks {
     compileKotlin {
         dependsOn(project(":compiler-plugin").tasks.jar)
         // force recompile
-        outputs.upToDateWhen { false }
-        outputs.cacheIf { false }
+//        outputs.upToDateWhen { false }
+//        outputs.cacheIf { false }
     }
 
     val benchmark by registering(JavaExec::class) {
