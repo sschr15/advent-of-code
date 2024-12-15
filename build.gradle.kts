@@ -81,7 +81,7 @@ dependencies {
 
     implementation(files("z3/kotlin-z3-wrapper.jar"))
 
-    implementation(projects.compilerAnnotations)
+    implementation(projects.compilerPlugin.runtimeComponents)
 }
 
 tasks {
