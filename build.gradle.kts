@@ -30,7 +30,7 @@ repositories {
 }
 
 powerAssert {
-    functions = listOf("kotlin.assert", "kotlin.require", "kotlin.check")
+//    functions = listOf("kotlin.assert", "kotlin.require", "kotlin.check")
     includedSourceSets = listOf("main")
 }
 
@@ -46,6 +46,7 @@ kotlin {
         freeCompilerArgs.addAll(listOf(
             "NOTHING_TO_INLINE",
         ).map { "-Xsuppress-warning=$it" })
+        freeCompilerArgs.add("-Xplugin=${project(":compiler-plugin").file("build/libs/compiler-plugin.jar")}")
     }
 
     sourceSets.configureEach { 
@@ -79,9 +80,18 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.3")
 
     implementation(files("z3/kotlin-z3-wrapper.jar"))
+
+    implementation(projects.compilerAnnotations)
 }
 
 tasks {
+    compileKotlin {
+        dependsOn(project(":compiler-plugin").tasks.jar)
+        // force recompile
+        outputs.upToDateWhen { false }
+        outputs.cacheIf { false }
+    }
+
     val benchmark by registering(JavaExec::class) {
         group = "application"
         description = "Run SolutionTimer, benchmarking every solution"
