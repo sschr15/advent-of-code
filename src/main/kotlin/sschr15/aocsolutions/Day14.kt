@@ -4,7 +4,7 @@ import sschr15.aocsolutions.util.*
 
 /**
  * AOC 2024 [Day 14](https://adventofcode.com/2024/day/14)
- * Challenge: 
+ * Challenge: Merry Christmas from a bunch of robots
  */
 object Day14 : Challenge {
     override fun solve() = challenge(2024, 14) {
