@@ -14,11 +14,26 @@ downloaded from the Advent of Code website and to be used without modification m
 If any exceptions are thrown, the program will catch them, print the error message,
 and export the stacktrace to a `dayN_error.txt` file. It will then continue to the next solution.
 
-## License
+## What's `compiler-plugin`?
 
-I am licensing this under the MIT license even though I suggest people not use my solutions. I'd still
-consider myself not the best when it comes to programming in general, but I have felt that I've improved.
-~~However, [GeneralUtils](src/main/kotlin/sschr15/aocsolutions/GeneralUtils.kt) might actually have some
-good code.~~ Nothing ever is good code if I touch it.
+This is a custom plugin providing an annotation for adding memoization to functions as well as automatically
+checking for integer/long overflow. If you want to use it, you can add the following to your `build.gradle.kts`:
 
-Proceed with caution!
+```kotlin
+val compilerPlugin by configurations.creating
+
+dependencies {
+    implementation("com.sschr15.aoc:runtime-components:0.1.0")
+    compilerPlugin("com.sschr15.aoc:compiler-plugin:0.1.0")
+}
+
+kotlin {
+    compilerOptions {
+        for (plugin in compilerPlugin) {
+            freeCompilerArgs.add("-Xplugin=${plugin.absolutePath}")
+        }
+    }
+}
+```
+
+I plan on providing a Gradle plugin at some point to avoid the need for manual configuration.
