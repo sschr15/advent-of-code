@@ -32,6 +32,10 @@ tasks.test {
 allprojects {
     group = "com.sschr15.aoc"
 
+    if (System.getenv("VERSION") != null) {
+        version = System.getenv("VERSION")
+    }
+
     val dokkaJar by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
         from(tasks.dokkaHtml)

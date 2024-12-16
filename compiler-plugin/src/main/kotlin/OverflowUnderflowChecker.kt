@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.jvm.compiler.report
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationBase
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -14,6 +15,8 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.getPrimitiveType
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
+import org.jetbrains.kotlin.ir.util.dump
+import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.isAnnotationWithEqualFqName
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.CallableId
@@ -23,22 +26,58 @@ import org.jetbrains.kotlin.name.FqName
 class OverflowUnderflowChecker(private val context: IrPluginContext, private val config: CompilerConfiguration) : IrElementTransformerVoid() {
     val skipCheckAnnotation = FqName("sschr15.aoc.annotations.SkipOverflowUnderflowCheck")
 
-    val singleTypeChecks = listOf(
+    val singleTypeChecks = setOf(
         "plus", "minus", "times",
         "inc", "dec",
         "unaryMinus",
         "rem",
     )
 
+    val intConversions = setOf("toFloat")
+    val longConversions = setOf("toInt", "toDouble", "toFloat")
+
+    fun visitConversionCall(expression: IrCall): IrExpression {
+        val par0 = expression.dispatchReceiver ?: expression.getValueArgument(0)!!
+        return context.irBuiltIns
+            .createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
+            .irCall(
+                context.referenceFunctions(
+                    CallableId(
+                        FqName("sschr15.aoc.annotations"),
+                        null,
+                        expression.symbol.owner.name,
+                    )
+                ).single { it.owner.valueParameters.single().type == par0.type }
+            ).apply {
+                putValueArgument(0, par0)
+            }
+    }
+
     override fun visitDeclaration(declaration: IrDeclarationBase): IrStatement {
         if (declaration.annotations.any { it.isAnnotationWithEqualFqName(skipCheckAnnotation) })
             return declaration // skip checking this and all children
+
+        if (declaration.annotations.any { it.isAnnotationWithEqualFqName(FqName("sschr15.aoc.annotations.ExportIr")) }) {
+            config.report(CompilerMessageSeverity.WARNING, declaration.dumpKotlinLike())
+            config.report(CompilerMessageSeverity.WARNING, declaration.dump())
+        }
 
         return super.visitDeclaration(declaration)
     }
 
     override fun visitCall(expression: IrCall): IrExpression {
         if (!expression.type.isPrimitiveType()) return super.visitCall(expression)
+
+        val par0 = expression.dispatchReceiver ?: expression.valueArguments.firstOrNull() ?: return super.visitCall(expression)
+        if (par0.type.isPrimitiveType()) {
+            val primitiveType = par0.type.getPrimitiveType()!!
+            if (primitiveType == PrimitiveType.INT && expression.symbol.owner.name.asString() in intConversions) {
+                return visitConversionCall(expression)
+            } else if (primitiveType == PrimitiveType.LONG && expression.symbol.owner.name.asString() in longConversions) {
+                return visitConversionCall(expression)
+            }
+        }
+
         val primitiveType = expression.type.getPrimitiveType() ?: return super.visitCall(expression)
         if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return super.visitCall(expression)
         if (expression.symbol.owner.name.asString() !in singleTypeChecks) return super.visitCall(expression)

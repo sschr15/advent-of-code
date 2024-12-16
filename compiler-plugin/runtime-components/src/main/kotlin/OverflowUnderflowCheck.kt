@@ -16,6 +16,9 @@ inline fun rem(a: Int, b: Int): Int {
     return a % b
 }
 
+inline fun toFloat(a: Int): Float =
+    if (a > 16777216 || a < -16777216) throw ArithmeticException("Not enough precision") else a.toFloat()
+
 inline fun plus(a: Long, b: Long): Long = Math.addExact(a, b)
 inline fun minus(a: Long, b: Long): Long = Math.subtractExact(a, b)
 inline fun times(a: Long, b: Long): Long = Math.multiplyExact(a, b)
@@ -29,3 +32,9 @@ inline fun rem(a: Long, b: Long): Long {
     }
     return a % b
 }
+
+inline fun toInt(a: Long): Int = Math.toIntExact(a)
+inline fun toFloat(a: Long): Float =
+    if (a > 16777216 || a < -16777216) throw ArithmeticException("Not enough precision") else a.toFloat()
+inline fun toDouble(a: Long): Double =
+    if (a > 9007199254740992 || a < -9007199254740992) throw ArithmeticException("Not enough precision") else a.toDouble()
