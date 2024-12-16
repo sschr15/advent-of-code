@@ -1,23 +1,40 @@
-# AdventOfCode
+# advent-of-code
 
-This is a repository containing *my personal solutions* to the 
-[Advent of Code](https://adventofcode.com/2021/about) challenges. All challenge files must be
-downloaded from the Advent of Code website and to be used without modification must be named as `dayN` in
-`inputs/<year>/` (where `N` is which day of 25 we are at, with a variable digit count).
+This is a repository containing my solutions to the 
+[Advent of Code](https://adventofcode.com/about) challenges as well as a
+[compiler plugin](compiler-plugin) providing additional features for
+ease of solving.
+
+## Getting challenge inputs
+
+Puzzle inputs can be provided in two ways:
+1. If a file named `session.txt` is provided in the run directory
+   (the root of the repository if run via Gradle), each challenge
+   will be downloaded using the session token provided in plain text
+   within that file.
+2. Inputs can be manually placed into `inputs/YEAR/dayN` files, given
+   `YEAR` being the current four-digit year and `N` being a number 1 through 25.
+   The file may have a `.txt` extension, but it is not required.
 
 ## Running all solutions
-1. Make sure you have installed Java 21 or higher, and that gradle is directed to use Java 21.
-2. Place all solutions in the `inputs/<year>/` directory, as files named as `dayN` without an extension
-   or with the `.txt` extension.
-3. Run `./gradlew run` to run all solutions.
+
+1. Install Java 21 or later and ensure it is the default version.
+2. Run one of the gradle tasks:
+   1. `./gradlew run` - Runs all solutions in parallel, printing the results in order.
+   2. `./gradlew benchmark` - Runs each solution at least 250 times or at most five minutes,
+      for five seconds (or longer if the solution takes longer) and prints the average,
+      minimum, and maximum execution times as well as the standard deviation.
+      To best benchmark the multithreaded solutions, each is run on its own.
 
 If any exceptions are thrown, the program will catch them, print the error message,
-and export the stacktrace to a `dayN_error.txt` file. It will then continue to the next solution.
+and export the stack trace to a file named `dayN_error.txt`.
+It will then continue to the next solution.
 
-## What's `compiler-plugin`?
+## What's [`compiler-plugin`](compiler-plugin)?
 
-This is a custom plugin providing an annotation for adding memoization to functions as well as automatically
-checking for integer/long overflow. If you want to use it, you can add the following to your `build.gradle.kts`:
+This is a custom plugin providing an annotation for adding memoization
+to functions as well as automatically checking for integer/long overflow.
+To use it, add the following to a project's `build.gradle.kts`:
 
 ```kotlin
 val compilerPlugin by configurations.creating
