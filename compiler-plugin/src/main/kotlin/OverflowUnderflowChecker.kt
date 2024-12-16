@@ -10,8 +10,11 @@ import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationBase
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithName
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.ir.symbols.IrBindableSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.getPrimitiveType
 import org.jetbrains.kotlin.ir.types.isPrimitiveType
@@ -21,6 +24,7 @@ import org.jetbrains.kotlin.ir.util.isAnnotationWithEqualFqName
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
 class OverflowUnderflowChecker(private val context: IrPluginContext, private val config: CompilerConfiguration) : IrElementTransformerVoid() {
@@ -29,12 +33,13 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
     val singleTypeChecks = setOf(
         "plus", "minus", "times",
         "inc", "dec",
-        "unaryMinus",
+        "unaryMinus", "abs",
         "rem",
     )
 
     val intConversions = setOf("toFloat")
     val longConversions = setOf("toInt", "toDouble", "toFloat")
+    val absoluteValueName = Name.special("<get-absoluteValue>")
 
     fun visitConversionCall(expression: IrCall): IrExpression {
         val par0 = expression.dispatchReceiver ?: expression.getValueArgument(0)!!
@@ -53,6 +58,24 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
             }
     }
 
+    fun absoluteValueCheck(expression: IrMemberAccessExpression<*>): IrExpression? {
+        val symbol = expression.symbol as? IrBindableSymbol<*, *> ?: return null
+        val owner = symbol.owner as? IrDeclarationWithName ?: return null
+        val extension = expression.extensionReceiver ?: return null
+        val primitiveType = extension.type.getPrimitiveType() ?: return null
+        if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return null
+        if (owner.name != absoluteValueName) return null
+        return context.irBuiltIns.createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
+            .irCall(context.referenceFunctions(CallableId(
+                FqName("sschr15.aoc.annotations"),
+                null,
+                Name.identifier("abs"),
+            )).single { it.owner.valueParameters.single().type == extension.type })
+            .apply {
+                putValueArgument(0, extension)
+            }
+    }
+
     override fun visitDeclaration(declaration: IrDeclarationBase): IrStatement {
         if (declaration.annotations.any { it.isAnnotationWithEqualFqName(skipCheckAnnotation) })
             return declaration // skip checking this and all children
@@ -63,6 +86,14 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         }
 
         return super.visitDeclaration(declaration)
+    }
+
+    override fun visitExpression(expression: IrExpression): IrExpression {
+        if (expression is IrMemberAccessExpression<*>) {
+            val abs = absoluteValueCheck(expression)
+            if (abs != null) return abs
+        }
+        return super.visitExpression(expression)
     }
 
     override fun visitCall(expression: IrCall): IrExpression {

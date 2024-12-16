@@ -8,6 +8,7 @@ inline fun times(a: Int, b: Int): Int = Math.multiplyExact(a, b)
 inline fun inc(a: Int): Int = Math.incrementExact(a) 
 inline fun dec(a: Int): Int = Math.decrementExact(a)
 inline fun unaryMinus(a: Int): Int = Math.negateExact(a)
+inline fun abs(a: Int): Int = Math.absExact(a)
 
 inline fun rem(a: Int, b: Int): Int {
     if (a < 0) {
@@ -25,6 +26,7 @@ inline fun times(a: Long, b: Long): Long = Math.multiplyExact(a, b)
 inline fun inc(a: Long): Long = Math.incrementExact(a)
 inline fun dec(a: Long): Long = Math.decrementExact(a)
 inline fun unaryMinus(a: Long): Long = Math.negateExact(a)
+inline fun abs(a: Long): Long = Math.absExact(a)
 
 inline fun rem(a: Long, b: Long): Long {
     if (a < 0) {
