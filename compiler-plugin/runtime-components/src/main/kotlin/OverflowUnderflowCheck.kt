@@ -9,9 +9,23 @@ inline fun inc(a: Int): Int = Math.incrementExact(a)
 inline fun dec(a: Int): Int = Math.decrementExact(a)
 inline fun unaryMinus(a: Int): Int = Math.negateExact(a)
 
+inline fun rem(a: Int, b: Int): Int {
+    if (a < 0) {
+        System.err.println("Warning: Remainder of a negative number")
+    }
+    return a % b
+}
+
 inline fun plus(a: Long, b: Long): Long = Math.addExact(a, b)
 inline fun minus(a: Long, b: Long): Long = Math.subtractExact(a, b)
 inline fun times(a: Long, b: Long): Long = Math.multiplyExact(a, b)
 inline fun inc(a: Long): Long = Math.incrementExact(a)
 inline fun dec(a: Long): Long = Math.decrementExact(a)
 inline fun unaryMinus(a: Long): Long = Math.negateExact(a)
+
+inline fun rem(a: Long, b: Long): Long {
+    if (a < 0) {
+        System.err.println("Warning: Remainder of a negative number")
+    }
+    return a % b
+}
