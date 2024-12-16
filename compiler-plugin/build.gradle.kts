@@ -3,12 +3,14 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
     `maven-publish`
     signing
+    java
 }
 
 subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
+    apply(plugin = "java")
 }
 
 repositories {
@@ -60,7 +62,9 @@ allprojects {
     }
 
     publishing {
-        publications.withType<MavenPublication> {
+        val publication by publications.registering(MavenPublication::class) {
+            from(components["java"])
+
             artifact(dokkaJar) {
                 classifier = "javadoc"
             }
