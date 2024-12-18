@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package sschr15.aoc.annotations
+package com.sschr15.aoc.annotations
 
 inline fun plus(a: Int, b: Int): Int = Math.addExact(a, b) 
 inline fun minus(a: Int, b: Int): Int = Math.subtractExact(a, b) 

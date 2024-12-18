@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.name.Name
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
 class OverflowUnderflowChecker(private val context: IrPluginContext, private val config: CompilerConfiguration) : IrElementTransformerVoid() {
-    val skipCheckAnnotation = FqName("sschr15.aoc.annotations.SkipOverflowUnderflowCheck")
+    val skipCheckAnnotation = FqName("com.sschr15.aoc.annotations.SkipOverflowUnderflowCheck")
 
     val singleTypeChecks = setOf(
         "plus", "minus", "times",
@@ -48,7 +48,7 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
             .irCall(
                 context.referenceFunctions(
                     CallableId(
-                        FqName("sschr15.aoc.annotations"),
+                        FqName("com.sschr15.aoc.annotations"),
                         null,
                         expression.symbol.owner.name,
                     )
@@ -67,7 +67,7 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         if (owner.name != absoluteValueName) return null
         return context.irBuiltIns.createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
             .irCall(context.referenceFunctions(CallableId(
-                FqName("sschr15.aoc.annotations"),
+                FqName("com.sschr15.aoc.annotations"),
                 null,
                 Name.identifier("abs"),
             )).single { it.owner.valueParameters.single().type == extension.type })
@@ -80,7 +80,7 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         if (declaration.annotations.any { it.isAnnotationWithEqualFqName(skipCheckAnnotation) })
             return declaration // skip checking this and all children
 
-        if (declaration.annotations.any { it.isAnnotationWithEqualFqName(FqName("sschr15.aoc.annotations.ExportIr")) }) {
+        if (declaration.annotations.any { it.isAnnotationWithEqualFqName(FqName("com.sschr15.aoc.annotations.ExportIr")) }) {
             config.report(CompilerMessageSeverity.WARNING, declaration.dumpKotlinLike())
             config.report(CompilerMessageSeverity.WARNING, declaration.dump())
         }
@@ -119,7 +119,7 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
 
         return context.irBuiltIns.createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
             .irCall(context.referenceFunctions(CallableId(
-                FqName("sschr15.aoc.annotations"),
+                FqName("com.sschr15.aoc.annotations"),
                 null,
                 expression.symbol.owner.name,
             )).single { it.owner.valueParameters.first().type == expression.type }).apply {

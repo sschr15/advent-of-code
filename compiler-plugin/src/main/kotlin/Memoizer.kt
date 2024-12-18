@@ -45,7 +45,7 @@ class Memoizer(private val context: IrPluginContext) : IrElementTransformerVoid(
     private val pair = context.referenceClass(ClassId(FqName("kotlin"), FqName("Pair"), false))!!
     private val triple = context.referenceClass(ClassId(FqName("kotlin"), FqName("Triple"), false))!!
 
-    private val memoizeAnnotation = FqName("sschr15.aoc.annotations.Memoize")
+    private val memoizeAnnotation = FqName("com.sschr15.aoc.annotations.Memoize")
 
     private fun IrPluginContext.keyFor(declaration: IrFunction): IrType = when (declaration.valueParameters.size) {
         1 -> declaration.valueParameters.single().type

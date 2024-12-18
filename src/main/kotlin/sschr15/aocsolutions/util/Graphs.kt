@@ -16,7 +16,13 @@ import kotlin.collections.ArrayDeque
  */
 class Graph<T> {
     inner class Node internal constructor(val name: String? = null, val value: T) {
-        val edges = mutableListOf<Edge>()
+        private val _edges = mutableListOf<Edge>()
+        private val _incoming = mutableListOf<Edge>()
+        private val _outgoing = mutableListOf<Edge>()
+
+        val edges: List<Edge> get() = _edges
+        val incomingEdges: List<Edge> get() = _incoming
+        val outgoingEdges: List<Edge> get() = _outgoing
 
         /**
          * Connects the current node to another node, creating a bidirectional edge between them.
@@ -26,8 +32,15 @@ class Graph<T> {
          * edge list are updated to include this new connection.
          */
         fun connectTo(other: Node, weight: Int? = null) = Edge(this, other, weight).also {
-            edges.add(it)
-            other.edges.add(it.reversed())
+            _edges.add(it)
+            _incoming.add(it)
+            other._outgoing.add(it)
+
+            val rev = it.reversed()
+            _outgoing.add(rev)
+            other._edges.add(rev)
+            other._incoming.add(rev)
+
             this@Graph.edges.add(it)
         }
 
@@ -39,7 +52,9 @@ class Graph<T> {
          * and the parent graph's edge list.
          */
         fun oneWayConnectTo(other: Node, weight: Int? = null) = Edge(this, other, weight).also {
-            edges.add(it)
+            _edges.add(it)
+            _outgoing.add(it)
+            other._incoming.add(it)
             this@Graph.edges.add(it)
         }
 
@@ -78,18 +93,6 @@ class Graph<T> {
     fun addNode(value: T, name: String? = null, ) = Node(name, value).also(nodes::add)
 
     override fun toString() = "Graph(nodes=$nodes, edges=$edges)"
-
-    fun removeNode(node: Node) {
-        nodes.remove(node)
-        edges.removeAll(node.edges.toSet())
-        node.edges.forEach { it.to.edges.remove(it.reversed()) }
-    }
-
-    fun removeEdge(edge: Edge) {
-        edges.remove(edge)
-        edge.from.edges.remove(edge)
-        edge.to.edges.remove(edge.reversed())
-    }
 
     /**
      * Converts the graph represented by the current instance into a Graphviz DOT format string.

@@ -359,3 +359,137 @@ inline fun <T> Iterable<T>.noneIndexed(predicate: (Int, T) -> Boolean): Boolean 
     }
     return true
 }
+
+inline fun List<Int>.indexOfMin(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var min = Int.MAX_VALUE
+    var minIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value < min) {
+            min = value
+            minIndex = i
+        }
+    }
+    if (minIndex == -1) return 0 // All values are Int.MAX_VALUE
+    return minIndex
+}
+
+@JvmName("longIndexOfMin")
+inline fun List<Long>.indexOfMin(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var min = Long.MAX_VALUE
+    var minIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value < min) {
+            min = value
+            minIndex = i
+        }
+    }
+    if (minIndex == -1) return 0
+    return minIndex
+}
+
+@JvmName("floatIndexOfMin")
+inline fun List<Float>.indexOfMin(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var min = Float.POSITIVE_INFINITY
+    var minIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value < min) {
+            min = value
+            minIndex = i
+        }
+    }
+    if (minIndex == -1) return 0
+    return minIndex
+}
+
+@JvmName("doubleIndexOfMin")
+inline fun List<Double>.indexOfMin(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var min = Double.POSITIVE_INFINITY
+    var minIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value < min) {
+            min = value
+            minIndex = i
+        }
+    }
+    if (minIndex == -1) return 0
+    return minIndex
+}
+
+inline fun List<Int>.indexOfMax(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var max = Int.MIN_VALUE
+    var maxIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value > max) {
+            max = value
+            maxIndex = i
+        }
+    }
+    if (maxIndex == -1) return 0
+    return maxIndex
+}
+
+@JvmName("longIndexOfMax")
+inline fun List<Long>.indexOfMax(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var max = Long.MIN_VALUE
+    var maxIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value > max) {
+            max = value
+            maxIndex = i
+        }
+    }
+    if (maxIndex == -1) return 0
+    return maxIndex
+}
+
+@JvmName("floatIndexOfMax")
+inline fun List<Float>.indexOfMax(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var max = Float.NEGATIVE_INFINITY
+    var maxIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value > max) {
+            max = value
+            maxIndex = i
+        }
+    }
+    if (maxIndex == -1) return 0
+    return maxIndex
+}
+
+@JvmName("doubleIndexOfMax")
+inline fun List<Double>.indexOfMax(): Int {
+    if (isEmpty()) return -1
+    if (size == 1) return 0
+
+    var max = Double.NEGATIVE_INFINITY
+    var maxIndex = -1
+    for ((i, value) in this.withIndex()) {
+        if (value > max) {
+            max = value
+            maxIndex = i
+        }
+    }
+    if (maxIndex == -1) return 0
+    return maxIndex
+}
