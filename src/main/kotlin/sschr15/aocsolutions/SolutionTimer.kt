@@ -45,8 +45,8 @@ object SolutionTimer {
         val start = Clock.System.now()
 
         // Load the challenge class
-        val day = if (dayString.matches("Day\\d{1,2}".toRegex())) dayString else error("Invalid day: $dayString")
-        val dayClass = Class.forName("sschr15.aocsolutions.$day")
+        val day = if (dayString.matches("Day\\d{1,2}.*".toRegex())) dayString else error("Invalid day: $dayString")
+        val dayClass = Class.forName("sschr15.aocsolutions.$dayString")
         val challenge = dayClass.kotlin.objectInstance as Challenge
 
         // Disable output (don't go logging the same thing 20 times)
@@ -86,7 +86,7 @@ object SolutionTimer {
         val min = times.min()
         val max = times.max()
 
-        print("Times for day ${day.substring(3)} ")
+        print("Times for day ${day.substring(3).takeWhile { it.isDigit() }} ")
 
         if (times.size > 500) {
             println("(${times.size} runs):")
@@ -117,7 +117,7 @@ object SolutionTimer {
         if (!prepFile.exists()) prepFile.createFile()
 
         val textToAppend = listOf(
-            "Day ${day.substring(3)} Preparation Times (20 runs):",
+            "Day ${day.substring(3).takeWhile { it.isDigit() }} Preparation Times (20 runs):",
             "Ran at ${start.toLocalDateTime(TimeZone.UTC)} (UTC)",
             "Average: ${(prepTimes.sumOf { it.toDouble(DurationUnit.NANOSECONDS) } / prepTimes.size).nanoseconds}",
             "Min: ${prepTimes.min()}",
