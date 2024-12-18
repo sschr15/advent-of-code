@@ -16,9 +16,9 @@ import kotlin.collections.ArrayDeque
  */
 class Graph<T> {
     inner class Node internal constructor(val name: String? = null, val value: T) {
-        private val _edges = mutableListOf<Edge>()
-        private val _incoming = mutableListOf<Edge>()
-        private val _outgoing = mutableListOf<Edge>()
+        internal val _edges = mutableListOf<Edge>()
+        internal val _incoming = mutableListOf<Edge>()
+        internal val _outgoing = mutableListOf<Edge>()
 
         val edges: List<Edge> get() = _edges
         val incomingEdges: List<Edge> get() = _incoming
@@ -33,13 +33,13 @@ class Graph<T> {
          */
         fun connectTo(other: Node, weight: Int? = null) = Edge(this, other, weight).also {
             _edges.add(it)
-            _incoming.add(it)
-            other._outgoing.add(it)
+            _outgoing.add(it)
+            other._incoming.add(it)
 
             val rev = it.reversed()
-            _outgoing.add(rev)
+            _incoming.add(rev)
             other._edges.add(rev)
-            other._incoming.add(rev)
+            other._outgoing.add(rev)
 
             this@Graph.edges.add(it)
         }
@@ -89,6 +89,27 @@ class Graph<T> {
 
     val nodes = mutableSetOf<Node>()
     val edges = mutableSetOf<Edge>()
+
+    fun removeNode(node: Node) {
+        nodes.remove(node)
+        edges.removeAll { it.from == node || it.to == node }
+        node.incomingEdges.forEach {
+            it.from._edges.remove(it)
+            it.from._outgoing.remove(it)
+        }
+        node.outgoingEdges.forEach {
+            it.to._edges.remove(it)
+            it.to._incoming.remove(it)
+        }
+    }
+
+    fun removeEdge(edge: Edge) {
+        edges.remove(edge)
+        edge.from._edges.remove(edge)
+        edge.from._outgoing.remove(edge)
+        edge.to._edges.remove(edge)
+        edge.to._incoming.remove(edge)
+    }
 
     fun addNode(value: T, name: String? = null, ) = Node(name, value).also(nodes::add)
 
@@ -252,7 +273,8 @@ fun <T> Graph<T>.Node.findPathTo(other: Graph<T>.Node): List<Graph<T>.Edge>? {
 
     while (queue.isNotEmpty()) {
         val next = queue.removeFirst()
-        next.edges.filter { it.to !in visited }.forEach {
+        next.outgoingEdges.forEach {
+            if (it.to in visited) return@forEach
             queue.add(it.to)
             visited.add(it.to)
             path[it.to] = next to it
