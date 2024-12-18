@@ -37,6 +37,10 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         "rem",
     )
 
+    val singleArgumentTypeChecks = setOf(
+        "inc", "dec", "unaryMinus", "abs",
+    )
+
     val intConversions = setOf("toFloat")
     val longConversions = setOf("toInt", "toDouble", "toFloat")
     val absoluteValueName = Name.special("<get-absoluteValue>")
@@ -112,8 +116,11 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         val primitiveType = expression.type.getPrimitiveType() ?: return super.visitCall(expression)
         if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return super.visitCall(expression)
         if (expression.symbol.owner.name.asString() !in singleTypeChecks) return super.visitCall(expression)
-        if (expression.valueArgumentsCount == 2 && expression.getValueArgument(0)!!.type != expression.getValueArgument(1)!!.type) {
-            config.report(CompilerMessageSeverity.WARNING, "Arguments to arithmetic operations are of different types, skipping overflow check")
+        if (
+            (expression.valueArgumentsCount != 2 || expression.getValueArgument(0)!!.type != expression.getValueArgument(1)!!.type) &&
+            (expression.valueArgumentsCount != 1 || !singleArgumentTypeChecks.contains(expression.symbol.owner.name.asString()))
+        ) {
+            config.report(CompilerMessageSeverity.WARNING, "Unexpected number of arguments for ${expression.symbol.owner.name}, skipping")
             return super.visitCall(expression)
         }
 

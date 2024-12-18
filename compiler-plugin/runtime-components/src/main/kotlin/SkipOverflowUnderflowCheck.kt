@@ -1,4 +1,4 @@
-package sschr15.aoc.annotations
+package com.sschr15.aoc.annotations
 
 /**
  * Marks an expression to skip overflow and underflow checks.

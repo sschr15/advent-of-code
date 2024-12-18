@@ -83,7 +83,7 @@ allprojects {
 
                 name = "AoC Utility Kotlin Compiler Plugin"
                 description = "Adds some utilities to code, developed originally for Advent of Code solving"
-                url = "https://github.com/advent-of-code/"
+                url = "https://github.com/sschr15/advent-of-code/"
 
                 developers {
                     developer {
