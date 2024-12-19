@@ -1,18 +1,17 @@
 package sschr15.aocsolutions
 
-import com.sschr15.templates.invoke
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import sschr15.aocsolutions.util.*
 import java.io.OutputStream
 import java.io.PrintStream
-import java.util.FormatProcessor.FMT
 import kotlin.io.path.Path
 import kotlin.io.path.appendText
 import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
@@ -82,7 +81,7 @@ object SolutionTimer {
         // Calculate and print the times + fun stats
         val nsTimes = times.map { it.toDouble(DurationUnit.NANOSECONDS) }
         val average = nsTimes.average().nanoseconds
-        val stdDev = times.map { it.toDouble(DurationUnit.MILLISECONDS) }.stdDev()
+        val stdDev = times.map { it.toDouble(DurationUnit.MILLISECONDS) }.stdDev().milliseconds
         val min = times.min()
         val max = times.max()
 
@@ -105,12 +104,7 @@ object SolutionTimer {
         println("Min: $min")
         println("Max: $max")
 
-        // The string here uses Java's FMT String template, available in Java 21 and later.
-        // In java, the function's argument would be written as:
-        //     FMT."Standard Deviation: %.2f\{stdDev}ms"
-        // The exclamation point in this version is for my templates-kt library, in order
-        // to skirt around Kotlin's direct injection of variables into strings.
-        println(FMT { "Standard Deviation: %.2f${!stdDev}ms" })
+        println("Standard Deviation: $stdDev")
 
         // Store prep times to a file
         val prepFile = Path("prep_times.txt")
