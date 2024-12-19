@@ -1,5 +1,10 @@
 # AoC Kotlin Compiler Plugin
 
+## 0.5.0
+
+- Modify destructuring errors to be a little less hard to read
+- Fix memoization on extension functions and high-arity functions
+
 ## 0.4.0
 
 - Add runtime errors for collection destructuring matching an incorrect number of elements
