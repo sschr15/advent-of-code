@@ -63,11 +63,11 @@ class IrDestructuringFinder(
                     thenPart=irThrow(irCallConstructor(extra.illegalArgumentExceptionCtor, emptyList()).apply {
                         putValueArgument(0, irConcat().apply {
                             arguments.addAll(listOf(
-                                irString("expected to destruct $expected elements, but "),
+                                irString("expected to destruct exactly $expected elements, but "),
                                 irCall(extra.sizeFunctionSymbol).apply {
                                     dispatchReceiver = irGet(stat)
                                 },
-                                irString(" were provided")
+                                irString(" were in the collection")
                             ))
                         })
                     }),
