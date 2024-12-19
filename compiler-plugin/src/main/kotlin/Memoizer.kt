@@ -42,16 +42,30 @@ class Memoizer(private val context: IrPluginContext) : IrElementTransformerVoid(
         Name.identifier("mutableMapOf")
     )).single { it.owner.valueParameters.isEmpty() }
 
+    private val listOf = context.referenceFunctions(CallableId(
+        FqName("kotlin.collections"),
+        null,
+        Name.identifier("listOf")
+    )).single { it.owner.valueParameters.singleOrNull()?.isVararg == true }
+
     private val pair = context.referenceClass(ClassId(FqName("kotlin"), FqName("Pair"), false))!!
     private val triple = context.referenceClass(ClassId(FqName("kotlin"), FqName("Triple"), false))!!
 
     private val memoizeAnnotation = FqName("com.sschr15.aoc.annotations.Memoize")
 
-    private fun IrPluginContext.keyFor(declaration: IrFunction): IrType = when (declaration.valueParameters.size) {
-        1 -> declaration.valueParameters.single().type
-        2 -> pair.typeWith(declaration.valueParameters.map { it.type })
-        3 -> triple.typeWith(declaration.valueParameters.map { it.type })
-        else -> irBuiltIns.arrayClass.typeWith(irBuiltIns.anyType)
+    private fun IrPluginContext.keyFor(params: List<IrValueParameter>): IrType = when (params.size) {
+        1 -> params.single().type
+        2 -> pair.typeWith(params.map { it.type })
+        3 -> triple.typeWith(params.map { it.type })
+        else -> irBuiltIns.listClass.typeWith(irBuiltIns.anyType)
+    }
+
+    fun IrPluginContext.keyFor(declaration: IrFunction): IrType {
+        val params = declaration.valueParameters.toMutableList()
+        if (declaration.extensionReceiverParameter != null) {
+            params.add(0, declaration.extensionReceiverParameter!!)
+        }
+        return keyFor(params)
     }
 
     override fun visitFunction(declaration: IrFunction): IrStatement {
@@ -137,20 +151,28 @@ class Memoizer(private val context: IrPluginContext) : IrElementTransformerVoid(
         return declaration
     }
 
+    fun IrBuilderWithScope.createKeyFor(declaration: IrFunction): IrExpression {
+        val params = declaration.valueParameters.toMutableList()
+        if (declaration.extensionReceiverParameter != null) {
+            params.add(0, declaration.extensionReceiverParameter!!)
+        }
+        return createKeyFor(params)
+    }
+
     @OptIn(UnsafeDuringIrConstructionAPI::class)
-    private fun IrBuilderWithScope.createKeyFor(function: IrFunction): IrExpression = when (function.valueParameters.size) {
-        1 -> irGet(function.valueParameters.single())
+    private fun IrBuilderWithScope.createKeyFor(params: List<IrValueParameter>): IrExpression = when (params.size) {
+        1 -> irGet(params.single())
         2 -> irCall(pair.constructors.single()).apply {
-            putValueArgument(0, irGet(function.valueParameters[0]))
-            putValueArgument(1, irGet(function.valueParameters[1]))
+            putValueArgument(0, irGet(params[0]))
+            putValueArgument(1, irGet(params[1]))
         }
         3 -> irCall(triple.constructors.single()).apply {
-            putValueArgument(0, irGet(function.valueParameters[0]))
-            putValueArgument(1, irGet(function.valueParameters[1]))
-            putValueArgument(2, irGet(function.valueParameters[2]))
+            putValueArgument(0, irGet(params[0]))
+            putValueArgument(1, irGet(params[1]))
+            putValueArgument(2, irGet(params[2]))
         }
-        else -> irCall(context.irBuiltIns.arrayOf).apply {
-            function.valueParameters.forEachIndexed { index, parameter ->
+        else -> irCall(listOf).apply {
+            params.forEachIndexed { index, parameter ->
                 putValueArgument(index, irGet(parameter))
             }
         }
