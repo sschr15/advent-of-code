@@ -171,6 +171,8 @@ class Grid<T> private constructor(private val data: MutableList<MutableList<T>>)
         row.mapIndexed { x, value -> Point(x, y) to value }
     }.toMap()
 
+    fun <V> mapValues(transform: (T) -> V) = Grid(data.map { it.map(transform).toMutableList() }.toMutableList())
+
     fun columns(): List<List<T>> = (0 until width).map { getColumn(it) }
     fun rows(): List<List<T>> = data
 

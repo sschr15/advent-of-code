@@ -1,6 +1,9 @@
+@file:OptIn(UnsafeDuringIrConstructionAPI::class)
+
 package com.sschr15.aoc.compiler.internal
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.starProjectedType

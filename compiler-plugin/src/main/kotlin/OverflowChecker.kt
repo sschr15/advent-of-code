@@ -27,8 +27,8 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
-class OverflowUnderflowChecker(private val context: IrPluginContext, private val config: CompilerConfiguration) : IrElementTransformerVoid() {
-    val skipCheckAnnotation = FqName("com.sschr15.aoc.annotations.SkipOverflowUnderflowCheck")
+class OverflowChecker(private val context: IrPluginContext, private val config: CompilerConfiguration) : IrElementTransformerVoid() {
+    val skipCheckAnnotation = FqName("com.sschr15.aoc.annotations.SkipOverflowChecks")
 
     val singleTypeChecks = setOf(
         "plus", "minus", "times",
@@ -81,13 +81,13 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
     }
 
     override fun visitDeclaration(declaration: IrDeclarationBase): IrStatement {
-        if (declaration.annotations.any { it.isAnnotationWithEqualFqName(skipCheckAnnotation) })
-            return declaration // skip checking this and all children
-
         if (declaration.annotations.any { it.isAnnotationWithEqualFqName(FqName("com.sschr15.aoc.annotations.ExportIr")) }) {
             config.report(CompilerMessageSeverity.WARNING, declaration.dumpKotlinLike())
             config.report(CompilerMessageSeverity.WARNING, declaration.dump())
         }
+
+        if (declaration.annotations.any { it.isAnnotationWithEqualFqName(skipCheckAnnotation) })
+            return declaration
 
         return super.visitDeclaration(declaration)
     }
@@ -98,6 +98,18 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
             if (abs != null) return abs
         }
         return super.visitExpression(expression)
+    }
+
+    private val IrMemberAccessExpression<*>.totalParameterCount: Int
+        get() = if (extensionReceiver != null || dispatchReceiver != null) valueArgumentsCount + 1 else valueArgumentsCount
+
+    private fun IrMemberAccessExpression<*>.getTotalParameter(index: Int): IrExpression? {
+        if (extensionReceiver != null) {
+            if (index == 0) return extensionReceiver
+        } else if (dispatchReceiver != null) {
+            if (index == 0) return dispatchReceiver
+        } else if (index == 0) return getValueArgument(0)
+        return getValueArgument(if (extensionReceiver != null || dispatchReceiver != null) index - 1 else index)
     }
 
     override fun visitCall(expression: IrCall): IrExpression {
@@ -117,8 +129,8 @@ class OverflowUnderflowChecker(private val context: IrPluginContext, private val
         if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return super.visitCall(expression)
         if (expression.symbol.owner.name.asString() !in singleTypeChecks) return super.visitCall(expression)
         if (
-            (expression.valueArgumentsCount != 2 || expression.getValueArgument(0)!!.type != expression.getValueArgument(1)!!.type) &&
-            (expression.valueArgumentsCount != 1 || !singleArgumentTypeChecks.contains(expression.symbol.owner.name.asString()))
+            (expression.totalParameterCount != 2 || expression.getTotalParameter(0)!!.type != expression.getTotalParameter(1)!!.type) &&
+            (expression.totalParameterCount != 1 || expression.symbol.owner.name.asString() !in singleArgumentTypeChecks)
         ) {
             config.report(CompilerMessageSeverity.WARNING, "Unexpected number of arguments for ${expression.symbol.owner.name}, skipping")
             return super.visitCall(expression)

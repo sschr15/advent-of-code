@@ -1,7 +1,5 @@
 package com.sschr15.aoc.compiler.internal
 
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.jvm.compiler.report
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.fir.FirSession
@@ -12,7 +10,6 @@ import org.jetbrains.kotlin.fir.expressions.FirComponentCall
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirStatusTransformerExtension
 import org.jetbrains.kotlin.fir.packageFqName
-import org.jetbrains.kotlin.fir.renderWithType
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.SpecialNames
 
@@ -48,8 +45,6 @@ class DestructuringFinder(session: FirSession, val config: CompilerConfiguration
                 if (currentDestruct == null) continue
 
                 val initializer = statement.initializer
-                config.report(CompilerMessageSeverity.STRONG_WARNING, statement.renderWithType())
-                config.report(CompilerMessageSeverity.STRONG_WARNING, initializer?.renderWithType() ?: "no initializer")
                 if (initializer !is FirComponentCall) continue
 
                 currentDestructCount++

@@ -7,5 +7,11 @@ package com.sschr15.aoc.annotations
  * if the destructed item is a [Collection].
  * If this behavior is not desired, adding `@SkipDestructuringChecks` will disable it.
  */
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.EXPRESSION,
+)
 @Retention(AnnotationRetention.SOURCE)
 annotation class SkipDestructuringChecks

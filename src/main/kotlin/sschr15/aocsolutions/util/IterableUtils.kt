@@ -4,8 +4,12 @@ package sschr15.aocsolutions.util
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -99,6 +103,31 @@ fun <T> I1d<T>.combinations(count: Int): List<List<T>> {
     if (count == 1) return this.map { listOf(it) }
     if (count == 2) return this.flatMapIndexed { i, t -> this.drop(i + 1).map { listOf(t, it) } }
     return this.flatMapIndexed { i, t -> this.drop(i + 1).combinations(count - 1).map { listOf(t) + it } }
+}
+
+fun <T> L1d<T>.pairs(): List<Pair<T, T>> {
+    val result = arrayOfNulls<Pair<T, T>?>(size * (size - 1) / 2) as Array<Pair<T, T>>
+    var index = 0
+    for (i in indices) {
+        for (j in i + 1..<size) {
+            result[index++] = this[i] to this[j]
+        }
+    }
+    return result.asList()
+}
+
+fun <T> L1d<T>.pairSequence(): Sequence<Pair<T, T>> {
+    return sequence {
+        for (i in indices) {
+            for (j in i + 1 until size) {
+                yield(this@pairSequence[i] to this@pairSequence[j])
+            }
+        }
+    }
+}
+
+inline fun <T, R> Iterable<T>.mapParallel(crossinline transform: suspend (T) -> R): List<R> = runBlocking { 
+    map { async(Dispatchers.Default) { transform(it) } }.awaitAll()
 }
 
 fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
@@ -325,6 +354,38 @@ fun <T> List<T>.divided(divisions: Int): List<List<T>> {
 fun <T, R> List<T>.divided(divisions: Int, transform: (List<T>) -> R): List<R> {
     val chunkSize = (size + divisions - 1) / divisions
     return chunked(chunkSize, transform)
+}
+
+/**
+ * Similar to [Iterable.chunked], but instead of creating a dynamic number of lists of a given size,
+ * creates a fixed number of lists of a dynamic size.
+ *
+ * This function doesn't maintain order.
+ * Elements are placed in the lists in a round-robin fashion.
+ */
+fun <T> Iterable<T>.divided(divisions: Int): List<List<T>> {
+    val lists = List(divisions) { mutableListOf<T>() }
+    var i = 0
+    for (element in this) {
+        lists[i++ % divisions].add(element)
+    }
+    return lists
+}
+
+/**
+ * Similar to [Iterable.chunked], but instead of creating a dynamic number of lists of a given size,
+ * creates a fixed number of lists of a dynamic size.
+ *
+ * This function doesn't maintain order.
+ * Elements are placed in the lists in a round-robin fashion.
+ */
+fun <T, R> Iterable<T>.divided(divisions: Int, transform: (List<T>) -> R): List<R> {
+    val lists = List(divisions) { mutableListOf<T>() }
+    var i = 0
+    for (element in this) {
+        lists[i++ % divisions].add(element)
+    }
+    return lists.map(transform)
 }
 
 inline fun <T> Iterable<T>.countIndexed(predicate: (Int, T) -> Boolean): Int {
