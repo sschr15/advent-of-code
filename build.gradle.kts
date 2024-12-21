@@ -30,7 +30,7 @@ repositories {
 }
 
 powerAssert {
-//    functions = listOf("kotlin.assert", "kotlin.require", "kotlin.check")
+    functions = listOf("kotlin.assert", "kotlin.require", "kotlin.check")
     includedSourceSets = listOf("main")
 }
 

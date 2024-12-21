@@ -126,6 +126,7 @@ fun <T> Grid<T>.aStar(
     start: Point,
     end: Point,
     getCost: (current: Point, neighbor: Point) -> Int,
+    isValidPoint: (Point) -> Boolean = { true },
     heuristic: (current: Point, goal: Point) -> Int = AbstractPoint::manhattanDistance,
 ): List<Point>? {
     data class Node(val point: Point, val f: Int)
@@ -146,6 +147,7 @@ fun <T> Grid<T>.aStar(
 
         for (neighbor in current.neighborsIn(this)) {
             if (neighbor in closed) continue
+            if (!isValidPoint(neighbor)) continue
 
             val tentativeGScore = gScore[current] + getCost(current, neighbor)
             if (tentativeGScore < gScore[neighbor]) {
