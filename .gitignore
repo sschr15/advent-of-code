@@ -16,6 +16,8 @@ session.txt
 *.dll
 *.so
 
+.kotlin/
+
 prep_times.txt
 
 # apparently gitignore doesn't like wildcards in the middle of the file name

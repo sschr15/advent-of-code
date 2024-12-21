@@ -132,16 +132,14 @@ class Memoizer(private val context: IrPluginContext) : IrElementTransformerVoid(
 
         val statements = body.statements.toMutableList()
 
-        val toAdd = context.irBuiltIns.createIrBuilder(declaration.symbol).run { 
-            irIfThen(
-                condition = irNot(irEqualsNull(irCall(mapGet).apply { 
-                    dispatchReceiver = irGetField(declaration.dispatchReceiverParameter?.let(::irGet), memoizeMapField)
-                    putValueArgument(0, createKeyFor(declaration))
-                })),
-                thenPart = irReturn(irCall(mapGet).apply { 
-                    dispatchReceiver = irGetField(declaration.dispatchReceiverParameter?.let(::irGet), memoizeMapField)
-                    putValueArgument(0, createKeyFor(declaration))
-                })
+        val toAdd = context.irBuiltIns.createIrBuilder(declaration.symbol).irBlock {
+            val check = createTmpVariable(irCall(mapGet).apply {
+                dispatchReceiver = irGetField(declaration.dispatchReceiverParameter?.let(::irGet), memoizeMapField)
+                putValueArgument(0, createKeyFor(declaration))
+            })
+            +irIfThen(
+                condition = irNot(irEqualsNull(irGet(check))),
+                thenPart = irReturn(irGet(check))
             )
         }
         statements.add(0, toAdd)
@@ -172,9 +170,7 @@ class Memoizer(private val context: IrPluginContext) : IrElementTransformerVoid(
             putValueArgument(2, irGet(params[2]))
         }
         else -> irCall(listOf).apply {
-            params.forEachIndexed { index, parameter ->
-                putValueArgument(index, irGet(parameter))
-            }
+            putValueArgument(0, irVararg(context.irBuiltIns.anyType, params.map { irGet(it) }))
         }
     }
 }
