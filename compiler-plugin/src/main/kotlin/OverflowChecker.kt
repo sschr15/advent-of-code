@@ -85,6 +85,9 @@ class OverflowChecker(private val context: IrPluginContext, private val config: 
         val collection = expression.extensionReceiver ?: error("Expected extension receiver")
 
         if (expression.valueArgumentsCount == 0) {
+            val type = collection.type
+            if (type != context.irBuiltIns.intType && type != context.irBuiltIns.longType) return super.visitCall(expression)
+
             return context.irBuiltIns
                 .createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
                 .irCall(

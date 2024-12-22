@@ -130,6 +130,20 @@ inline fun <T, R> Iterable<T>.mapParallel(crossinline transform: suspend (T) -> 
     map { async(Dispatchers.Default) { transform(it) } }.awaitAll()
 }
 
+inline fun <T, R> Iterable<T>.mapIndexedParallel(crossinline transform: suspend (Int, T) -> R): List<R> = runBlocking {
+    mapIndexed { index, t -> async(Dispatchers.Default) { transform(index, t) } }.awaitAll()
+}
+
+inline fun <K, V> Iterable<Map<K, V>>.combineMaps(): Map<K, List<V>> {
+    val result = mutableMapOf<K, MutableList<V>>()
+    for (map in this) {
+        for ((key, value) in map) {
+            result.getOrPut(key) { mutableListOf() }.add(value)
+        }
+    }
+    return result
+}
+
 fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
 fun <A, B : Any> Iterable<Pair<A, B?>>.filterSecondNotNull() = filter { it.second != null }.map { it.first to it.second!! }
 
