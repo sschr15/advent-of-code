@@ -4,12 +4,9 @@ package sschr15.aocsolutions.util
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -132,6 +129,22 @@ inline fun <T, R> Iterable<T>.mapParallel(crossinline transform: suspend (T) -> 
 
 inline fun <T, R> Iterable<T>.mapIndexedParallel(crossinline transform: suspend (Int, T) -> R): List<R> = runBlocking {
     mapIndexed { index, t -> async(Dispatchers.Default) { transform(index, t) } }.awaitAll()
+}
+
+inline fun <T> Iterable<T>.forEachParallel(crossinline action: suspend (T) -> Unit) {
+    runBlocking {
+        withContext(Dispatchers.Default) { 
+            forEach { async { action(it) } }
+        }
+    }
+}
+
+inline fun <T> Iterable<T>.forEachIndexedParallel(crossinline action: suspend (Int, T) -> Unit) {
+    runBlocking {
+        withContext(Dispatchers.Default) {
+            forEachIndexed { index, t -> async { action(index, t) } }
+        }
+    }
 }
 
 inline fun <K, V> Iterable<Map<K, V>>.combineMaps(): Map<K, List<V>> {

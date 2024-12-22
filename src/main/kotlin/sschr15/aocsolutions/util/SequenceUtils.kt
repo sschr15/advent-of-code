@@ -62,3 +62,44 @@ inline fun <T> Sequence<T>.noneIndexed(predicate: (Int, T) -> Boolean): Boolean 
     }
     return true
 }
+
+class LimitedSequence<T>(
+    limit: Int,
+    private val first: T = NOT_INITIALIZED as T,
+    private val generateFirst: () -> T = { error("No generation passed") },
+    private val generateNext: (T) -> T
+) : Iterator<T> {
+    private var current = if (first === NOT_INITIALIZED) generateFirst() else first
+    private var left = limit
+
+    override fun hasNext(): Boolean {
+        return left > 0
+    }
+
+    override fun next(): T {
+        if (left-- <= 0) throw NoSuchElementException()
+        val result = current
+        current = generateNext(current)
+        return result
+    }
+
+    companion object {
+        private val NOT_INITIALIZED = Any()
+    }
+}
+
+fun <T> generateLimitedSequence(limit: Int, seed: T, generateNext: (T) -> T): Sequence<T> {
+    return object : Sequence<T> {
+        override fun iterator(): Iterator<T> {
+            return LimitedSequence(limit, seed, generateNext = generateNext)
+        }
+    }
+}
+
+fun <T> generateLimitedSequence(limit: Int, generateFirst: () -> T, generateNext: (T) -> T): Sequence<T> {
+    return object : Sequence<T> {
+        override fun iterator(): Iterator<T> {
+            return LimitedSequence(limit, generateFirst = generateFirst, generateNext = generateNext)
+        }
+    }
+}
