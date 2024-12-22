@@ -11,8 +11,9 @@ inline fun unaryMinus(a: Int): Int = Math.negateExact(a)
 inline fun abs(a: Int): Int = Math.absExact(a)
 
 inline fun rem(a: Int, b: Int): Int {
-    if (a < 0) {
-        System.err.println("Warning: Remainder of a negative number")
+    if (a < 0 && b != a && System.getProperty("aoc.warnOnNegativeRemainder") != "false") {
+        System.err.println("Warning: Remainder of $a (a negative number)")
+        System.setProperty("aoc.warnOnNegativeRemainder", "false")
     }
     return a % b
 }
@@ -29,8 +30,9 @@ inline fun unaryMinus(a: Long): Long = Math.negateExact(a)
 inline fun abs(a: Long): Long = Math.absExact(a)
 
 inline fun rem(a: Long, b: Long): Long {
-    if (a < 0) {
-        System.err.println("Warning: Remainder of a negative number")
+    if (a < 0 && b != a && System.getProperty("aoc.warnOnNegativeRemainder") != "false") {
+        System.err.println("Warning: Remainder of $a (a negative number)")
+        System.setProperty("aoc.warnOnNegativeRemainder", "false")
     }
     return a % b
 }

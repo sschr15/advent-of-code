@@ -3,16 +3,14 @@ package com.sschr15.aoc.compiler.internal
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.builtins.PrimitiveType
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.jvm.compiler.report
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.irCall
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationBase
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationWithName
-import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrFunctionExpression
@@ -78,6 +76,7 @@ class OverflowChecker(private val context: IrPluginContext, private val config: 
     }
 
     lateinit var parent: IrDeclarationParent
+    lateinit var file: IrFile
 
     private fun IrType.isSumCandidate() =
         isSubtypeOfClass(context.irBuiltIns.iterableClass) || isArray() || isPrimitiveArray() || isSubtypeOfClass(sequenceClass)
@@ -145,6 +144,11 @@ class OverflowChecker(private val context: IrPluginContext, private val config: 
             }
     }
 
+    override fun visitFile(declaration: IrFile): IrFile {
+        file = declaration
+        return super.visitFile(declaration)
+    }
+
     override fun visitDeclaration(declaration: IrDeclarationBase): IrStatement {
         if (declaration.annotations.any { it.isAnnotationWithEqualFqName(FqName("com.sschr15.aoc.annotations.ExportIr")) }) {
             config.report(CompilerMessageSeverity.WARNING, declaration.dumpKotlinLike())
@@ -183,51 +187,72 @@ class OverflowChecker(private val context: IrPluginContext, private val config: 
     }
 
     override fun visitCall(expression: IrCall): IrExpression {
-        if (!expression.type.isPrimitiveType()) return super.visitCall(expression)
+        try {
+            if (!expression.type.isPrimitiveType()) return super.visitCall(expression)
 
-        val extension = expression.extensionReceiver
-        if (extension != null && extension.type.isSumCandidate()) {
-            if (expression.symbol.owner.kotlinFqName in collectionChecks) {
-                return visitSumCall(expression)
-            }
-        }
-
-        val par0 = expression.dispatchReceiver ?: expression.valueArguments.firstOrNull() ?: return super.visitCall(expression)
-        if (par0.type.isPrimitiveType()) {
-            val primitiveType = par0.type.getPrimitiveType()!!
-            if (primitiveType == PrimitiveType.INT && expression.symbol.owner.name.asString() in intConversions) {
-                return visitConversionCall(expression)
-            } else if (primitiveType == PrimitiveType.LONG && expression.symbol.owner.name.asString() in longConversions) {
-                return visitConversionCall(expression)
-            }
-        }
-
-        val primitiveType = expression.type.getPrimitiveType() ?: return super.visitCall(expression)
-        if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return super.visitCall(expression)
-        if (expression.symbol.owner.name.asString() !in singleTypeChecks) return super.visitCall(expression)
-        if (
-            (expression.totalParameterCount != 2 || expression.getTotalParameter(0)!!.type != expression.getTotalParameter(1)!!.type) &&
-            (expression.totalParameterCount != 1 || expression.symbol.owner.name.asString() !in singleArgumentTypeChecks)
-        ) {
-            config.report(CompilerMessageSeverity.WARNING, "Unexpected number of arguments for ${expression.symbol.owner.name}, skipping")
-            return super.visitCall(expression)
-        }
-
-        return context.irBuiltIns.createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
-            .irCall(context.referenceFunctions(CallableId(
-                FqName("com.sschr15.aoc.annotations"),
-                null,
-                expression.symbol.owner.name,
-            )).single { it.owner.valueParameters.first().type == expression.type }).apply {
-                expression.dispatchReceiver
-                val offset = if (expression.dispatchReceiver != null) {
-                    putValueArgument(0, expression.dispatchReceiver!!)
-                    1
-                } else 0
-
-                for (i in 0 until expression.valueArgumentsCount) {
-                    putValueArgument(i + offset, expression.getValueArgument(i))
+            val extension = expression.extensionReceiver
+            if (extension != null && extension.type.isSumCandidate()) {
+                if (expression.symbol.owner.kotlinFqName in collectionChecks) {
+                    return visitSumCall(expression)
                 }
             }
+
+            val par0 = expression.dispatchReceiver ?: expression.valueArguments.firstOrNull() ?: return super.visitCall(
+                expression
+            )
+            if (par0.type.isPrimitiveType()) {
+                val primitiveType = par0.type.getPrimitiveType()!!
+                if (primitiveType == PrimitiveType.INT && expression.symbol.owner.name.asString() in intConversions) {
+                    return visitConversionCall(expression)
+                } else if (primitiveType == PrimitiveType.LONG && expression.symbol.owner.name.asString() in longConversions) {
+                    return visitConversionCall(expression)
+                }
+            }
+
+            val primitiveType = expression.type.getPrimitiveType() ?: return super.visitCall(expression)
+            if (primitiveType != PrimitiveType.INT && primitiveType != PrimitiveType.LONG) return super.visitCall(
+                expression
+            )
+            if (expression.symbol.owner.name.asString() !in singleTypeChecks) return super.visitCall(expression)
+            if (
+                (expression.totalParameterCount != 2 || expression.getTotalParameter(0)!!.type != expression.getTotalParameter(
+                    1
+                )!!.type) &&
+                (expression.totalParameterCount != 1 || expression.symbol.owner.name.asString() !in singleArgumentTypeChecks)
+            ) {
+                config.report(
+                    CompilerMessageSeverity.WARNING,
+                    "Unexpected number of arguments for ${expression.symbol.owner.name}, skipping"
+                )
+                return super.visitCall(expression)
+            }
+
+            return context.irBuiltIns.createIrBuilder(expression.symbol, expression.startOffset, expression.endOffset)
+                .irCall(
+                    context.referenceFunctions(
+                        CallableId(
+                            FqName("com.sschr15.aoc.annotations"),
+                            null,
+                            expression.symbol.owner.name,
+                        )
+                    ).single { it.owner.valueParameters.first().type == expression.type }).apply {
+                    expression.dispatchReceiver
+                    val offset = if (expression.dispatchReceiver != null) {
+                        putValueArgument(0, expression.dispatchReceiver!!)
+                        1
+                    } else 0
+
+                    for (i in 0 until expression.valueArgumentsCount) {
+                        putValueArgument(i + offset, expression.getValueArgument(i))
+                    }
+                }
+        } catch (e: Exception) {
+            config.report(
+                CompilerMessageSeverity.ERROR,
+                "Error while checking for overflow: ${e.stackTraceToString()}",
+                CompilerMessageLocation.create(file.path, file.fileEntry.getLineNumber(expression.startOffset), file.fileEntry.getColumnNumber(expression.startOffset), null)
+            )
+            return expression
+        }
     }
 }
