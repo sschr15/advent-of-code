@@ -1,5 +1,28 @@
 # AoC Kotlin Compiler Plugin
 
+## 0.9.0
+
+- Fix `sum` replacements to not target `Float` and `Double` types
+
+## 0.8.0
+
+- Add (approximate) locations to compiler plugin errors
+  - This may be inaccurate in some cases but will remain close to the actual location.
+  - If reporting bugs, include the surrounding context and if possible the IR of the erroring function.
+- Modify `rem` checks to only warn once during the JVM's lifetime.
+  - To manually disable the warning entirely, pass `-Daoc.warnOnNegativeRemainder=false` to the JVM.
+
+## 0.7.0
+
+- Add Iterable/Sequence/Array summation overflow checks
+  - This will replace `sum` and `sumOf` calls with inlined alternatives.
+  - `sumBy` (deprecated in Kotlin) is mapped to `sumOf` before being replaced.
+    If using `sumBy`, the plugin will raise a warning.
+
+## 0.6.0
+
+- *Actually* fix memoization on high-arity functions (varargs are hard)
+
 ## 0.5.0
 
 - Modify destructuring errors to be a little less hard to read
