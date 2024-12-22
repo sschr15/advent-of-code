@@ -18,7 +18,6 @@ class PluginRegistrar : CompilerPluginRegistrar() {
         IrGenerationExtension.registerExtension(object : IrGenerationExtension {
             override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
                 moduleFragment.transform(Memoizer(pluginContext), null)
-                moduleFragment.transform(SumInlining(pluginContext, configuration), null)
                 moduleFragment.transform(OverflowChecker(pluginContext, configuration), null)
                 moduleFragment.transform(IrDestructuringFinder(pluginContext, configuration), null)
             }
