@@ -1,5 +1,6 @@
 package sschr15.aocsolutions
 
+import org.jgrapht.Graphs
 import org.jgrapht.alg.clique.BronKerboschCliqueFinder
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.DefaultUndirectedGraph
@@ -14,38 +15,20 @@ object Day23 : Challenge {
     override fun solve() = challenge(2024, 23) {
 //        test()
 
-        val graph = Graph<String>()
+        val graph: JGraph<String, DefaultEdge> = DefaultUndirectedGraph(DefaultEdge::class.java)
         part1 {
-            val cpusToNodes = mutableMapOf<String, Graph<String>.Node>()
-
             for (line in inputLines) {
                 val (a, b) = line.split("-")
-                if (a !in cpusToNodes) {
-                    cpusToNodes[a] = graph.addNode(a)
-                }
-                if (b !in cpusToNodes) {
-                    cpusToNodes[b] = graph.addNode(b)
-                }
+                Graphs.addEdgeWithVertices(graph, a, b)
             }
 
-            for (line in inputLines) {
-                val (a, b) = line.split("-")
-                val aNode = cpusToNodes[a]!!
-                val bNode = cpusToNodes[b]!!
-                aNode.connectTo(bNode)
-            }
+            val tNodes = graph.vertexSet().filter { it.startsWith("t") }
 
-            val tNodes = mutableListOf<Graph<String>.Node>()
-
-            for (node in graph.nodes) {
-                if (node.value.startsWith("t")) tNodes.add(node)
-            }
-
-            val sets = mutableSetOf<Set<Graph<String>.Node>>()
+            val sets = mutableSetOf<Set<String>>()
             for (node in tNodes) {
-                val neighbors = node.neighbors()
+                val neighbors = Graphs.neighborListOf(graph, node)
                 val neighborPairs = neighbors.pairSequence()
-                    .filter { (a, b) -> b in a.neighbors() }
+                    .filter { (a, b) -> b in Graphs.neighborSetOf(graph, a) }
 
                 sets += neighborPairs.map { (a, b) -> setOf(a, b, node) }
             }
@@ -53,24 +36,7 @@ object Day23 : Challenge {
             sets.size
         }
         part2 {
-            val newGraph: JGraph<String, DefaultEdge> = DefaultUndirectedGraph(DefaultEdge::class.java)
-
-            for (line in inputLines) {
-                val (a, b) = line.split("-")
-                if (!newGraph.containsVertex(a)) {
-                    newGraph.addVertex(a)
-                }
-                if (!newGraph.containsVertex(b)) {
-                    newGraph.addVertex(b)
-                }
-            }
-
-            for (line in inputLines) {
-                val (a, b) = line.split("-")
-                newGraph.addEdge(a, b)
-            }
-
-            val finder = BronKerboschCliqueFinder(newGraph)
+            val finder = BronKerboschCliqueFinder(graph)
             val cliques = finder.maxBy { it.size }
             cliques.sorted().joinToString(",")
         }

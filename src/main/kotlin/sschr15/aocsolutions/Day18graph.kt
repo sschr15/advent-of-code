@@ -1,5 +1,10 @@
 package sschr15.aocsolutions
 
+import org.jgrapht.Graph
+import org.jgrapht.alg.shortestpath.ALTAdmissibleHeuristic
+import org.jgrapht.alg.shortestpath.AStarShortestPath
+import org.jgrapht.graph.DefaultEdge
+import org.jgrapht.graph.DefaultUndirectedGraph
 import sschr15.aocsolutions.util.*
 
 /**
@@ -12,49 +17,49 @@ object Day18graph : Challenge {
 
         val size = if (_test) 7 else 71
 
-        val graph: Graph<Point>
-        val corruptions: List<Graph<Point>.Node>
-        val start: Graph<Point>.Node
-        val end: Graph<Point>.Node
+        val graph: Graph<Point, DefaultEdge>
+        val corruptions: List<Point>
+        val start: Point
+        val end: Point
+        val pathSearch: AStarShortestPath<Point, DefaultEdge>
         part1 {
-            graph = Graph()
-            val pointsToNodes = mutableMapOf<Point, Graph<Point>.Node>()
+            graph = DefaultUndirectedGraph(DefaultEdge::class.java)
+
             for (x in 0..<size) for (y in 0..<size) {
                 val point = Point(x, y)
-                val node = graph.addNode(point)
-                pointsToNodes[point] = node
+                graph.addVertex(point)
             }
 
             for (x in 0..<size) for (y in 0..<size) {
                 val point = Point(x, y)
-                val node = pointsToNodes[point]!!
                 for (neighbor in point.neighbors()) {
-                    val neighborNode = pointsToNodes[neighbor] ?: continue // out of bounds
-                    node.connectTo(neighborNode, 1)
+                    if (!graph.containsVertex(neighbor)) continue
+                    graph.addEdge(point, neighbor)
                 }
             }
 
-            start = pointsToNodes[Point.origin]!!
-            end = pointsToNodes[Point(size - 1, size - 1)]!!
+            start = Point.origin
+            end = Point(size - 1, size - 1)
 
             corruptions = inputLines
                 .map { it.split(",").ints() }
                 .map { (a, b) -> Point(a, b) }
-                .map { pointsToNodes[it]!! }
 
             repeat(if (_test) 12 else 1024) {
-                graph.removeNode(corruptions[it])
+                graph.removeVertex(corruptions[it])
             }
 
-            start.findPathTo(end)!!.size
+            pathSearch = AStarShortestPath<Point, DefaultEdge>(graph, ALTAdmissibleHeuristic(graph, setOf(end)))
+
+            pathSearch.getPath(start, end).length
         }
         part2 {
             var next = if (_test) 12 else 1024
-            while (start.findPathTo(end) != null) {
-                graph.removeNode(corruptions[next++])
+            while (pathSearch.getPath(start, end) != null) {
+                graph.removeVertex(corruptions[next++])
             }
 
-            val (x, y) = corruptions[next - 1].value
+            val (x, y) = corruptions[next - 1]
             "$x,$y"
         }
     }

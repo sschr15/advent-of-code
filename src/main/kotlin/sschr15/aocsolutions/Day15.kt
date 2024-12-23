@@ -8,7 +8,7 @@ import sschr15.aocsolutions.util.*
  */
 object Day15 : Challenge {
     override fun solve() = challenge(2024, 15) {
-        test()
+//        test()
 
         splitBy("\n\n")
 
@@ -134,15 +134,15 @@ object Day15 : Challenge {
             }
 
             var robotPos = grid.toPointMap().filterValues { it == '@' }.keys.single()
-            println(grid)
+//            println(grid)
 
             for ((i, move) in moves.withIndex()) {
-                println(when (move) {
-                    Direction.North -> '^'
-                    Direction.South -> 'v'
-                    Direction.East -> '>'
-                    Direction.West -> '<'
-                } + " $i")
+//                println(when (move) {
+//                    Direction.North -> '^'
+//                    Direction.South -> 'v'
+//                    Direction.East -> '>'
+//                    Direction.West -> '<'
+//                } + " $i")
                 val newPos = move.mod(robotPos)
                 if (grid[newPos] == '#') continue
                 if (grid[newPos] in "[]") {
@@ -156,10 +156,10 @@ object Day15 : Challenge {
                     grid[newPos] = '@'
                     robotPos = newPos
                 }
-                println(grid)
+//                println(grid)
             }
 
-            println(grid)
+//            println(grid)
 
             grid.toPointMap().filterValues { it == '[' }.keys.sumOf { it.y * 100 + it.x }
         }
