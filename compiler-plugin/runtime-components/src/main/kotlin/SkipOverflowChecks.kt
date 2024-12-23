@@ -10,6 +10,12 @@ package com.sschr15.aoc.annotations
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.EXPRESSION,
+    AnnotationTarget.FIELD,
+    AnnotationTarget.LOCAL_VARIABLE,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+    AnnotationTarget.FILE,
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class SkipOverflowChecks
