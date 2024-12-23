@@ -1,7 +1,6 @@
 package sschr15.aocsolutions
 
-import sschr15.aocsolutions.util.Challenge
-import sschr15.aocsolutions.util.ThreadLocalPrintStream
+import sschr15.aocsolutions.util.*
 import java.io.PrintWriter
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedWriter
@@ -20,7 +19,7 @@ fun main() {
         null
     }
 
-    System.setProperty("aoc.skip.clipboard.copy", "true")
+    System.setProperty("aoc.clipboard.skip", "true")
 
     println("Total time: ${
         measureTime {
