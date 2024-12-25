@@ -42,6 +42,13 @@ sealed class Direction {
         East -> South
     }
 
+    fun turnAround() = when (this) {
+        North -> South
+        South -> North
+        West -> East
+        East -> West
+    }
+
     object North : Direction() {
         override fun mod(point: AbstractPoint) = point.up()
     }
@@ -559,3 +566,6 @@ fun log10iSmall(n: Long): Int {
     }
     return i - 1
 }
+
+@Suppress("UNCHECKED_CAST")
+inline fun <T> Any.uncheckedCast() = this as T

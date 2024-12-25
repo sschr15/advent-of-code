@@ -69,6 +69,40 @@ fun AbstractPoint.toPoint() = Point(x(), y())
  */
 fun AbstractPoint.chessDistance(other: AbstractPoint): Int = max((x() - other.x()).absoluteValue, (y() - other.y()).absoluteValue)
 
+/**
+ * Get the direction from this point to the other point.
+ */
+fun AbstractPoint.directionTo(other: AbstractPoint): AbstractPoint.Direction {
+    val dx = other.x() - x()
+    val dy = other.y() - y()
+    return when {
+        dx == 0 && dy < 0 -> AbstractPoint.Direction.TTB
+        dx == 0 && dy > 0 -> AbstractPoint.Direction.BTT
+        dx < 0 && dy == 0 -> AbstractPoint.Direction.LTR
+        dx > 0 && dy == 0 -> AbstractPoint.Direction.RTL
+        dx < 0 && dy < 0 -> AbstractPoint.Direction.BL_TR
+        dx > 0 && dy > 0 -> AbstractPoint.Direction.TR_BL
+        dx < 0 && dy > 0 -> AbstractPoint.Direction.TL_BR
+        dx > 0 && dy < 0 -> AbstractPoint.Direction.BR_TL
+        else -> throw IllegalArgumentException("Points are the same")
+    }
+}
+
+/**
+ * Get the cardinal direction from this point to the other point.
+ */
+fun AbstractPoint.cardinalDirectionTo(other: AbstractPoint): Direction {
+    val dx = other.x() - x()
+    val dy = other.y() - y()
+    return when {
+        dx == 0 && dy < 0 -> Direction.North
+        dx == 0 && dy > 0 -> Direction.South
+        dx < 0 && dy == 0 -> Direction.West
+        dx > 0 && dy == 0 -> Direction.East
+        else -> throw IllegalArgumentException("Points are not cardinal")
+    }
+}
+
 operator fun AbstractPoint.plus(other: AbstractPoint) = Point(x() + other.x(), y() + other.y())
 operator fun AbstractPoint.minus(other: AbstractPoint) = Point(x() - other.x(), y() - other.y())
 
