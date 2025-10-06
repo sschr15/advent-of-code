@@ -5,12 +5,18 @@ HEADER = '''
 package com.sschr15.aoc.annotations
 
 import kotlin.experimental.ExperimentalTypeInference
+import kotlin.jvm.JvmName
 '''.strip()
 
 FUNCTION_BODY = '''
     var sum = 0%s
     for (item in items) {
-        sum = Math.addExact(sum, %s.to%s())
+        val prev = sum
+        val num = %s.to%s()
+        sum += num
+        if ((sum xor prev) and (sum xor num) < 0) {
+            throw ArithmeticException("Integer overflow")
+        }
     }
     return sum
 '''.strip('\n')
@@ -59,5 +65,5 @@ if __name__ == '__main__':
         *declarations,
     ]
 
-    with open('src/main/kotlin/CollectionOverflowChecks.kt', 'wb') as file:
+    with open('src/commonMain/kotlin/CollectionOverflowChecks.kt', 'wb') as file:
         file.write('\n\n'.join(output_file).encode())

@@ -1,0 +1,4 @@
+headers = igraph.h
+headerFilter = igraph*.h
+package = lib.igraph
+linkerOpts = -L/usr/lib -ligraph
