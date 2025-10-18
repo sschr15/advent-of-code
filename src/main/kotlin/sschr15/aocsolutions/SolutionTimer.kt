@@ -1,6 +1,6 @@
 package sschr15.aocsolutions
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import sschr15.aocsolutions.util.*

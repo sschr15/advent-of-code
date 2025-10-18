@@ -7,8 +7,9 @@ plugins {
     java
     // if kotlin is so good why isn't there a kotlin 2
     // oh, it's here
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.power-assert") version "2.1.0"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.power-assert") version "2.2.20"
+    id("com.sschr15.chekt") version "0.1.1"
     application
 }
 
@@ -26,6 +27,7 @@ java {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -43,21 +45,22 @@ kotlin {
             "kotlin.experimental.ExperimentalTypeInference",
         ))
 
-        freeCompilerArgs.addAll(listOf(
-            "NOTHING_TO_INLINE",
-        ).map { "-Xsuppress-warning=$it" })
-        freeCompilerArgs.add("-Xplugin=${project(":compiler-plugin").file("build/libs/compiler-plugin.jar")}")
-    }
+        freeCompilerArgs.addAll(
+            "-Xwhen-guards", // When guards: switch guards for kotlin
+            "-Xcontext-parameters", // the newer version of context receivers
+            "-Xnested-type-aliases", // type aliases meet inception
+            "-Xallow-reified-type-in-catch", // catching reified exceptions is a thing now
+            "-Xallow-contracts-on-more-functions", // operators, accessors, and "erased types" (???)
+            "-Xallow-condition-implies-returns-contracts", // (condition) implies returns()
+            "-Xallow-holdsin-contract", // a condition that "holds in" a lambda block
+            "-Xcontext-sensitive-resolution", // enums can be referenced by names with a `when` enum condition, and similar
+            "-Xnon-local-break-continue", // `break` and `continue` in inline lambdas
+            "-Xmulti-dollar-interpolation", // prefixing a string with dollar signs to change the interpolation signifier
+//            "-Xdirect-java-actualization", // for multiplatform, actual classes implemented in java
+            "-Xwhen-expressions=indy", // compile `when` expressions on types into invokedynamic (java 21+)
 
-    sourceSets.configureEach { 
-        languageSettings { 
-            listOf(
-                LanguageFeature.ContextReceivers, // for my z3 wrapper
-                LanguageFeature.BreakContinueInInlineLambdas, // because very useful
-                LanguageFeature.WhenGuards, // copying java's "new" switch guards
-                LanguageFeature.MultiDollarInterpolation, // just in case
-            ).forEach { enableLanguageFeature(it.toString()) }
-        }
+            "-Xwarning-level=NOTHING_TO_INLINE:disabled",
+        )
     }
 }
 
@@ -71,22 +74,18 @@ dependencies {
     ).forEach {
         implementation(kotlin(it))
     }
-    implementation("org.jetbrains:annotations:26.0.1")
-    implementation("com.sschr15:templates-kt:1.0.0") // here because i want java 21 string templates
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-    implementation("it.unimi.dsi:fastutil:8.5.12")
+    implementation("org.jetbrains:annotations:26.0.2-1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+    implementation("it.unimi.dsi:fastutil:8.5.18")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
     implementation("org.jsoup:jsoup:1.15.3")
-
-    implementation(files("z3/kotlin-z3-wrapper.jar"))
-
-    implementation(projects.compilerPlugin.runtimeComponents)
+    implementation("com.sschr15.z3kt:z3kt:0.7.0")
+    runtimeOnly(files("com.microsoft.z3.jar"))
 }
 
 tasks {
     compileKotlin {
-        dependsOn(project(":compiler-plugin").tasks.jar)
         // force recompile
 //        outputs.upToDateWhen { false }
 //        outputs.cacheIf { false }

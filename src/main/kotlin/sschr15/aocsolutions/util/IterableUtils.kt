@@ -134,7 +134,7 @@ inline fun <T, R> Iterable<T>.mapIndexedParallel(crossinline transform: suspend 
 inline fun <T> Iterable<T>.forEachParallel(crossinline action: suspend (T) -> Unit) {
     runBlocking {
         withContext(Dispatchers.Default) { 
-            forEach { async { action(it) } }
+            map { async { action(it) } }.awaitAll()
         }
     }
 }
@@ -142,7 +142,7 @@ inline fun <T> Iterable<T>.forEachParallel(crossinline action: suspend (T) -> Un
 inline fun <T> Iterable<T>.forEachIndexedParallel(crossinline action: suspend (Int, T) -> Unit) {
     runBlocking {
         withContext(Dispatchers.Default) {
-            forEachIndexed { index, t -> async { action(index, t) } }
+            mapIndexed { index, t -> async { action(index, t) } }.awaitAll()
         }
     }
 }
@@ -157,8 +157,11 @@ inline fun <K, V> Iterable<Map<K, V>>.combineMaps(): Map<K, List<V>> {
     return result
 }
 
-fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null }.map { it.first!! to it.second }
-fun <A, B : Any> Iterable<Pair<A, B?>>.filterSecondNotNull() = filter { it.second != null }.map { it.first to it.second!! }
+@Suppress("UNCHECKED_CAST")
+fun <A : Any, B> Iterable<Pair<A?, B>>.filterFirstNotNull() = filter { it.first != null } as List<Pair<A, B>>
+
+@Suppress("UNCHECKED_CAST")
+fun <A, B : Any> Iterable<Pair<A, B?>>.filterSecondNotNull() = filter { it.second != null } as List<Pair<A, B>>
 
 val IntRange.range get() = last - first + 1
 val LongRange.range get() = last - first + 1
@@ -201,7 +204,7 @@ class EmptyCollection<T> : List<T>, Set<T>, Sequence<T>, Flow<T> {
         override fun tryAdvance(action: Consumer<in Any?>?) = false
         override fun trySplit(): Spliterator<Any?> = this
         override fun estimateSize() = 0L
-        override fun characteristics() = Spliterator.IMMUTABLE
+        override fun characteristics() = 0x4555
     }
 
     override val size = 0

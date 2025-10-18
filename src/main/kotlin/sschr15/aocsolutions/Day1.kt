@@ -1,27 +1,20 @@
 package sschr15.aocsolutions
 
 import sschr15.aocsolutions.util.*
-import kotlin.math.absoluteValue
 
 /**
- * AOC 2024 [Day 1](https://adventofcode.com/2024/day/1)
- * Challenge: Make sure two historic location lists are "close enough"
+ * AOC 2025 [Day 1](https://adventofcode.com/2025/day/1)
+ * Challenge: Unreleased! What could it be?
  */
 object Day1 : Challenge {
-    override fun solve() = challenge(2024, 1) {
-        val parts: List<List<Int>>
-        val a: List<Int>
-        val b: List<Int>
+    override fun solve() = challenge(2025, 1) {
+        // test()
+
         part1 {
-            parts = inputLines.map { it.split("   ").ints() }
-            a = parts.map { it[0] }
-            b = parts.map { it[1] }
-            a.sorted().zip(b.sorted())
-                .sumOf { (a, b) -> (b - a).absoluteValue }
+            //TODO
         }
         part2 {
-            val freqs = b.counts()
-            a.sumOf { (freqs[it] ?: 0) * it }
+            //TODO
         }
     }
 
