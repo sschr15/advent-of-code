@@ -8,13 +8,28 @@ import sschr15.aocsolutions.util.*
  */
 object Day1 : Challenge {
     override fun solve() = challenge(2025, 1) {
-        // test()
+//        test()
 
         part1 {
-            //TODO
+            inputLines.runningFold(50) { prev, line ->
+                val dir = if (line.first() == 'R') 1 else -1
+                val amount = line.drop(1).toInt()
+                (prev + dir * amount) mod 100
+            }.count { it == 0 }
         }
         part2 {
-            //TODO
+            var dial = 50
+            var zeroes = 0
+            for (line in inputLines) {
+                val dir = if (line.first() == 'R') 1 else -1
+                val amount = line.drop(1).toInt()
+
+                repeat(amount) {
+                    dial = (dial + dir) mod 100
+                    zeroes += if (dial == 0) 1 else 0
+                }
+            }
+            zeroes
         }
     }
 

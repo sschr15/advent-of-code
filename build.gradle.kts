@@ -9,7 +9,7 @@ plugins {
     // oh, it's here
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.power-assert") version "2.2.20"
-    id("com.sschr15.chekt") version "0.1.1"
+    id("com.sschr15.chekt") version "0.2.0"
     application
 }
 
@@ -80,7 +80,7 @@ dependencies {
     implementation("it.unimi.dsi:fastutil:8.5.18")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
     implementation("org.jsoup:jsoup:1.15.3")
-    implementation("com.sschr15.z3kt:z3kt:0.7.0")
+    implementation("com.sschr15.z3kt:z3kt-jvm:0.6.0")
     runtimeOnly(files("com.microsoft.z3.jar"))
 }
 
