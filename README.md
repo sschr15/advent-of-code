@@ -30,27 +30,8 @@ If any exceptions are thrown, the program will catch them, print the error messa
 and export the stack trace to a file named `dayN_error.txt`.
 It will then continue to the next solution.
 
-## What's [`compiler-plugin`](compiler-plugin)?
+## Compiler Plugin
 
-This is a custom plugin providing an annotation for adding memoization
-to functions as well as automatically checking for integer/long overflow.
-To use it, add the following to a project's `build.gradle.kts`:
-
-```kotlin
-val compilerPlugin by configurations.creating
-
-dependencies {
-    implementation("com.sschr15.aoc:runtime-components:0.1.0")
-    compilerPlugin("com.sschr15.aoc:compiler-plugin:0.1.0")
-}
-
-kotlin {
-    compilerOptions {
-        for (plugin in compilerPlugin) {
-            freeCompilerArgs.add("-Xplugin=${plugin.absolutePath}")
-        }
-    }
-}
-```
-
-I plan on providing a Gradle plugin at some point to avoid the need for manual configuration.
+Formerly, I had a compiler plugin in this repository that added integer overflow checks
+and a few other utilities. That has now been moved to [its own repository](https://github.com/sschr15/chekt)
+and is available as a [Gradle plugin](https://plugins.gradle.org/plugin/com.sschr15.chekt).
