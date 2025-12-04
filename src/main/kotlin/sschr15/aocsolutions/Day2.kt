@@ -4,7 +4,7 @@ import sschr15.aocsolutions.util.*
 
 /**
  * AOC 2025 [Day 2](https://adventofcode.com/2025/day/2)
- * Challenge: Unreleased! What could it be?
+ * Challenge: elves messed up the database, we'll need to fix it
  */
 object Day2 : Challenge {
     override fun solve() = challenge(2025, 2) {

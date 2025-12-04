@@ -4,7 +4,7 @@ import sschr15.aocsolutions.util.*
 
 /**
  * AOC 2025 [Day 1](https://adventofcode.com/2025/day/1)
- * Challenge: Unreleased! What could it be?
+ * Challenge: What a complicated way to retrieve a password, from a combination lock of all things
  */
 object Day1 : Challenge {
     override fun solve() = challenge(2025, 1) {
