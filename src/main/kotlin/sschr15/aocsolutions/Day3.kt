@@ -5,7 +5,7 @@ import sschr15.aocsolutions.util.*
 import java.util.TreeSet
 
 /**
- * AOC 2025 [Day 1](https://adventofcode.com/2025/day/1)
+ * AOC 2025 [Day 3](https://adventofcode.com/2025/day/3)
  * Challenge: joltage: it's like voltage but better
  */
 object Day3 : Challenge {
