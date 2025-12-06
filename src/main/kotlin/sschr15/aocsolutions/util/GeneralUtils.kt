@@ -103,7 +103,7 @@ fun getChallenge(year: Int, day: Int, separator: String? = "\n") =
             day !in 1..25 && day !in 31..55 -> error("Day $day is not a valid day")
             else -> error("Could not find challenge file for $year day $day")
         }.replace("\r\n", "\n") // remove crlf, it breaks too many things (thanks windows)
-            .trim()
+            .trimEnd('\n')
 
         // return the input as a list of lines, or as a singleton list if the separator is null
         if (separator != null) text.split(separator) else listOf(text)
