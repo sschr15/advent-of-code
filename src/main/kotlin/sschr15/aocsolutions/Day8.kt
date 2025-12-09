@@ -17,7 +17,7 @@ private typealias P3d = Triple<Long, Long, Long>
 object Day8 : Challenge {
     override fun solve() = challenge(2025, 8) {
 //        test()
-        
+
         data class Link(val a: P3d, val b: P3d) : Comparable<Link> {
             val distanceSquared by lazy {
                 val (x1, y1, z1) = a
