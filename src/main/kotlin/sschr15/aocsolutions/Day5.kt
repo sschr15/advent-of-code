@@ -17,7 +17,7 @@ object Day5 : Challenge {
         part1 {
             val (rangesString, ids) = inputLines
             ranges = rangesString.lines().map { it.split("-").longs() }.map { (a, b) -> a..b }
-            ids.lines().apply { println(size) }.longs().count {
+            ids.lines().longs().count {
                 ranges.any { range -> it in range }
             }
         }

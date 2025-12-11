@@ -1,9 +1,14 @@
 package sschr15.aocsolutions
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import sschr15.aocsolutions.util.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.io.PrintStream
 import kotlin.io.path.Path
@@ -23,24 +28,48 @@ object SolutionTimer {
         System.setProperty("aoc.clipboard.skip", "true") // Copying to clipboard is slow and unnecessary
 
         if (args.isNotEmpty()) {
-            runDay(args[0])
+            val out = System.out
+            System.setOut(PrintStream(OutputStream.nullOutputStream()))
+            runDay(args[0], out)
             return
         }
 
         // Run all the challenges
-        try {
-            System.setProperty("aoc.timeout", "5s") // Running tests synchronously, decrease wait time
-            repeat(25) {
-                runDay("Day${it + 1}")
-                println()
+//        try {
+//            System.setProperty("aoc.timeout", "5s") // Running tests synchronously, decrease wait time
+//            repeat(25) {
+//                runDay("Day${it + 1}")
+//                println()
+//            }
+//        } catch (e: ClassNotFoundException) {
+//            // If we get here, we've run out of days to run
+//            println("Done!")
+//        }
+
+        runBlocking {
+            val out = System.out
+            val results = mutableMapOf<Int, String>()
+            val printStream = ThreadLocalPrintStream()
+            System.setOut(PrintStream(OutputStream.nullOutputStream()))
+            (1..25).forEachParallel {
+                try {
+                    printStream.out = ByteArrayOutputStream()
+                    runDay("Day$it", printStream)
+                    synchronized(results) { results[it] = printStream.out.toString() }
+                } catch (_: ClassNotFoundException) {
+                    // ignore
+                }
             }
-        } catch (e: ClassNotFoundException) {
-            // If we get here, we've run out of days to run
-            println("Done!")
+
+            System.setOut(out)
+            for ((day, result) in results.toSortedMap()) {
+                println("Day $day:")
+                println(result)
+            }
         }
     }
 
-    private fun runDay(dayString: String) {
+    private fun runDay(dayString: String, out: PrintStream) {
         val start = Clock.System.now()
 
         // Load the challenge class
@@ -49,9 +78,9 @@ object SolutionTimer {
         val challenge = dayClass.kotlin.objectInstance as Challenge
 
         // Disable output (don't go logging the same thing 20 times)
-        val existingOut = System.out
-        val nullOutput = PrintStream(OutputStream.nullOutputStream())
-        System.setOut(nullOutput)
+//        val existingOut = System.out
+//        val nullOutput = PrintStream(OutputStream.nullOutputStream())
+//        System.setOut(nullOutput)
 
         // Prep the challenge by running it a handful of times
         // (because JVM startup is slow and class loading is slow)
@@ -76,7 +105,7 @@ object SolutionTimer {
         }
 
         // Re-enable output
-        System.setOut(existingOut)
+//        System.setOut(existingOut)
 
         // Calculate and print the times + fun stats
         val nsTimes = times.map { it.toDouble(DurationUnit.NANOSECONDS) }
@@ -85,26 +114,28 @@ object SolutionTimer {
         val min = times.min()
         val max = times.max()
 
-        print("Times for day ${day.substring(3).takeWhile { it.isDigit() }} ")
+        with(out) {
+            print("Times for day ${day.substring(3).takeWhile { it.isDigit() }} ")
 
-        if (times.size > 500) {
-            println("(${times.size} runs):")
-        } else if (times.size > 100) {
-            // Yellow: starting to get slow
-            println("\u001B[33m(${times.size} runs)\u001B[0m:")
-        } else if (times.size > 10) {
-            // Red: quite slow
-            println("\u001B[31m(${times.size} runs)\u001B[0m:")
-        } else {
-            // Highlighted red: extraordinarily, outrageously, preposterously slow
-            println("\u001B[41m(${times.size} runs, very slow)\u001B[0m:")
+            if (times.size > 500) {
+                println("(${times.size} runs):")
+            } else if (times.size > 100) {
+                // Yellow: starting to get slow
+                println("\u001B[33m(${times.size} runs)\u001B[0m:")
+            } else if (times.size > 10) {
+                // Red: quite slow
+                println("\u001B[31m(${times.size} runs)\u001B[0m:")
+            } else {
+                // Highlighted red: extraordinarily, outrageously, preposterously slow
+                println("\u001B[41m(${times.size} runs, very slow)\u001B[0m:")
+            }
+
+            println("Average: $average")
+            println("Min: $min")
+            println("Max: $max")
+
+            println("Standard Deviation: $stdDev")
         }
-
-        println("Average: $average")
-        println("Min: $min")
-        println("Max: $max")
-
-        println("Standard Deviation: $stdDev")
 
         // Store prep times to a file
         val prepFile = Path("prep_times.txt")

@@ -50,8 +50,8 @@ object Day6 : Challenge {
                     .filter { it.isNotBlank() }
                     .map { it.trim() }
                     .longs()
-                
-                println(fixedNumbers to operation)
+
+//                println(fixedNumbers to operation)
 
                 when (operation.trim()) {
                     "+" -> fixedNumbers.sum()

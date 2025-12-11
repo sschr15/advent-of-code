@@ -36,7 +36,7 @@ object Day3 : Challenge {
             }
 
             inputLines.sumOf { s ->
-                maxValue(s, 12).also(::println) ?: error(s)
+                maxValue(s, 12) ?: error(s)
             }
         }
     }
