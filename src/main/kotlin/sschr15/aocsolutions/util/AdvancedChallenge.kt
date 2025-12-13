@@ -19,6 +19,7 @@ fun challenge(year: Int, day: Int, block: AdvancedChallenge.Scope.() -> Unit): D
 
 object AdvancedChallenge {
     class Scope(private val year: Int, private val day: Int) {
+        @PublishedApi
         internal var _test = false
         internal var _splitBy: String? = "\n"
 
@@ -30,7 +31,7 @@ object AdvancedChallenge {
             getChallenge(year, d, _splitBy)
         }
 
-        fun part1(block: ChallengePart.() -> Any?) {
+        inline fun part1(crossinline block: ChallengePart.() -> Any?) {
             contract {
                 callsInPlace(block, EXACTLY_ONCE)
             }
@@ -63,7 +64,8 @@ object AdvancedChallenge {
         }
     }
 
-    private fun copyToClipboard(text: String, test: Boolean) {
+    @PublishedApi
+    internal fun copyToClipboard(text: String, test: Boolean) {
         if (System.getProperty("aoc.clipboard.skip") == "true" || test) return
 
         val copyUtility = System.getProperty("aoc.clipboard.cli")
@@ -82,6 +84,7 @@ object AdvancedChallenge {
     class ChallengePart(
         val inputLines: List<String>,
     ) {
+        @PublishedApi
         internal var _res: Any? = null
         @PublishedApi
         internal val _extra = mutableMapOf<String, Any>()
